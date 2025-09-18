@@ -1,6 +1,6 @@
 ---
 import { Navbar } from "@/components/Navbar"
-import { SetupSection } from "@/components/SetupSection"
+import { CustomCharacterForm } from "@/components/CustomCharacterForm"
 import "../styles/global.css"
 ---
 
@@ -10,8 +10,8 @@ import "../styles/global.css"
 		<meta name="viewport" content="width=device-width" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Video Generator - Create Amazing Videos</title>
-		<meta name="description" content="Create professional videos with our easy-to-use video generator. Follow simple steps to generate, customize, and download your videos." />
+		<title>Buat Karakter Custom - Video Generator</title>
+		<meta name="description" content="Buat karakter AI custom sesuai keinginan Anda dengan deskripsi detail." />
 	</head>
 
 	<body class="min-h-screen bg-background antialiased">
@@ -21,7 +21,7 @@ import "../styles/global.css"
 		<!-- Main Content -->
 		<main class="flex-1">
 			<div class="container mx-auto px-8 py-12">
-				<SetupSection client:load />
+				<CustomCharacterForm client:load />
 			</div>
 		</main>
 
@@ -33,15 +33,5 @@ import "../styles/global.css"
 				</div>
 			</div>
 		</footer>
-
-		<script>
-			function updateStep(step: number) {
-				// This is just for demo purposes
-				// In a real app, you would update the component state
-				console.log(`Moving to step ${step}`);
-				// You could trigger a page reload with the new step or use a state management solution
-				window.location.href = `?step=${step}`;
-			}
-		</script>
 	</body>
 </html>
