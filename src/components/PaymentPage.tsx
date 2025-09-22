@@ -14,7 +14,11 @@ import {
   Video,
   Check,
   Sparkles,
+  AlertCircle,
 } from "lucide-react";
+import { OTPModal } from "./OTPModal";
+import { videoSetupStorage } from "@/lib/videoSetupStorage";
+import { videoStoreApi } from "@/lib/api";
 
 export function PaymentPage() {
   const [name, setName] = useState("");
@@ -27,11 +31,252 @@ export function PaymentPage() {
   >(null);
   const [selectedPackage, setSelectedPackage] = useState<string | null>(null);
   const [isPersonalInfoComplete, setIsPersonalInfoComplete] = useState(false);
+  const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
+  const [userQuota, setUserQuota] = useState<number | null>(null);
+  const [isOTPVerified, setIsOTPVerified] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handlePersonalInfoChange = () => {
     const isComplete =
       name.trim() !== "" && email.trim() !== "" && phoneNumber.trim() !== "";
     setIsPersonalInfoComplete(isComplete);
+  };
+
+  const handleOTPSuccess = async (quota: number) => {
+    setUserQuota(quota);
+    setIsOTPVerified(true);
+    setIsOTPModalOpen(false);
+
+    // Get selected package price
+    const selectedPkg = pricingPackages.find(
+      (pkg) => pkg.id === selectedPackage
+    );
+    const packagePrice = selectedPkg
+      ? parseInt(selectedPkg.currentPrice.replace(/[^\d]/g, ""))
+      : null;
+
+    // Update localStorage with payment info
+    videoSetupStorage.updatePaymentInfo({
+      email: email,
+      no_wa: phoneNumber,
+      metode_pengiriman: "kuota",
+      metode: null,
+      jumlah: packagePrice,
+    });
+
+    // If coins payment method is selected and quota is sufficient, proceed automatically
+    if (selectedPaymentMethod === "coins" && quota >= 25000 && packagePrice) {
+      await handleCoinsPayment();
+    }
+  };
+
+  const handleVerificationClick = () => {
+    if (email.trim() !== "") {
+      setIsOTPModalOpen(true);
+    }
+  };
+
+  const handlePaymentMethodSelect = async (methodId: string) => {
+    setSelectedPaymentMethod(methodId);
+
+    // Get selected package price
+    const selectedPkg = pricingPackages.find(
+      (pkg) => pkg.id === selectedPackage
+    );
+    const packagePrice = selectedPkg
+      ? parseInt(selectedPkg.currentPrice.replace(/[^\d]/g, ""))
+      : null;
+
+    // Update localStorage based on payment method
+    if (methodId === "coins") {
+      // For coins, only update if OTP is verified
+      if (isOTPVerified && packagePrice) {
+        videoSetupStorage.updatePaymentInfo({
+          email: email,
+          no_wa: phoneNumber,
+          metode_pengiriman: "kuota",
+          metode: null,
+          jumlah: packagePrice,
+        });
+
+        // If using coins, directly proceed to store and generate video
+        await handleCoinsPayment();
+      }
+    } else {
+      // For other payment methods, update immediately
+      let metode = null;
+      if (methodId === "gopay") {
+        metode = "gopay";
+      } else if (methodId === "qris") {
+        metode = "other_qris";
+      } else if (methodId === "credit-card") {
+        metode = "kreem";
+      }
+
+      videoSetupStorage.updatePaymentInfo({
+        email: email,
+        no_wa: phoneNumber,
+        metode_pengiriman: "pembayaran",
+        metode: metode,
+        jumlah: packagePrice,
+      });
+    }
+  };
+
+  const handlePackageSelect = (packageId: string) => {
+    setSelectedPackage(packageId);
+
+    // Get selected package price
+    const selectedPkg = pricingPackages.find((pkg) => pkg.id === packageId);
+    const packagePrice = selectedPkg
+      ? parseInt(selectedPkg.currentPrice.replace(/[^\d]/g, ""))
+      : null;
+
+    // Update localStorage with package price
+    if (packagePrice) {
+      videoSetupStorage.updatePaymentInfo({
+        email: email,
+        no_wa: phoneNumber,
+        metode_pengiriman:
+          selectedPaymentMethod === "coins" ? "kuota" : "pembayaran",
+        metode:
+          selectedPaymentMethod === "coins"
+            ? null
+            : selectedPaymentMethod === "gopay"
+            ? "gopay"
+            : selectedPaymentMethod === "qris"
+            ? "other_qris"
+            : selectedPaymentMethod === "credit-card"
+            ? "kreem"
+            : null,
+        jumlah: packagePrice,
+      });
+    }
+  };
+
+  const handleCoinsPayment = async () => {
+    try {
+      setIsProcessing(true);
+      setError(null);
+
+      // Get all data from localStorage
+      const videoData = videoSetupStorage.load();
+      if (!videoData) {
+        throw new Error(
+          "Data video tidak ditemukan. Silakan kembali ke halaman setup."
+        );
+      }
+
+      // Prepare data for API call
+      const storeData = {
+        prompt: videoData.prompt,
+        karakter_image: videoData.karakter_image,
+        background_image: videoData.background_image,
+        aspek_rasio: videoData.aspek_rasio,
+        seeds: null,
+        model_ai: "veo3_fast",
+        metode_pengiriman: "kuota",
+        metode: null,
+        jumlah: videoData.jumlah,
+        email: videoData.email || email,
+        no_wa: videoData.no_wa || phoneNumber,
+        affiliate_by: "", // Empty string as per requirement
+      };
+
+      // Call the store API
+      const result = await videoStoreApi.storeVideoData(storeData);
+
+      if (result.status) {
+        // Success - save x-api-key and redirect to generate video
+        console.log(
+          "Video data stored successfully with coins:",
+          result.message
+        );
+
+        // Save x-api-key to localStorage for video generation
+        if (result.data && result.data["x-api-key"]) {
+          localStorage.setItem("x-api-key", result.data["x-api-key"]);
+        }
+
+        // Redirect directly to generate video page since payment is completed
+        window.location.href = "/generate";
+      } else {
+        throw new Error(result.message || "Gagal menyimpan data video");
+      }
+    } catch (err) {
+      console.error("Error processing coins payment:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat memproses pembayaran dengan koin"
+      );
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleContinuePayment = async () => {
+    try {
+      setIsProcessing(true);
+      setError(null);
+
+      // Get all data from localStorage
+      const videoData = videoSetupStorage.load();
+      if (!videoData) {
+        throw new Error(
+          "Data video tidak ditemukan. Silakan kembali ke halaman setup."
+        );
+      }
+
+      // Prepare data for API call
+      const storeData = {
+        prompt: videoData.prompt,
+        karakter_image: videoData.karakter_image,
+        background_image: videoData.background_image,
+        aspek_rasio: videoData.aspek_rasio,
+        seeds: null,
+        model_ai: "veo3_fast",
+        metode_pengiriman: videoData.metode_pengiriman || "pembayaran",
+        metode: videoData.metode,
+        jumlah: videoData.jumlah,
+        email: videoData.email || email,
+        no_wa: videoData.no_wa || phoneNumber,
+        affiliate_by: "", // Empty string as per requirement
+      };
+
+      // Call the store API
+      const result = await videoStoreApi.storeVideoData(storeData);
+
+      if (result.status) {
+        // Success - redirect to transaction detail page
+        console.log("Video data stored successfully:", result.message);
+
+        // Save x-api-key to localStorage for video generation
+        if (result.data && result.data["x-api-key"]) {
+          localStorage.setItem("x-api-key", result.data["x-api-key"]);
+        }
+
+        // Extract invoice number from result.data.invoice
+        if (result.data && result.data.invoice) {
+          // Redirect to transaction detail page
+          window.location.href = `/transaksi/${result.data.invoice}`;
+        } else {
+          alert("Pembayaran berhasil! Video Anda sedang diproses.");
+        }
+      } else {
+        throw new Error(result.message || "Gagal menyimpan data video");
+      }
+    } catch (err) {
+      console.error("Error processing payment:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat memproses pembayaran"
+      );
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const pricingPackages = [
@@ -83,10 +328,12 @@ export function PaymentPage() {
     {
       id: "coins",
       name: "Gunakan Koin",
-      description: "Isi informasi data diri terlebih dahulu",
+      description: isOTPVerified
+        ? `Saldo: ${userQuota?.toLocaleString()} Koin`
+        : "Verifikasi OTP terlebih dahulu",
       icon: <Coins className="w-6 h-6" />,
-      balance: "0 Koin",
-      disabled: !isPersonalInfoComplete,
+      balance: userQuota ? `${userQuota.toLocaleString()} Koin` : "0 Koin",
+      disabled: !isOTPVerified || (userQuota !== null && userQuota < 25000),
     },
     {
       id: "gopay",
@@ -151,7 +398,7 @@ export function PaymentPage() {
                       ? "ring-2 ring-purple-200 dark:ring-purple-800"
                       : ""
                   }`}
-                  onClick={() => setSelectedPackage(pkg.id)}
+                  onClick={() => handlePackageSelect(pkg.id)}
                 >
                   {/* Popular Badge */}
                   {pkg.popular && (
@@ -280,11 +527,8 @@ export function PaymentPage() {
                             />
                             <Button
                               variant="default"
-                              disabled={phoneNumber.trim() === ""}
-                              onClick={() => {
-                                // Handle verification logic here
-                                console.log("Verifikasi nomor:", phoneNumber);
-                              }}
+                              disabled={email.trim() === ""}
+                              onClick={handleVerificationClick}
                             >
                               Verifikasi
                             </Button>
@@ -323,7 +567,7 @@ export function PaymentPage() {
                             }`}
                             onClick={() =>
                               !method.disabled &&
-                              setSelectedPaymentMethod(method.id)
+                              handlePaymentMethodSelect(method.id)
                             }
                           >
                             <div className="flex flex-col items-center text-center space-y-3">
@@ -497,6 +741,16 @@ export function PaymentPage() {
                                 </span>
                               </div>
                             )}
+                            {isOTPVerified && userQuota !== null && (
+                              <div className="flex justify-between">
+                                <span className="text-sm text-muted-foreground">
+                                  Saldo Koin:
+                                </span>
+                                <span className="text-sm font-medium text-foreground">
+                                  {userQuota.toLocaleString()} Koin
+                                </span>
+                              </div>
+                            )}
                           </div>
                         </div>
                       )}
@@ -521,6 +775,18 @@ export function PaymentPage() {
         </div>
       )}
 
+      {/* Error Message */}
+      {error && (
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mr-3" />
+            <span className="text-red-800 dark:text-red-200 font-medium">
+              {error}
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Action Buttons */}
       <div className="flex justify-center space-x-4">
         <Button
@@ -534,15 +800,25 @@ export function PaymentPage() {
         <Button
           size="lg"
           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-          disabled={
-            !selectedPaymentMethod ||
-            !isPersonalInfoComplete ||
-            !selectedPackage
-          }
+          // disabled={
+          //   !selectedPaymentMethod ||
+          //   !isPersonalInfoComplete ||
+          //   !selectedPackage ||
+          //   isProcessing
+          // }
+          onClick={handleContinuePayment}
         >
-          Lanjutkan Pembayaran
+          {isProcessing ? "Memproses..." : "Bayar Sekarang"}
         </Button>
       </div>
+
+      {/* OTP Modal */}
+      <OTPModal
+        isOpen={isOTPModalOpen}
+        onClose={() => setIsOTPModalOpen(false)}
+        email={email}
+        onSuccess={handleOTPSuccess}
+      />
     </div>
   );
 }

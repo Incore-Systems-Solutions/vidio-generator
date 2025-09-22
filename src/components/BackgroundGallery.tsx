@@ -1,61 +1,86 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { BackgroundCard } from "./BackgroundCard";
 import { Button } from "@/components/ui/button";
 import { Eye } from "lucide-react";
+import { backgroundsApi, uploadApi, type Background } from "@/lib/api";
+import { useVideoSetup } from "@/contexts/VideoSetupContext";
 
 export function BackgroundGallery() {
-  const [selectedBackground, setSelectedBackground] = useState<string | null>(
-    null
-  );
+  const { data, updateBackground } = useVideoSetup();
+  const [backgrounds, setBackgrounds] = useState<Background[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const backgrounds = [
-    {
-      id: "upload",
-      type: "upload" as const,
-      title: "Upload Foto",
-    },
-    {
-      id: "modern-office",
-      type: "background" as const,
-      title: "Kantor Modern",
-      description:
-        "Ruang kantor professional modern dengan pencahayaan natural",
-      image:
-        "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-      tags: ["Professional", "Modern"],
-    },
-    {
-      id: "recording-studio",
-      type: "background" as const,
-      title: "Studio Rekaman",
-      description: "Studio rekaman professional dengan pencahayaan dramatis",
-      image:
-        "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop",
-      tags: ["Professional", "Dramatic"],
-    },
-    {
-      id: "tropical-beach",
-      type: "background" as const,
-      title: "Pantai Tropis",
-      description: "Pantai indah dengan pemandangan laut biru",
-      image:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
-      tags: ["Nature", "Tropical"],
-    },
-    {
-      id: "green-nature",
-      type: "background" as const,
-      title: "Pemandangan Alam Hijau",
-      description:
-        "Pemandangan alam penuh pohon-pohon rindang, dengan udara yang sejuk",
-      image:
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop",
-      tags: ["Nature", "Green"],
-    },
-  ];
+  useEffect(() => {
+    const fetchBackgrounds = async () => {
+      try {
+        setLoading(true);
+        const data = await backgroundsApi.getBackgrounds();
+        setBackgrounds(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch backgrounds"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const handleBackgroundSelect = (backgroundId: string) => {
-    setSelectedBackground(backgroundId);
+    fetchBackgrounds();
+  }, []);
+
+  const handleBackgroundSelect = async (backgroundId: string) => {
+    // If it's an upload background, handle file upload
+    if (backgroundId === "upload") {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) {
+          try {
+            setUploading(true);
+            setError(null);
+
+            // Convert file to base64
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.readAsDataURL(file);
+            });
+
+            // Upload image
+            const result = await uploadApi.uploadImage(base64);
+
+            // Update the upload background with the uploaded image
+            setBackgrounds((prev) =>
+              prev.map((bg) =>
+                bg.id === "upload"
+                  ? {
+                      ...bg,
+                      image: result.url,
+                      description: "Background yang diupload",
+                    }
+                  : bg
+              )
+            );
+
+            // Update context with background selection and image
+            updateBackground(backgroundId, result.url);
+          } catch (err) {
+            setError(err instanceof Error ? err.message : "Upload failed");
+          } finally {
+            setUploading(false);
+          }
+        }
+      };
+      input.click();
+    } else {
+      // For regular backgrounds, get the image URL from the background data
+      const background = backgrounds.find((bg) => bg.id === backgroundId);
+      updateBackground(backgroundId, background?.image || null);
+    }
   };
 
   return (
@@ -76,20 +101,34 @@ export function BackgroundGallery() {
       </div>
 
       {/* Background Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-        {backgrounds.map((background) => (
-          <BackgroundCard
-            key={background.id}
-            type={background.type}
-            title={background.title}
-            description={background.description}
-            image={background.image}
-            tags={background.tags}
-            isSelected={selectedBackground === background.id}
-            onClick={() => handleBackgroundSelect(background.id)}
-          />
-        ))}
-      </div>
+      {loading ? (
+        <div className="text-center py-8">
+          <div className="text-muted-foreground">Loading backgrounds...</div>
+        </div>
+      ) : uploading ? (
+        <div className="text-center py-8">
+          <div className="text-muted-foreground">Uploading image...</div>
+        </div>
+      ) : error ? (
+        <div className="text-center py-8">
+          <div className="text-red-500">Error: {error}</div>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+          {backgrounds.map((background) => (
+            <BackgroundCard
+              key={background.id}
+              type={background.type}
+              title={background.title}
+              description={background.description || undefined}
+              image={background.image || undefined}
+              tags={background.tags || undefined}
+              isSelected={data.selectedBackground === background.id}
+              onClick={() => handleBackgroundSelect(background.id)}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }

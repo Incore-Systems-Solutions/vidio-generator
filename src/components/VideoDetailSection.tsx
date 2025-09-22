@@ -1,14 +1,20 @@
-import React, { useState } from "react"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
-import { Button } from "@/components/ui/button"
-import { Badge } from "@/components/ui/badge"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { 
-  Star, 
-  Lightbulb, 
-  FileText, 
+import React, { useState } from "react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Star,
+  Lightbulb,
+  FileText,
   Volume2,
   Mic,
   Briefcase,
@@ -16,19 +22,24 @@ import {
   GraduationCap,
   BarChart3,
   BookOpen,
-  Newspaper
-} from "lucide-react"
+  Newspaper,
+} from "lucide-react";
+import { useVideoSetup } from "@/contexts/VideoSetupContext";
 
 export function VideoDetailSection() {
-  const [videoTitle, setVideoTitle] = useState("")
-  const [aspectRatio, setAspectRatio] = useState("")
-  const [script, setScript] = useState("")
-  const [language, setLanguage] = useState("")
-  const [voiceStyle, setVoiceStyle] = useState("")
-  const [voiceOver, setVoiceOver] = useState("")
-  const [selectedTone, setSelectedTone] = useState("")
-  const [backgroundMusic, setBackgroundMusic] = useState("")
-  const [videoResolution, setVideoResolution] = useState("")
+  const {
+    data,
+    updatePrompt,
+    updateAspectRatio,
+    updateJudulVideo,
+    updateBahasa,
+    updateGayaSuara,
+    updateVoiceOver,
+    updateTone,
+    updateBackgroundMusic,
+    updateResolusiVideo,
+  } = useVideoSetup();
+  const [script, setScript] = useState("");
 
   const toneOptions = [
     { id: "professional", label: "Professional", icon: Briefcase },
@@ -36,10 +47,12 @@ export function VideoDetailSection() {
     { id: "educational", label: "Educational", icon: GraduationCap },
     { id: "marketing", label: "Marketing", icon: BarChart3 },
     { id: "storytelling", label: "Storytelling", icon: BookOpen },
-    { id: "news", label: "News", icon: Newspaper }
-  ]
+    { id: "news", label: "News", icon: Newspaper },
+  ];
 
-  const wordCount = script.split(/\s+/).filter(word => word.length > 0).length
+  const wordCount = script
+    .split(/\s+/)
+    .filter((word) => word.length > 0).length;
 
   return (
     <div className="w-full">
@@ -58,17 +71,21 @@ export function VideoDetailSection() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Judul Video</label>
+              <label className="text-sm font-medium mb-2 block">
+                Judul Video
+              </label>
               <Input
                 placeholder="Masukkan judul video anda..."
-                value={videoTitle}
-                onChange={(e) => setVideoTitle(e.target.value)}
+                value={data.judulVideo}
+                onChange={(e) => updateJudulVideo(e.target.value)}
               />
             </div>
-            
+
             <div>
-              <label className="text-sm font-medium mb-2 block">Aspek Rasio</label>
-              <Select value={aspectRatio} onValueChange={setAspectRatio}>
+              <label className="text-sm font-medium mb-2 block">
+                Aspek Rasio
+              </label>
+              <Select value={data.aspekRasio} onValueChange={updateAspectRatio}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih rasio video anda" />
                 </SelectTrigger>
@@ -82,14 +99,21 @@ export function VideoDetailSection() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Script/Naskah Video</label>
+              <label className="text-sm font-medium mb-2 block">
+                Script/Naskah Video
+              </label>
               <Textarea
                 placeholder="Masukkan script video anda..."
                 value={script}
-                onChange={(e) => setScript(e.target.value)}
+                onChange={(e) => {
+                  setScript(e.target.value);
+                  updatePrompt(e.target.value);
+                }}
                 className="min-h-32"
               />
-              <p className="text-sm text-muted-foreground mt-2">{wordCount} kata</p>
+              <p className="text-sm text-muted-foreground mt-2">
+                {wordCount} kata
+              </p>
             </div>
           </CardContent>
         </Card>
@@ -105,7 +129,7 @@ export function VideoDetailSection() {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium mb-2 block">Bahasa</label>
-              <Select value={language} onValueChange={setLanguage}>
+              <Select value={data.bahasa} onValueChange={updateBahasa}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih bahasa untuk video anda" />
                 </SelectTrigger>
@@ -119,8 +143,10 @@ export function VideoDetailSection() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Gaya Suara</label>
-              <Select value={voiceStyle} onValueChange={setVoiceStyle}>
+              <label className="text-sm font-medium mb-2 block">
+                Gaya Suara
+              </label>
+              <Select value={data.gayaSuara} onValueChange={updateGayaSuara}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih gaya suara untuk video anda" />
                 </SelectTrigger>
@@ -134,8 +160,10 @@ export function VideoDetailSection() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Voice Over</label>
-              <Select value={voiceOver} onValueChange={setVoiceOver}>
+              <label className="text-sm font-medium mb-2 block">
+                Voice Over
+              </label>
+              <Select value={data.voiceOver} onValueChange={updateVoiceOver}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih voice over untuk video anda" />
                 </SelectTrigger>
@@ -148,26 +176,28 @@ export function VideoDetailSection() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Tone/Nada Video</label>
+              <label className="text-sm font-medium mb-2 block">
+                Tone/Nada Video
+              </label>
               <div className="grid grid-cols-2 gap-2">
                 {toneOptions.map((tone) => {
-                  const Icon = tone.icon
+                  const Icon = tone.icon;
                   return (
                     <Button
                       key={tone.id}
-                      variant={selectedTone === tone.id ? "default" : "outline"}
+                      variant={data.tone === tone.id ? "default" : "outline"}
                       size="sm"
-                      onClick={() => setSelectedTone(tone.id)}
+                      onClick={() => updateTone(tone.id)}
                       className={`flex items-center space-x-2 ${
-                        selectedTone === tone.id 
-                          ? 'bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700' 
-                          : ''
+                        data.tone === tone.id
+                          ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                          : ""
                       }`}
                     >
                       <Icon className="w-4 h-4" />
                       <span>{tone.label}</span>
                     </Button>
-                  )
+                  );
                 })}
               </div>
             </div>
@@ -184,8 +214,13 @@ export function VideoDetailSection() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Background Music</label>
-              <Select value={backgroundMusic} onValueChange={setBackgroundMusic}>
+              <label className="text-sm font-medium mb-2 block">
+                Background Music
+              </label>
+              <Select
+                value={data.backgroundMusic}
+                onValueChange={updateBackgroundMusic}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih background music" />
                 </SelectTrigger>
@@ -201,8 +236,13 @@ export function VideoDetailSection() {
             </div>
 
             <div>
-              <label className="text-sm font-medium mb-2 block">Resolusi Video</label>
-              <Select value={videoResolution} onValueChange={setVideoResolution}>
+              <label className="text-sm font-medium mb-2 block">
+                Resolusi Video
+              </label>
+              <Select
+                value={data.resolusiVideo}
+                onValueChange={updateResolusiVideo}
+              >
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih resolusi video" />
                 </SelectTrigger>
@@ -230,27 +270,39 @@ export function VideoDetailSection() {
           <CardContent className="space-y-3">
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Bahasa:</span>
-              <Badge variant="secondary">{language || "Belum dipilih"}</Badge>
+              <Badge variant="secondary">
+                {data.bahasa || "Belum dipilih"}
+              </Badge>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Gaya Suara:</span>
-              <Badge variant="secondary">{voiceStyle || "Belum dipilih"}</Badge>
+              <Badge variant="secondary">
+                {data.gayaSuara || "Belum dipilih"}
+              </Badge>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Tone:</span>
-              <Badge variant="secondary">{selectedTone || "Belum dipilih"}</Badge>
+              <Badge variant="secondary">{data.tone || "Belum dipilih"}</Badge>
             </div>
             <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">Background Musik:</span>
-              <Badge variant="secondary">{backgroundMusic || "Belum dipilih"}</Badge>
+              <span className="text-sm text-muted-foreground">
+                Background Musik:
+              </span>
+              <Badge variant="secondary">
+                {data.backgroundMusic || "Belum dipilih"}
+              </Badge>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Resolusi:</span>
-              <Badge variant="secondary">{videoResolution || "Belum dipilih"}</Badge>
+              <Badge variant="secondary">
+                {data.resolusiVideo || "Belum dipilih"}
+              </Badge>
             </div>
             <div className="flex justify-between">
               <span className="text-sm text-muted-foreground">Voice Over:</span>
-              <Badge variant="secondary">{voiceOver || "Belum dipilih"}</Badge>
+              <Badge variant="secondary">
+                {data.voiceOver || "Belum dipilih"}
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -268,11 +320,14 @@ export function VideoDetailSection() {
               <li>• Gunakan kalimat yang jelas dan tidak terlalu panjang</li>
               <li>• Tambahkan jeda dengan tanda koma atau titik</li>
               <li>• Hindari singkatan yang sulit diucapkan</li>
-              <li>• Jelaskan script dengan detail agar menghasilkan video yang diinginkan</li>
+              <li>
+                • Jelaskan script dengan detail agar menghasilkan video yang
+                diinginkan
+              </li>
             </ul>
           </CardContent>
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -1,0 +1,27 @@
+---
+import Layout from "@/layouts/main.astro";
+import { GenerateVideo } from "@/components/GenerateVideo";
+import { Navbar } from "@/components/Navbar";
+
+export const prerender = false;
+---
+
+<Layout content={{ title: "Generate Video" }}>
+  <main class="min-h-screen bg-background">
+    <div class="container mx-auto px-4 py-8">
+      <Navbar currentStep={3} />
+
+      <div class="max-w-7xl mx-auto mt-8">
+        <GenerateVideo client:load />
+      </div>
+    </div>
+
+    <footer class="bg-muted/50 border-t">
+      <div class="container mx-auto px-4 py-6">
+        <div class="text-center text-muted-foreground">
+          <p>&copy; 2025 Video Generator. All rights reserved.</p>
+        </div>
+      </div>
+    </footer>
+  </main>
+</Layout>

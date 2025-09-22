@@ -1,0 +1,230 @@
+{
+  "videoGenerationRequest": {
+    "userId": "user_12345",
+    "sessionId": "session_67890",
+    "timestamp": "2024-01-15T10:30:00Z",
+    "character": {
+      "id": "asian-woman",
+      "type": "character",
+      "title": "Wanita Asia",
+      "image": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
+      "tags": ["Realistis", "Wanita"],
+      "customImage": null
+    },
+    "background": {
+      "id": "modern-office",
+      "type": "background",
+      "title": "Kantor Modern",
+      "description": "Ruang kantor professional modern dengan pencahayaan natural",
+      "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+      "tags": ["Professional", "Modern"],
+      "customImage": null
+    },
+    "videoDetails": {
+      "script": "Selamat pagi! Hari ini kita akan membahas tentang teknologi AI yang sedang berkembang pesat di Indonesia.",
+      "duration": 30,
+      "voiceSettings": {
+        "language": "id",
+        "voiceType": "female",
+        "speed": 1.0,
+        "pitch": 1.0
+      },
+      "videoSettings": {
+        "resolution": "1080p",
+        "fps": 30,
+        "aspectRatio": "16:9"
+      }
+    },
+    "filters": {
+      "characterType": "all",
+      "characterStyle": "all"
+    },
+    "metadata": {
+      "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+      "ipAddress": "192.168.1.100",
+      "referrer": "https://example.com"
+    }
+  },
+  "availableCharacters": [
+    {
+      "id": "upload",
+      "type": "upload",
+      "title": "Upload Foto",
+      "description": null,
+      "image": null,
+      "tags": null
+    },
+    {
+      "id": "asian-woman",
+      "type": "character",
+      "title": "Wanita Asia",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400&h=400&fit=crop&crop=face",
+      "tags": ["Realistis", "Wanita"]
+    },
+    {
+      "id": "asian-man",
+      "type": "character",
+      "title": "Pria Asia",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+      "tags": ["Realistis", "Pria"]
+    },
+    {
+      "id": "3d-andra",
+      "type": "character",
+      "title": "3D Karakter Andra",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
+      "tags": ["3D", "Pria"]
+    },
+    {
+      "id": "cartoon-wanda",
+      "type": "character",
+      "title": "Kartun Wanda",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
+      "tags": ["Kartun", "Wanita"]
+    },
+    {
+      "id": "3d-dimas",
+      "type": "character",
+      "title": "3D Karakter Dimas",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
+      "tags": ["3D", "Pria"]
+    },
+    {
+      "id": "cartoon-fira",
+      "type": "character",
+      "title": "Kartun Fira",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
+      "tags": ["Kartun", "Wanita"]
+    },
+    {
+      "id": "anime-yun",
+      "type": "character",
+      "title": "Anime Yun",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
+      "tags": ["Anime", "Pria"]
+    },
+    {
+      "id": "anime-lala",
+      "type": "character",
+      "title": "Anime Lala",
+      "description": null,
+      "image": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
+      "tags": ["Anime", "Wanita"]
+    }
+  ],
+  "availableBackgrounds": [
+    {
+      "id": "upload",
+      "type": "upload",
+      "title": "Upload Foto",
+      "description": null,
+      "image": null,
+      "tags": null
+    },
+    {
+      "id": "modern-office",
+      "type": "background",
+      "title": "Kantor Modern",
+      "description": "Ruang kantor professional modern dengan pencahayaan natural",
+      "image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
+      "tags": ["Professional", "Modern"]
+    },
+    {
+      "id": "recording-studio",
+      "type": "background",
+      "title": "Studio Rekaman",
+      "description": "Studio rekaman professional dengan pencahayaan dramatis",
+      "image": "https://images.unsplash.com/photo-1493225457124-a3eb161ffa5f?w=400&h=300&fit=crop",
+      "tags": ["Professional", "Dramatic"]
+    },
+    {
+      "id": "tropical-beach",
+      "type": "background",
+      "title": "Pantai Tropis",
+      "description": "Pantai indah dengan pemandangan laut biru",
+      "image": "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=400&h=300&fit=crop",
+      "tags": ["Nature", "Tropical"]
+    },
+    {
+      "id": "green-nature",
+      "type": "background",
+      "title": "Pemandangan Alam Hijau",
+      "description": "Pemandangan alam penuh pohon-pohon rindang, dengan udara yang sejuk",
+      "image": "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=400&h=300&fit=crop",
+      "tags": ["Nature", "Green"]
+    }
+  ],
+  "apiEndpoints": {
+    "getCharacters": {
+      "method": "GET",
+      "url": "/api/v1/characters",
+      "queryParams": {
+        "type": "string (optional) - filter by character type",
+        "style": "string (optional) - filter by character style",
+        "tags": "string[] (optional) - filter by tags"
+      },
+      "response": "availableCharacters array"
+    },
+    "getBackgrounds": {
+      "method": "GET",
+      "url": "/api/v1/backgrounds",
+      "queryParams": {
+        "category": "string (optional) - filter by background category",
+        "tags": "string[] (optional) - filter by tags"
+      },
+      "response": "availableBackgrounds array"
+    }
+  },
+  "dataTypes": {
+    "Character": {
+      "id": "string (required)",
+      "type": "string (required) - 'character' | 'upload'",
+      "title": "string (required)",
+      "description": "string (optional)",
+      "image": "string (optional) - URL to image",
+      "tags": "string[] (optional)"
+    },
+    "Background": {
+      "id": "string (required)",
+      "type": "string (required) - 'background' | 'upload'",
+      "title": "string (required)",
+      "description": "string (optional)",
+      "image": "string (optional) - URL to image",
+      "tags": "string[] (optional)"
+    },
+    "VideoGenerationRequest": {
+      "userId": "string (required)",
+      "sessionId": "string (required)",
+      "timestamp": "string (required) - ISO 8601 format",
+      "character": "Character object (required)",
+      "background": "Background object (required)",
+      "videoDetails": "VideoDetails object (required)",
+      "filters": "FilterSettings object (optional)",
+      "metadata": "Metadata object (optional)"
+    },
+    "VideoDetails": {
+      "script": "string (required)",
+      "duration": "number (required) - in seconds",
+      "voiceSettings": "VoiceSettings object (required)",
+      "videoSettings": "VideoSettings object (required)"
+    },
+    "VoiceSettings": {
+      "language": "string (required) - ISO language code",
+      "voiceType": "string (required) - 'male' | 'female'",
+      "speed": "number (required) - 0.5 to 2.0",
+      "pitch": "number (required) - 0.5 to 2.0"
+    },
+    "VideoSettings": {
+      "resolution": "string (required) - '720p' | '1080p' | '4K'",
+      "fps": "number (required) - frames per second",
+      "aspectRatio": "string (required) - '16:9' | '9:16' | '1:1'"
+    }
+  }
+}

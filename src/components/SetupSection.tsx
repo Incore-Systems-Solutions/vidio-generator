@@ -1,88 +1,39 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { CharacterCard } from "./CharacterCard";
 import { FilterRow } from "./FilterRow";
 import { BackgroundGallery } from "./BackgroundGallery";
 import { VideoDetailSection } from "./VideoDetailSection";
 import { Button } from "@/components/ui/button";
+import { charactersApi, uploadApi, type Character } from "@/lib/api";
+import { useVideoSetup } from "@/contexts/VideoSetupContext";
+import { videoSetupStorage } from "@/lib/videoSetupStorage";
 
 export function SetupSection() {
+  const { data, updateCharacter } = useVideoSetup();
   const [characterType, setCharacterType] = useState("all");
   const [characterStyle, setCharacterStyle] = useState("all");
-  const [selectedCharacter, setSelectedCharacter] = useState<string | null>(
-    null
-  );
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
 
-  const characters = [
-    {
-      id: "upload",
-      type: "upload" as const,
-      title: "Upload Foto",
-    },
-    {
-      id: "asian-woman",
-      type: "character" as const,
-      title: "Wanita Asia",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-      tags: ["Realistis", "Wanita"],
-    },
-    {
-      id: "asian-man",
-      type: "character" as const,
-      title: "Pria Asia",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-      tags: ["Realistis", "Pria"],
-    },
-    {
-      id: "3d-andra",
-      type: "character" as const,
-      title: "3D Karakter Andra",
-      image:
-        "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400&h=400&fit=crop&crop=face",
-      tags: ["3D", "Pria"],
-    },
-    {
-      id: "cartoon-wanda",
-      type: "character" as const,
-      title: "Kartun Wanda",
-      image:
-        "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=400&h=400&fit=crop&crop=face",
-      tags: ["Kartun", "Wanita"],
-    },
-    {
-      id: "3d-dimas",
-      type: "character" as const,
-      title: "3D Karakter Dimas",
-      image:
-        "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400&h=400&fit=crop&crop=face",
-      tags: ["3D", "Pria"],
-    },
-    {
-      id: "cartoon-fira",
-      type: "character" as const,
-      title: "Kartun Fira",
-      image:
-        "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=400&h=400&fit=crop&crop=face",
-      tags: ["Kartun", "Wanita"],
-    },
-    {
-      id: "anime-yun",
-      type: "character" as const,
-      title: "Anime Yun",
-      image:
-        "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-      tags: ["Anime", "Pria"],
-    },
-    {
-      id: "anime-lala",
-      type: "character" as const,
-      title: "Anime Lala",
-      image:
-        "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&h=400&fit=crop&crop=face",
-      tags: ["Anime", "Wanita"],
-    },
-  ];
+  useEffect(() => {
+    const fetchCharacters = async () => {
+      try {
+        setLoading(true);
+        const data = await charactersApi.getCharacters();
+        setCharacters(data);
+      } catch (err) {
+        setError(
+          err instanceof Error ? err.message : "Failed to fetch characters"
+        );
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCharacters();
+  }, []);
 
   const handleCharacterTypeChange = (type: string) => {
     setCharacterType(type);
@@ -92,8 +43,77 @@ export function SetupSection() {
     setCharacterStyle(style);
   };
 
-  const handleCharacterSelect = (characterId: string) => {
-    setSelectedCharacter(characterId);
+  const handleContinueToPayment = () => {
+    // Save required data to localStorage
+    videoSetupStorage.save({
+      prompt: data.prompt,
+      karakter_image: data.characterImage || "",
+      background_image: data.backgroundImage || "",
+      aspek_rasio: data.aspekRasio,
+      judul_video: data.judulVideo,
+      bahasa: data.bahasa,
+      gaya_suara: data.gayaSuara,
+      voice_over: data.voiceOver,
+      tone: data.tone,
+      background_music: data.backgroundMusic,
+      resolusi_video: data.resolusiVideo,
+    });
+
+    // Navigate to payment page
+    window.location.href = "/pembayaran";
+  };
+
+  const handleCharacterSelect = async (characterId: string) => {
+    // If it's an upload character, handle file upload
+    if (characterId === "upload") {
+      const input = document.createElement("input");
+      input.type = "file";
+      input.accept = "image/*";
+      input.onchange = async (e) => {
+        const file = (e.target as HTMLInputElement).files?.[0];
+        if (file) {
+          try {
+            setUploading(true);
+            setError(null);
+
+            // Convert file to base64
+            const base64 = await new Promise<string>((resolve) => {
+              const reader = new FileReader();
+              reader.onload = () => resolve(reader.result as string);
+              reader.readAsDataURL(file);
+            });
+
+            // Upload image
+            const result = await uploadApi.uploadImage(base64);
+
+            // Update the upload character with the uploaded image
+            setCharacters((prev) =>
+              prev.map((char) =>
+                char.id === "upload"
+                  ? {
+                      ...char,
+                      image: result.url,
+                      description: "Foto yang diupload",
+                    }
+                  : char
+              )
+            );
+
+            // Update context with character selection and image
+            updateCharacter(characterId, result.url);
+          } catch (err) {
+            setError(err instanceof Error ? err.message : "Upload failed");
+          } finally {
+            setUploading(false);
+          }
+        }
+      };
+      input.click();
+    } else {
+      // For regular characters, get the image URL from the character data
+      const character = characters.find((char) => char.id === characterId);
+      updateCharacter(characterId, character?.image || null);
+    }
   };
 
   return (
@@ -137,20 +157,36 @@ export function SetupSection() {
 
         <div className="flex justify-center">
           <div className="w-full max-w-7xl">
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-              {characters.map((character) => (
-                <CharacterCard
-                  key={character.id}
-                  type={character.type}
-                  title={character.title}
-                  description={character.description || undefined}
-                  image={character.image}
-                  tags={character.tags}
-                  isSelected={selectedCharacter === character.id}
-                  onClick={() => handleCharacterSelect(character.id)}
-                />
-              ))}
-            </div>
+            {loading ? (
+              <div className="text-center py-8">
+                <div className="text-muted-foreground">
+                  Loading characters...
+                </div>
+              </div>
+            ) : uploading ? (
+              <div className="text-center py-8">
+                <div className="text-muted-foreground">Uploading image...</div>
+              </div>
+            ) : error ? (
+              <div className="text-center py-8">
+                <div className="text-red-500">Error: {error}</div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+                {characters.map((character) => (
+                  <CharacterCard
+                    key={character.id}
+                    type={character.type}
+                    title={character.title}
+                    description={character.description || undefined}
+                    image={character.image || undefined}
+                    tags={character.tags || undefined}
+                    isSelected={data.selectedCharacter === character.id}
+                    onClick={() => handleCharacterSelect(character.id)}
+                  />
+                ))}
+              </div>
+            )}
           </div>
         </div>
       </div>
@@ -167,16 +203,13 @@ export function SetupSection() {
 
       {/* Action Buttons */}
       <div className="flex justify-center space-x-4">
-        <Button variant="outline" size="lg">
-          Kembali
-        </Button>
         <Button
           size="lg"
           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-          disabled={!selectedCharacter}
-          onClick={() => (window.location.href = "/pembayaran")}
+          disabled={!data.selectedCharacter || uploading}
+          onClick={handleContinueToPayment}
         >
-          Lanjutkan ke Pembayaran
+          {uploading ? "Uploading..." : "Lanjutkan ke Pembayaran"}
         </Button>
       </div>
     </div>
