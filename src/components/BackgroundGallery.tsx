@@ -111,35 +111,33 @@ export function BackgroundGallery() {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-foreground">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground">
           Galeri Background
         </h2>
-        <Button
-          variant="outline"
-          size="sm"
-          className="flex items-center space-x-2"
-        >
-          <Eye className="w-4 h-4" />
-          <span>Live Preview</span>
-        </Button>
       </div>
 
       {/* Background Grid */}
       {loading ? (
-        <div className="text-center py-8">
-          <div className="text-muted-foreground">Loading backgrounds...</div>
+        <div className="text-center py-6 sm:py-8">
+          <div className="text-sm sm:text-base text-muted-foreground">
+            Loading backgrounds...
+          </div>
         </div>
       ) : uploading ? (
-        <div className="text-center py-8">
-          <div className="text-muted-foreground">Uploading image...</div>
+        <div className="text-center py-6 sm:py-8">
+          <div className="text-sm sm:text-base text-muted-foreground">
+            Uploading image...
+          </div>
         </div>
       ) : error ? (
-        <div className="text-center py-8">
-          <div className="text-red-500">Error: {error}</div>
+        <div className="text-center py-6 sm:py-8">
+          <div className="text-sm sm:text-base text-red-500">
+            Error: {error}
+          </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {backgrounds.map((background) => (
             <BackgroundCard
               key={background.id}

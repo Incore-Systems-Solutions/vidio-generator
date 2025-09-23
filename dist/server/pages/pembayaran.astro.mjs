@@ -1,10 +1,10 @@
 import { e as createComponent, f as createAstro, h as addAttribute, k as renderHead, l as renderComponent, r as renderTemplate } from '../chunks/astro/server_DLHOh8jC.mjs';
 import 'kleur/colors';
-import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DlTLNYz3.mjs';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DF7YqAOL.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState } from 'react';
-import { C as Card, a as CardHeader, b as CardTitle, B as Button, c as CardContent, d as Badge } from '../chunks/card_BBwcWowj.mjs';
-import { I as Input } from '../chunks/input_Cdrza9AE.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, B as Button, c as CardContent, d as Badge } from '../chunks/card_D8elN7z5.mjs';
+import { I as Input } from '../chunks/input_BNBZJNyb.mjs';
 import { X, Mail, Clock, AlertCircle, CheckCircle, Coins, Wallet, QrCode, CreditCard, Sparkles, Video, Check, User, ArrowLeft } from 'lucide-react';
 import { o as otpApi, a as videoStoreApi } from '../chunks/api_Zi8Etrro.mjs';
 import { v as videoSetupStorage } from '../chunks/videoSetupStorage_3qmsD2TP.mjs';

@@ -39,13 +39,13 @@ export function CharacterCard({
   const getIcon = () => {
     switch (type) {
       case "custom":
-        return <Wand2 className="w-8 h-8 text-purple-600" />;
+        return <Wand2 className="w-full h-full text-purple-600" />;
       case "upload":
-        return <Upload className="w-8 h-8 text-gray-600" />;
+        return <Upload className="w-full h-full text-gray-600" />;
       case "character":
-        return <User className="w-8 h-8 text-gray-600" />;
+        return <User className="w-full h-full text-gray-600" />;
       default:
-        return <UserCheck className="w-8 h-8 text-gray-600" />;
+        return <UserCheck className="w-full h-full text-gray-600" />;
     }
   };
 
@@ -61,12 +61,12 @@ export function CharacterCard({
 
   return (
     <Card
-      className={`p-6 h-full flex flex-col ${getCardStyle()}`}
+      className={`p-3 sm:p-4 md:p-6 h-full flex flex-col ${getCardStyle()}`}
       onClick={handleClick}
     >
       {(type === "character" || type === "upload") && image ? (
-        <div className="mb-4">
-          <div className="w-full h-48 bg-gray-100 rounded-lg overflow-hidden mb-4">
+        <div className="mb-3 sm:mb-4">
+          <div className="w-full h-32 sm:h-40 md:h-48 bg-gray-100 rounded-lg overflow-hidden mb-3 sm:mb-4">
             <img
               src={image}
               alt={title}
@@ -75,11 +75,15 @@ export function CharacterCard({
           </div>
         </div>
       ) : (
-        <div className="flex justify-center mb-4">{getIcon()}</div>
+        <div className="flex justify-center mb-3 sm:mb-4">
+          <div className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12">
+            {getIcon()}
+          </div>
+        </div>
       )}
 
       <div className="flex-1 flex flex-col">
-        <h3 className="text-lg font-semibold mb-2 text-center">
+        <h3 className="text-sm sm:text-base md:text-lg font-semibold mb-2 text-center leading-tight">
           {type === "custom" ? (
             <span className="text-purple-600">Buat dengan AI</span>
           ) : (
@@ -88,18 +92,24 @@ export function CharacterCard({
         </h3>
 
         {type === "custom" && (
-          <p className="text-sm text-gray-500 text-center mb-4">{title}</p>
+          <p className="text-xs sm:text-sm text-gray-500 text-center mb-3 sm:mb-4 leading-tight">
+            {title}
+          </p>
         )}
 
         {description && (
-          <p className="text-sm text-gray-500 text-center mb-4">
+          <p className="text-xs sm:text-sm text-gray-500 text-center mb-3 sm:mb-4 leading-tight hidden sm:block">
             {description}
           </p>
         )}
 
         {type === "upload" && (
-          <div className="space-y-2">
-            <Button variant="outline" size="sm" className="w-full">
+          <div className="space-y-1 sm:space-y-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs sm:text-sm py-1 sm:py-2"
+            >
               Pilih File
             </Button>
           </div>
@@ -108,7 +118,21 @@ export function CharacterCard({
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 justify-center mt-auto">
             {tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
+              <Badge
+                key={index}
+                variant="secondary"
+                className="text-xs px-1 py-0 hidden sm:inline-block"
+              >
+                {tag}
+              </Badge>
+            ))}
+            {/* Show only first 2 tags on mobile */}
+            {tags.slice(0, 2).map((tag, index) => (
+              <Badge
+                key={`mobile-${index}`}
+                variant="secondary"
+                className="text-xs px-1 py-0 sm:hidden"
+              >
                 {tag}
               </Badge>
             ))}

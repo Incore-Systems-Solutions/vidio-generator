@@ -143,13 +143,13 @@ export function SetupSection() {
   };
 
   return (
-    <div className="w-full">
+    <div className="w-full px-4 sm:px-6 lg:px-8">
       {/* Header Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold text-foreground mb-4">
+      <div className="text-center mb-8 sm:mb-12">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4">
           Setup Video AI Anda
         </h1>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+        <p className="text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
           Lengkapi semua pengaturan untuk video AI Anda dalam satu langkah.
           Pilih karakter, tulis script, dan tentukan environment untuk hasil
           terbaik.
@@ -157,7 +157,7 @@ export function SetupSection() {
       </div>
 
       {/* Filter Section */}
-      <div className="mb-12">
+      <div className="mb-8 sm:mb-12">
         <div className="flex justify-center">
           <div className="w-full max-w-6xl">
             <FilterRow
@@ -171,12 +171,12 @@ export function SetupSection() {
       </div>
 
       {/* Character Selection Section */}
-      <div className="mb-8">
-        <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-foreground mb-2">
+      <div className="mb-6 sm:mb-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
             Pilih Karakter AI Anda
           </h2>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground px-4">
             Pilih karakter yang sesuai dengan kebutuhan video Anda
           </p>
         </div>
@@ -184,21 +184,25 @@ export function SetupSection() {
         <div className="flex justify-center">
           <div className="w-full max-w-7xl">
             {loading ? (
-              <div className="text-center py-8">
-                <div className="text-muted-foreground">
+              <div className="text-center py-6 sm:py-8">
+                <div className="text-sm sm:text-base text-muted-foreground">
                   Loading characters...
                 </div>
               </div>
             ) : uploading ? (
-              <div className="text-center py-8">
-                <div className="text-muted-foreground">Uploading image...</div>
+              <div className="text-center py-6 sm:py-8">
+                <div className="text-sm sm:text-base text-muted-foreground">
+                  Uploading image...
+                </div>
               </div>
             ) : error ? (
-              <div className="text-center py-8">
-                <div className="text-red-500">Error: {error}</div>
+              <div className="text-center py-6 sm:py-8">
+                <div className="text-sm sm:text-base text-red-500">
+                  Error: {error}
+                </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
                 {characters.map((character) => (
                   <CharacterCard
                     key={character.id}
@@ -218,20 +222,20 @@ export function SetupSection() {
       </div>
 
       {/* Background Gallery Section */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <BackgroundGallery />
       </div>
 
       {/* Video Detail Section */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <VideoDetailSection />
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-center space-x-4">
+      <div className="flex justify-center px-4">
         <Button
           size="lg"
-          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+          className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-sm sm:text-base"
           disabled={!data.selectedCharacter || uploading}
           onClick={handleContinueToPayment}
         >

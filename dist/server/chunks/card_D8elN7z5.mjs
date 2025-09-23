@@ -2,7 +2,7 @@ import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva } from 'class-variance-authority';
-import { Moon, Sun, History, Menu, Settings, CreditCard, Sparkles, Download, CheckCircle2 } from 'lucide-react';
+import { Moon, Sun, History, Settings, CreditCard, Sparkles, Download, CheckCircle2 } from 'lucide-react';
 import { clsx } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 
@@ -160,43 +160,38 @@ function Navbar({
       active: currentStep === 4
     }
   ];
-  return /* @__PURE__ */ jsx("nav", { className: "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", children: /* @__PURE__ */ jsx("div", { className: "container mx-auto px-8", children: /* @__PURE__ */ jsxs("div", { className: "py-4", children: [
-    /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-4", children: [
-      /* @__PURE__ */ jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsx(Badge, { className: "px-6 py-3 text-base font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg", children: "VIDEO GENERATOR" }) }),
-      /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-4", children: [
+  return /* @__PURE__ */ jsx("nav", { className: "sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60", children: /* @__PURE__ */ jsx("div", { className: "container mx-auto px-4 sm:px-6 lg:px-8", children: /* @__PURE__ */ jsxs("div", { className: "py-3 sm:py-4", children: [
+    /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-3 sm:mb-4", children: [
+      /* @__PURE__ */ jsx("div", { className: "flex items-center", children: /* @__PURE__ */ jsxs(Badge, { className: "px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-sm sm:text-base font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg", children: [
+        /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "VIDEO GENERATOR" }),
+        /* @__PURE__ */ jsx("span", { className: "sm:hidden", children: "VG" })
+      ] }) }),
+      /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2 sm:space-x-4", children: [
         /* @__PURE__ */ jsxs(
           Button,
           {
             variant: "outline",
             size: "sm",
-            className: "flex items-center space-x-2 text-sm",
+            className: "flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-3",
             onClick: handleVideoHistoryClick,
             children: [
-              /* @__PURE__ */ jsx(History, { className: "w-4 h-4" }),
-              /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: "Riwayat Video" })
+              /* @__PURE__ */ jsx(History, { className: "w-3 h-3 sm:w-4 sm:h-4" }),
+              /* @__PURE__ */ jsx("span", { className: "hidden md:inline", children: "Riwayat Video" }),
+              /* @__PURE__ */ jsx("span", { className: "md:hidden", children: "Riwayat" })
             ]
           }
         ),
-        /* @__PURE__ */ jsxs("div", { className: "text-sm text-muted-foreground font-medium", children: [
+        /* @__PURE__ */ jsxs("div", { className: "text-xs sm:text-sm text-muted-foreground font-medium hidden sm:block", children: [
           "Langkah ",
           currentStep,
           " dari ",
           totalSteps
         ] }),
-        /* @__PURE__ */ jsx(ThemeToggle, {}),
-        /* @__PURE__ */ jsx(
-          Button,
-          {
-            variant: "ghost",
-            size: "icon",
-            className: "w-10 h-10 lg:hidden",
-            children: /* @__PURE__ */ jsx(Menu, { className: "h-5 w-5" })
-          }
-        )
+        /* @__PURE__ */ jsx(ThemeToggle, {})
       ] })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "flex justify-center px-8", children: /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between w-full max-w-2xl relative", children: [
-      /* @__PURE__ */ jsx("div", { className: "absolute top-6 left-0 right-0 h-0.5 bg-border", children: /* @__PURE__ */ jsx(
+    /* @__PURE__ */ jsx("div", { className: "flex justify-center px-2 sm:px-4 md:px-8", children: /* @__PURE__ */ jsxs("div", { className: "flex items-start justify-between w-full max-w-2xl relative", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute top-4 sm:top-6 left-0 right-0 h-0.5 bg-border", children: /* @__PURE__ */ jsx(
         "div",
         {
           className: "h-full bg-gradient-to-r from-purple-600 to-blue-600 transition-all duration-500 ease-out",
@@ -216,29 +211,32 @@ function Navbar({
                 "div",
                 {
                   className: `
-                      flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 bg-background
+                      flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 bg-background
                       ${step.completed ? "bg-gradient-to-r from-purple-600 to-blue-600 border-purple-600 text-white shadow-lg" : step.active ? "border-purple-600 text-purple-600 shadow-md ring-2 ring-purple-200 dark:ring-purple-800" : "border-gray-300 text-gray-400 bg-gray-50 dark:border-gray-600 dark:text-gray-500 dark:bg-gray-800"}
                     `,
-                  children: step.completed ? /* @__PURE__ */ jsx(CheckCircle2, { className: "w-5 h-5" }) : /* @__PURE__ */ jsx(
+                  children: step.completed ? /* @__PURE__ */ jsx(CheckCircle2, { className: "w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" }) : /* @__PURE__ */ jsx(
                     Icon,
                     {
-                      className: `w-5 h-5 ${step.active ? "animate-pulse" : ""}`
+                      className: `w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 ${step.active ? "animate-pulse" : ""}`
                     }
                   )
                 }
               ),
-              /* @__PURE__ */ jsxs("div", { className: "mt-4 text-center max-w-24", children: [
-                /* @__PURE__ */ jsx(
+              /* @__PURE__ */ jsxs("div", { className: "mt-2 sm:mt-3 md:mt-4 text-center max-w-16 sm:max-w-20 md:max-w-24", children: [
+                /* @__PURE__ */ jsxs(
                   "div",
                   {
                     className: `
-                        text-sm font-medium transition-colors duration-300 leading-tight
+                        text-xs sm:text-sm font-medium transition-colors duration-300 leading-tight
                         ${step.completed ? "text-purple-600 font-semibold" : step.active ? "text-foreground font-semibold" : "text-muted-foreground"}
                       `,
-                    children: step.title
+                    children: [
+                      /* @__PURE__ */ jsx("span", { className: "hidden sm:inline", children: step.title }),
+                      /* @__PURE__ */ jsx("span", { className: "sm:hidden", children: step.title.split(" ")[0] })
+                    ]
                   }
                 ),
-                step.active && /* @__PURE__ */ jsx("div", { className: "mt-2 w-2 h-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mx-auto animate-pulse" })
+                step.active && /* @__PURE__ */ jsx("div", { className: "mt-1 sm:mt-2 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mx-auto animate-pulse" })
               ] })
             ]
           },

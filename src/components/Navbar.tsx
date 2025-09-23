@@ -69,51 +69,45 @@ export function Navbar({
 
   return (
     <nav className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-      <div className="container mx-auto px-8">
-        <div className="py-4">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="py-3 sm:py-4">
           {/* Top Row - Logo and Actions */}
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             {/* Logo/Brand */}
             <div className="flex items-center">
-              <Badge className="px-6 py-3 text-base font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg">
-                VIDEO GENERATOR
+              <Badge className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-sm sm:text-base font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg">
+                <span className="hidden sm:inline">VIDEO GENERATOR</span>
+                <span className="sm:hidden">VG</span>
               </Badge>
             </div>
 
             {/* Right Side Actions */}
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 sm:space-x-4">
               {/* Riwayat Video Button */}
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center space-x-2 text-sm"
+                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-3"
                 onClick={handleVideoHistoryClick}
               >
-                <History className="w-4 h-4" />
-                <span className="hidden sm:inline">Riwayat Video</span>
+                <History className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden md:inline">Riwayat Video</span>
+                <span className="md:hidden">Riwayat</span>
               </Button>
 
               {/* Step Progress Info */}
-              <div className="text-sm text-muted-foreground font-medium">
+              <div className="text-xs sm:text-sm text-muted-foreground font-medium hidden sm:block">
                 Langkah {currentStep} dari {totalSteps}
               </div>
               <ThemeToggle />
-              {/* Mobile Menu Button */}
-              <Button
-                variant="ghost"
-                size="icon"
-                className="w-10 h-10 lg:hidden"
-              >
-                <Menu className="h-5 w-5" />
-              </Button>
             </div>
           </div>
 
           {/* Bottom Row - Progress Stepper Centered */}
-          <div className="flex justify-center px-8">
+          <div className="flex justify-center px-2 sm:px-4 md:px-8">
             <div className="flex items-start justify-between w-full max-w-2xl relative">
               {/* Progress Line - Perfectly centered between circles */}
-              <div className="absolute top-6 left-0 right-0 h-0.5 bg-border">
+              <div className="absolute top-4 sm:top-6 left-0 right-0 h-0.5 bg-border">
                 <div
                   className="h-full bg-gradient-to-r from-purple-600 to-blue-600 transition-all duration-500 ease-out"
                   style={{
@@ -134,7 +128,7 @@ export function Navbar({
                     {/* Step Circle */}
                     <div
                       className={`
-                      flex items-center justify-center w-12 h-12 rounded-full border-2 transition-all duration-300 bg-background
+                      flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 bg-background
                       ${
                         step.completed
                           ? "bg-gradient-to-r from-purple-600 to-blue-600 border-purple-600 text-white shadow-lg"
@@ -145,10 +139,10 @@ export function Navbar({
                     `}
                     >
                       {step.completed ? (
-                        <CheckCircle2 className="w-5 h-5" />
+                        <CheckCircle2 className="w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5" />
                       ) : (
                         <Icon
-                          className={`w-5 h-5 ${
+                          className={`w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 ${
                             step.active ? "animate-pulse" : ""
                           }`}
                         />
@@ -156,10 +150,10 @@ export function Navbar({
                     </div>
 
                     {/* Step Label */}
-                    <div className="mt-4 text-center max-w-24">
+                    <div className="mt-2 sm:mt-3 md:mt-4 text-center max-w-16 sm:max-w-20 md:max-w-24">
                       <div
                         className={`
-                        text-sm font-medium transition-colors duration-300 leading-tight
+                        text-xs sm:text-sm font-medium transition-colors duration-300 leading-tight
                         ${
                           step.completed
                             ? "text-purple-600 font-semibold"
@@ -169,10 +163,13 @@ export function Navbar({
                         }
                       `}
                       >
-                        {step.title}
+                        <span className="hidden sm:inline">{step.title}</span>
+                        <span className="sm:hidden">
+                          {step.title.split(" ")[0]}
+                        </span>
                       </div>
                       {step.active && (
-                        <div className="mt-2 w-2 h-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mx-auto animate-pulse" />
+                        <div className="mt-1 sm:mt-2 w-1.5 h-1.5 sm:w-2 sm:h-2 bg-gradient-to-r from-purple-600 to-blue-600 rounded-full mx-auto animate-pulse" />
                       )}
                     </div>
                   </div>

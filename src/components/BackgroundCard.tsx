@@ -46,12 +46,12 @@ export function BackgroundCard({
 
   return (
     <Card
-      className={`p-4 h-full flex flex-col ${getCardStyle()}`}
+      className={`p-2 sm:p-3 md:p-4 h-full flex flex-col ${getCardStyle()}`}
       onClick={onClick}
     >
       {(type === "background" || type === "upload") && image ? (
-        <div className="mb-4">
-          <div className="w-full h-32 bg-gray-100 rounded-lg overflow-hidden mb-3">
+        <div className="mb-2 sm:mb-3 md:mb-4">
+          <div className="w-full h-20 sm:h-24 md:h-32 bg-gray-100 rounded-lg overflow-hidden mb-2 sm:mb-3">
             <img
               src={image}
               alt={title}
@@ -60,11 +60,13 @@ export function BackgroundCard({
           </div>
         </div>
       ) : (
-        <div className="flex justify-center mb-4">{getIcon()}</div>
+        <div className="flex justify-center mb-2 sm:mb-3 md:mb-4">
+          <div className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8">{getIcon()}</div>
+        </div>
       )}
 
       <div className="flex-1 flex flex-col">
-        <h3 className="text-sm font-semibold mb-2 text-center">
+        <h3 className="text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-center leading-tight">
           {type === "custom" ? (
             <span className="text-purple-600">Buat dengan AI</span>
           ) : (
@@ -73,18 +75,24 @@ export function BackgroundCard({
         </h3>
 
         {type === "custom" && (
-          <p className="text-xs text-gray-500 text-center mb-2">{title}</p>
+          <p className="text-xs text-gray-500 text-center mb-1 sm:mb-2 leading-tight">
+            {title}
+          </p>
         )}
 
         {description && (
-          <p className="text-xs text-gray-500 text-center mb-3">
+          <p className="text-xs text-gray-500 text-center mb-2 sm:mb-3 leading-tight hidden sm:block">
             {description}
           </p>
         )}
 
         {type === "upload" && (
-          <div className="space-y-2">
-            <Button variant="outline" size="sm" className="w-full text-xs">
+          <div className="space-y-1 sm:space-y-2">
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full text-xs py-1 sm:py-2"
+            >
               Pilih File
             </Button>
           </div>
@@ -93,7 +101,21 @@ export function BackgroundCard({
         {tags.length > 0 && (
           <div className="flex flex-wrap gap-1 justify-center mt-auto">
             {tags.map((tag, index) => (
-              <Badge key={index} variant="secondary" className="text-xs">
+              <Badge
+                key={index}
+                variant="secondary"
+                className="text-xs px-1 py-0 hidden sm:inline-block"
+              >
+                {tag}
+              </Badge>
+            ))}
+            {/* Show only first 2 tags on mobile */}
+            {tags.slice(0, 2).map((tag, index) => (
+              <Badge
+                key={`mobile-${index}`}
+                variant="secondary"
+                className="text-xs px-1 py-0 sm:hidden"
+              >
                 {tag}
               </Badge>
             ))}
