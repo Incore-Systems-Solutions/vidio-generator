@@ -1,7 +1,7 @@
 ---
 import Layout from "@/layouts/main.astro";
 import { GenerateVideo } from "@/components/GenerateVideo";
-import { Navbar } from "@/components/Navbar";
+import { NavbarWithModal } from "@/components/NavbarWithModal";
 
 export const prerender = false;
 ---
@@ -9,7 +9,7 @@ export const prerender = false;
 <Layout content={{ title: "Generate Video" }}>
   <main class="min-h-screen bg-background">
     <div class="container mx-auto px-4 py-8">
-      <Navbar currentStep={3} />
+      <NavbarWithModal client:load currentStep={3} totalSteps={4} />
 
       <div class="max-w-7xl mx-auto mt-8">
         <GenerateVideo client:load />

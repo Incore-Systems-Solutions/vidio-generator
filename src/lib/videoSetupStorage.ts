@@ -11,6 +11,7 @@ export interface VideoSetupData {
   tone: string;
   background_music: string;
   resolusi_video: string;
+  is_share: "y" | "n";
   // Payment related fields
   email?: string;
   no_wa?: string;

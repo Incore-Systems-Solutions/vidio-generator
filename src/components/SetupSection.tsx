@@ -35,6 +35,31 @@ export function SetupSection() {
     fetchCharacters();
   }, []);
 
+  // Auto-select character when data is loaded from localStorage
+  useEffect(() => {
+    if (
+      data.characterImage &&
+      !data.selectedCharacter &&
+      characters.length > 0
+    ) {
+      // Find character with matching image or create a custom one
+      const matchingCharacter = characters.find(
+        (char) => char.image === data.characterImage
+      );
+      if (matchingCharacter) {
+        updateCharacter(matchingCharacter.id, data.characterImage);
+      } else {
+        // Create a custom character entry for uploaded image
+        updateCharacter("upload", data.characterImage);
+      }
+    }
+  }, [
+    data.characterImage,
+    characters,
+    data.selectedCharacter,
+    updateCharacter,
+  ]);
+
   const handleCharacterTypeChange = (type: string) => {
     setCharacterType(type);
   };
@@ -57,6 +82,7 @@ export function SetupSection() {
       tone: data.tone,
       background_music: data.backgroundMusic,
       resolusi_video: data.resolusiVideo,
+      is_share: data.isShare,
     });
 
     // Navigate to payment page

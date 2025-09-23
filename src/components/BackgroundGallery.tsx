@@ -30,6 +30,31 @@ export function BackgroundGallery() {
     fetchBackgrounds();
   }, []);
 
+  // Auto-select background when data is loaded from localStorage
+  useEffect(() => {
+    if (
+      data.backgroundImage &&
+      !data.selectedBackground &&
+      backgrounds.length > 0
+    ) {
+      // Find background with matching image or create a custom one
+      const matchingBackground = backgrounds.find(
+        (bg) => bg.image === data.backgroundImage
+      );
+      if (matchingBackground) {
+        updateBackground(matchingBackground.id, data.backgroundImage);
+      } else {
+        // Create a custom background entry for uploaded image
+        updateBackground("upload", data.backgroundImage);
+      }
+    }
+  }, [
+    data.backgroundImage,
+    backgrounds,
+    data.selectedBackground,
+    updateBackground,
+  ]);
+
   const handleBackgroundSelect = async (backgroundId: string) => {
     // If it's an upload background, handle file upload
     if (backgroundId === "upload") {

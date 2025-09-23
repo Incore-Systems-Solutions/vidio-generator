@@ -25,6 +25,70 @@ export interface ApiResponse<T> {
   data: T;
 }
 
+export interface VideoHistoryItem {
+  id: number;
+  user_video_id: string;
+  task_id: string | null;
+  prompt: string;
+  model_ai: string;
+  aspect_ratio: string;
+  enableFallback: number;
+  enableTranslation: number;
+  seeds: string | null;
+  image_urls: string;
+  status_video: string;
+  created_at: string;
+  updated_at: string;
+  bahasa: string | null;
+  gaya_suara: string | null;
+  voice_over: string | null;
+  tone: string | null;
+  background_music: string | null;
+  resolusi_video: string;
+  url_video: string | null;
+  url_video_share: string | null;
+  share_url: string;
+}
+
+export interface VideoHistoryResponse {
+  status: boolean;
+  message: string;
+  current_page: number;
+  last_page: number;
+  per_page: string;
+  total: number;
+  data: VideoHistoryItem[];
+}
+
+export interface CoinData {
+  id: number;
+  quota: number;
+  hari_ini: number;
+  minggu_ini: number;
+}
+
+export interface CoinResponse {
+  status: boolean;
+  data: CoinData;
+}
+
+export interface OTPRequest {
+  username: string;
+}
+
+export interface OTPVerifyRequest {
+  username: string;
+  otp: string;
+}
+
+export interface OTPResponse {
+  status: boolean;
+  message: string;
+  data: {
+    "x-api-key": string;
+  };
+}
+
 // Characters API
 export const charactersApi = {
   async getCharacters(): Promise<Character[]> {
@@ -108,6 +172,7 @@ export interface VideoStoreData {
   email?: string;
   no_wa?: string | null;
   affiliate_by?: string;
+  is_share?: "y" | "n";
 }
 
 export const videoStoreApi = {
@@ -153,7 +218,7 @@ export interface ValidateOTPData {
   otp: number;
 }
 
-export interface OTPResponse {
+export interface ValidateOTPResponse {
   status: boolean;
   message: string;
   data?: {
@@ -188,7 +253,7 @@ export const otpApi = {
     }
   },
 
-  async validateOTP(data: ValidateOTPData): Promise<OTPResponse> {
+  async validateOTP(data: ValidateOTPData): Promise<ValidateOTPResponse> {
     try {
       const response = await fetch(
         `${BASE_URL}/api/video-ai/validasi-otp-koin`,
@@ -382,6 +447,216 @@ export const videoGenerationApi = {
       return result;
     } catch (error) {
       console.error("Error converting video:", error);
+      throw error;
+    }
+  },
+};
+
+// Public Video Gallery API
+export interface PublicVideoItem {
+  id: number;
+  user_video_id: string;
+  share_url: "y" | "n";
+  url_video: string;
+  prompt: string;
+  user: {
+    id: number;
+    name: string;
+  };
+}
+
+export interface PublicVideoGalleryResponse {
+  status: boolean;
+  message: string;
+  data: PublicVideoItem[];
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export const publicVideoGalleryApi = {
+  async getPublicVideos(
+    page: number = 1,
+    perPage: number = 10
+  ): Promise<PublicVideoGalleryResponse> {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/video-ai/public?page=${page}&per_page=${perPage}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch public videos");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error fetching public videos:", error);
+      throw error;
+    }
+  },
+
+  async getVideoDetail(id: string): Promise<{
+    status: boolean;
+    message: string;
+    data: {
+      id: number;
+      user_video_id: string;
+      task_id: string;
+      prompt: string;
+      model_ai: string;
+      aspect_ratio: string;
+      enableFallback: number;
+      enableTranslation: number;
+      seeds: string | null;
+      image_urls: string;
+      status_video: string;
+      created_at: string;
+      updated_at: string;
+      bahasa: string | null;
+      gaya_suara: string | null;
+      voice_over: string | null;
+      tone: string | null;
+      background_music: string | null;
+      resolusi_video: string | null;
+      url_video: string;
+      url_video_share: string | null;
+      share_url: string;
+      karakter_image: string | null;
+      background_image: string | null;
+      user: {
+        id: number;
+        name: string;
+      };
+    };
+  }> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/video-ai/public/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch video detail");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error fetching video detail:", error);
+      throw error;
+    }
+  },
+};
+export const videoHistoryApi = {
+  async requestOTP(
+    username: string
+  ): Promise<{ status: boolean; message: string }> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/video-ai/otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "OTP request failed");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error requesting OTP:", error);
+      throw error;
+    }
+  },
+
+  async verifyOTP(username: string, otp: string): Promise<OTPResponse> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/video-ai/verify-otp`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ username, otp }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "OTP verification failed");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error verifying OTP:", error);
+      throw error;
+    }
+  },
+
+  async getVideoList(
+    xApiKey: string,
+    page: number = 1,
+    perPage: number = 5
+  ): Promise<VideoHistoryResponse> {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/video-ai/check-list-video?page=${page}&per_page=${perPage}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": xApiKey,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch video list");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error fetching video list:", error);
+      throw error;
+    }
+  },
+
+  async getCoinBalance(xApiKey: string): Promise<CoinResponse> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/video-ai/check-koin`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": xApiKey,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch coin balance");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error fetching coin balance:", error);
       throw error;
     }
   },

@@ -1,5 +1,5 @@
 ---
-import { Navbar } from "@/components/Navbar"
+import { NavbarWithModal } from "@/components/NavbarWithModal"
 import { PaymentPage } from "@/components/PaymentPage"
 import "../styles/global.css"
 ---
@@ -16,7 +16,7 @@ import "../styles/global.css"
 
 	<body class="min-h-screen bg-background antialiased">
 		<!-- Navigation with Integrated Stepper -->
-		<Navbar client:load currentStep={2} totalSteps={4} />
+		<NavbarWithModal client:load currentStep={2} totalSteps={4} />
 
 		<!-- Main Content -->
 		<main class="flex-1">

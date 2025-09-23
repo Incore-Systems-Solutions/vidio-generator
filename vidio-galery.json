@@ -1,0 +1,120 @@
+{
+  "status": true,
+  "message": "Success Get Data",
+  "data": [
+    {
+      "id": 61,
+      "user_video_id": "2",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/95d7da77ccb67ce2bd994a04b2f354b6_1758530712.mp4",
+      "prompt": "Hyper-realistic cartoon penguin trying to ride a skateboard, falling down and getting back up, cheerful and funny, Pixar-style, colorful, 4K.",
+      "user": {
+        "id": 2,
+        "name": "Admin Digimar"
+      }
+    },
+    {
+      "id": 60,
+      "user_video_id": "2",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/95d7da77ccb67ce2bd994a04b2f354b6_1758530712.mp4",
+      "prompt": "vidio1",
+      "user": {
+        "id": 2,
+        "name": "Admin Digimar"
+      }
+    },
+    {
+      "id": 59,
+      "user_video_id": "2",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/95d7da77ccb67ce2bd994a04b2f354b6_1758530712.mp4",
+      "prompt": "vidio1",
+      "user": {
+        "id": 2,
+        "name": "Admin Digimar"
+      }
+    },
+    {
+      "id": 52,
+      "user_video_id": "2",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/6a5b9e7862745e302b42e03ee9cbec06_1758529043.mp4",
+      "prompt": "A hyper-realistic cinematic war scene, soldiers in modern military gear running through a battlefield with smoke, fire, and destroyed buildings, tanks moving in the background, dramatic lighting, handheld camera effect, epic atmosphere, 4K, ultra detailed, movie trailer style.",
+      "user": {
+        "id": 2,
+        "name": "Admin Digimar"
+      }
+    },
+    {
+      "id": 51,
+      "user_video_id": "1",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/cf96c5a2c6e0c19d844c031108669403_1758527824.mp4",
+      "prompt": "Ultra-realistic cinematic video of a powerful rocket launching from a modern space center at dawn. Camera starts with a wide shot of the launch pad surrounded by fog, showing detailed metal structures, fuel pipes, and countdown lights. As the countdown ends, the engines ignite with bright flames and thick smoke, shaking the ground. The camera smoothly tracks upward, capturing the rocket rising into the sky, leaving behind massive plumes of smoke and fire. Close-up shots reveal detailed engine nozzles, realistic vibrations, sparks, and heat distortion. The rocket pierces through the clouds with a glowing trail, transitioning into a breathtaking wide shot of the rocket ascending into the stratosphere. Highly cinematic, 4K, realistic lighting, slow motion details, Dolby-like sound atmosphere, IMAX style.",
+      "user": {
+        "id": 1,
+        "name": "Developer"
+      }
+    },
+    {
+      "id": 50,
+      "user_video_id": "1",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/c42f92748d9ff553af16a53b3aeb11f7_1758521636.mp4",
+      "prompt": "test data prompt",
+      "user": {
+        "id": 1,
+        "name": "Developer"
+      }
+    },
+    {
+      "id": 49,
+      "user_video_id": "1",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/c42f92748d9ff553af16a53b3aeb11f7_1758521636.mp4",
+      "prompt": "test data prompt",
+      "user": {
+        "id": 1,
+        "name": "Developer"
+      }
+    },
+    {
+      "id": 47,
+      "user_video_id": "1",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/ddd318e9176b88dc20d2f6d2ef763969_1758525047.mp4",
+      "prompt": "Ultra-realistic cinematic video of a powerful rocket launching from a modern space center at dawn. Camera starts with a wide shot of the launch pad surrounded by fog, showing detailed metal structures, fuel pipes, and countdown lights. As the countdown ends, the engines ignite with bright flames and thick smoke, shaking the ground. The camera smoothly tracks upward, capturing the rocket rising into the sky, leaving behind massive plumes of smoke and fire. Close-up shots reveal detailed engine nozzles, realistic vibrations, sparks, and heat distortion. The rocket pierces through the clouds with a glowing trail, transitioning into a breathtaking wide shot of the rocket ascending into the stratosphere. Highly cinematic, 4K, realistic lighting, slow motion details, Dolby-like sound atmosphere, IMAX style.",
+      "user": {
+        "id": 1,
+        "name": "Developer"
+      }
+    },
+    {
+      "id": 45,
+      "user_video_id": "1",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/c42f92748d9ff553af16a53b3aeb11f7_1758521636.mp4",
+      "prompt": "A cute c",
+      "user": {
+        "id": 1,
+        "name": "Developer"
+      }
+    },
+    {
+      "id": 43,
+      "user_video_id": "1",
+      "share_url": "y",
+      "url_video": "https://tempfile.aiquickdraw.com/p/a1c3e8456bd56b2e39602583054f5de9_1758524491.mp4",
+      "prompt": "A cute cat playing in a backyard garden on a sunny day. The yard is full of fresh green grass, colorful flowers, and a small tree. The cat runs around, jumps playfully, and chases butterflies flying nearby. Bright cheerful atmosphere, natural sunlight, realistic cinematic style, 4K, HDR, smooth camera pan and close-up shots of the cat.",
+      "user": {
+        "id": 1,
+        "name": "Developer"
+      }
+    }
+  ],
+  "current_page": 1,
+  "last_page": 2,
+  "per_page": 10,
+  "total": 18
+}

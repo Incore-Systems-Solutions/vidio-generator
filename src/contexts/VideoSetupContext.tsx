@@ -2,6 +2,7 @@ import React, {
   createContext,
   useContext,
   useState,
+  useEffect,
   type ReactNode,
 } from "react";
 
@@ -19,6 +20,7 @@ interface VideoSetupData {
   tone: string;
   backgroundMusic: string;
   resolusiVideo: string;
+  isShare: "y" | "n";
 }
 
 interface VideoSetupContextType {
@@ -34,6 +36,7 @@ interface VideoSetupContextType {
   updateTone: (tone: string) => void;
   updateBackgroundMusic: (music: string) => void;
   updateResolusiVideo: (resolusi: string) => void;
+  updateIsShare: (isShare: "y" | "n") => void;
   resetData: () => void;
 }
 
@@ -55,10 +58,41 @@ const initialData: VideoSetupData = {
   tone: "",
   backgroundMusic: "",
   resolusiVideo: "",
+  isShare: "n",
 };
 
 export function VideoSetupProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<VideoSetupData>(initialData);
+
+  // Load data from localStorage on mount
+  useEffect(() => {
+    const savedData = localStorage.getItem("videoSetupData");
+    if (savedData) {
+      try {
+        const parsedData = JSON.parse(savedData);
+        setData((prev) => ({
+          ...prev,
+          prompt: parsedData.prompt || "",
+          characterImage: parsedData.karakter_image || null,
+          backgroundImage: parsedData.background_image || null,
+          aspekRasio: parsedData.aspek_rasio || "",
+          judulVideo: parsedData.judul_video || "",
+          bahasa: parsedData.bahasa || "",
+          gayaSuara: parsedData.gaya_suara || "",
+          voiceOver: parsedData.voice_over || "",
+          tone: parsedData.tone || "",
+          backgroundMusic: parsedData.background_music || "",
+          resolusiVideo: parsedData.resolusi_video || "",
+          isShare: parsedData.is_share || "n",
+        }));
+
+        // Clear localStorage after loading to prevent re-loading
+        localStorage.removeItem("videoSetupData");
+      } catch (error) {
+        console.error("Error parsing videoSetupData from localStorage:", error);
+      }
+    }
+  }, []);
 
   const updateCharacter = (characterId: string, imageUrl: string | null) => {
     setData((prev) => ({
@@ -139,6 +173,13 @@ export function VideoSetupProvider({ children }: { children: ReactNode }) {
     }));
   };
 
+  const updateIsShare = (isShare: "y" | "n") => {
+    setData((prev) => ({
+      ...prev,
+      isShare: isShare,
+    }));
+  };
+
   const resetData = () => {
     setData(initialData);
   };
@@ -158,6 +199,7 @@ export function VideoSetupProvider({ children }: { children: ReactNode }) {
         updateTone,
         updateBackgroundMusic,
         updateResolusiVideo,
+        updateIsShare,
         resetData,
       }}
     >

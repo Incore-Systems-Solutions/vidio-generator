@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -38,8 +38,14 @@ export function VideoDetailSection() {
     updateTone,
     updateBackgroundMusic,
     updateResolusiVideo,
+    updateIsShare,
   } = useVideoSetup();
-  const [script, setScript] = useState("");
+  const [script, setScript] = useState(data.prompt || "");
+
+  // Update script when data.prompt changes
+  useEffect(() => {
+    setScript(data.prompt || "");
+  }, [data.prompt]);
 
   const toneOptions = [
     { id: "professional", label: "Professional", icon: Briefcase },
@@ -251,6 +257,21 @@ export function VideoDetailSection() {
                   <SelectItem value="720p">720p (HD)</SelectItem>
                   <SelectItem value="480p">480p (SD)</SelectItem>
                   <SelectItem value="4k">4K (Ultra HD)</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <label className="text-sm font-medium mb-2 block">
+                Share Video Public
+              </label>
+              <Select value={data.isShare} onValueChange={updateIsShare}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih visibility video" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="y">Share Public</SelectItem>
+                  <SelectItem value="n">Private</SelectItem>
                 </SelectContent>
               </Select>
             </div>
