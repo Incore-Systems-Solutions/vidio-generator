@@ -1,11 +1,12 @@
 import { e as createComponent, f as createAstro, h as addAttribute, k as renderHead, l as renderComponent, r as renderTemplate } from '../chunks/astro/server_DLHOh8jC.mjs';
 import 'kleur/colors';
-import { C as Card, a as CardHeader, b as CardTitle, B as Button, c as CardContent, d as Badge, N as Navbar } from '../chunks/card_DMaO0jxC.mjs';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DlTLNYz3.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
 import { useState } from 'react';
-import { I as Input } from '../chunks/input_nhgdP4CX.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, B as Button, c as CardContent, d as Badge } from '../chunks/card_BBwcWowj.mjs';
+import { I as Input } from '../chunks/input_Cdrza9AE.mjs';
 import { X, Mail, Clock, AlertCircle, CheckCircle, Coins, Wallet, QrCode, CreditCard, Sparkles, Video, Check, User, ArrowLeft } from 'lucide-react';
-import { o as otpApi, a as videoStoreApi } from '../chunks/api_B4s6jhmt.mjs';
+import { o as otpApi, a as videoStoreApi } from '../chunks/api_Zi8Etrro.mjs';
 import { v as videoSetupStorage } from '../chunks/videoSetupStorage_3qmsD2TP.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
@@ -695,7 +696,7 @@ const $$Astro = createAstro();
 const $$Pembayaran = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$Pembayaran;
-  return renderTemplate`<html lang="en" class="scroll-smooth"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator"${addAttribute(Astro2.generator, "content")}><title>Pilih Paket & Pembayaran - Video Generator</title><meta name="description" content="Pilih paket yang sesuai dengan kebutuhan Anda dan metode pembayaran yang diinginkan.">${renderHead()}</head> <body class="min-h-screen bg-background antialiased"> <!-- Navigation with Integrated Stepper --> ${renderComponent($$result, "Navbar", Navbar, { "client:load": true, "currentStep": 2, "totalSteps": 4, "client:component-hydration": "load", "client:component-path": "@/components/Navbar", "client:component-export": "Navbar" })} <!-- Main Content --> <main class="flex-1"> <div class="container mx-auto px-8 py-12"> ${renderComponent($$result, "PaymentPage", PaymentPage, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/PaymentPage", "client:component-export": "PaymentPage" })} </div> </main> <!-- Footer --> <footer class="border-t py-12 mt-24"> <div class="container mx-auto px-4"> <div class="text-center text-muted-foreground"> <p>&copy; 2024 Video Generator. All rights reserved.</p> </div> </div> </footer> </body></html>`;
+  return renderTemplate`<html lang="en" class="scroll-smooth"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator"${addAttribute(Astro2.generator, "content")}><title>Pilih Paket & Pembayaran - Video Generator</title><meta name="description" content="Pilih paket yang sesuai dengan kebutuhan Anda dan metode pembayaran yang diinginkan.">${renderHead()}</head> <body class="min-h-screen bg-background antialiased"> <!-- Navigation with Integrated Stepper --> ${renderComponent($$result, "NavbarWithModal", NavbarWithModal, { "client:load": true, "currentStep": 2, "totalSteps": 4, "client:component-hydration": "load", "client:component-path": "@/components/NavbarWithModal", "client:component-export": "NavbarWithModal" })} <!-- Main Content --> <main class="flex-1"> <div class="container mx-auto px-8 py-12"> ${renderComponent($$result, "PaymentPage", PaymentPage, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/PaymentPage", "client:component-export": "PaymentPage" })} </div> </main> <!-- Footer --> <footer class="border-t py-12 mt-24"> <div class="container mx-auto px-4"> <div class="text-center text-muted-foreground"> <p>&copy; 2024 Video Generator. All rights reserved.</p> </div> </div> </footer> </body></html>`;
 }, "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/pembayaran.astro", void 0);
 
 const $$file = "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/pembayaran.astro";

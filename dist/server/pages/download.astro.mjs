@@ -1,11 +1,12 @@
 import { e as createComponent, f as createAstro, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DLHOh8jC.mjs';
 import 'kleur/colors';
-import { $ as $$Main } from '../chunks/main_CrLwiLZA.mjs';
+import { $ as $$Main } from '../chunks/main_C8Zn-fhb.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState } from 'react';
-import { B as Button, C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as Badge, N as Navbar } from '../chunks/card_DMaO0jxC.mjs';
-import { v as videoGenerationApi } from '../chunks/api_B4s6jhmt.mjs';
+import { B as Button, C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as Badge } from '../chunks/card_BBwcWowj.mjs';
+import { v as videoGenerationApi } from '../chunks/api_Zi8Etrro.mjs';
 import { ArrowLeft, CheckCircle, Video, Settings, Maximize2, Download, Share2, ArrowRight, Music, Camera, Play, MessageCircle } from 'lucide-react';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DlTLNYz3.mjs';
 export { renderers } from '../renderers.mjs';
 
 function VideoDownload({
@@ -376,7 +377,7 @@ const $$Download = createComponent(($$result, $$props, $$slots) => {
   const url = Astro2.url.searchParams.get("url") || "";
   const taskId = Astro2.url.searchParams.get("taskId") || "";
   const videoUrl = url ? decodeURIComponent(url) : "";
-  return renderTemplate`${renderComponent($$result, "Layout", $$Main, { "content": { title: "Download Video" } }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<main class="min-h-screen bg-background"> <div class="container mx-auto px-4 py-8"> ${renderComponent($$result2, "Navbar", Navbar, { "currentStep": 4 })} <div class="max-w-7xl mx-auto mt-8"> ${videoUrl && taskId ? renderTemplate`${renderComponent($$result2, "VideoDownload", VideoDownload, { "videoUrl": videoUrl, "taskId": taskId, "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/VideoDownload", "client:component-export": "VideoDownload" })}` : renderTemplate`<div class="text-center py-12"> <h2 class="text-2xl font-bold text-foreground mb-4">
+  return renderTemplate`${renderComponent($$result, "Layout", $$Main, { "content": { title: "Download Video" } }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<main class="min-h-screen bg-background"> <div class="container mx-auto px-4 py-8"> ${renderComponent($$result2, "NavbarWithModal", NavbarWithModal, { "client:load": true, "currentStep": 4, "totalSteps": 4, "client:component-hydration": "load", "client:component-path": "@/components/NavbarWithModal", "client:component-export": "NavbarWithModal" })} <div class="max-w-7xl mx-auto mt-8"> ${videoUrl && taskId ? renderTemplate`${renderComponent($$result2, "VideoDownload", VideoDownload, { "videoUrl": videoUrl, "taskId": taskId, "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/VideoDownload", "client:component-export": "VideoDownload" })}` : renderTemplate`<div class="text-center py-12"> <h2 class="text-2xl font-bold text-foreground mb-4">
 Video tidak ditemukan
 </h2> <p class="text-muted-foreground">
 Silakan kembali ke halaman generate untuk melanjutkan.

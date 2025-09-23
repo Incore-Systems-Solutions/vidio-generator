@@ -1,12 +1,13 @@
 import { e as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DLHOh8jC.mjs';
 import 'kleur/colors';
-import { $ as $$Main } from '../chunks/main_CrLwiLZA.mjs';
+import { $ as $$Main } from '../chunks/main_C8Zn-fhb.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
-import { B as Button, d as Badge, C as Card, a as CardHeader, b as CardTitle, c as CardContent, N as Navbar } from '../chunks/card_DMaO0jxC.mjs';
+import { B as Button, d as Badge, C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_BBwcWowj.mjs';
 import { RefreshCw, AlertCircle, ArrowLeft, Clock, Video, Eye, Download, FileText, CheckCircle, Play } from 'lucide-react';
-import { v as videoGenerationApi } from '../chunks/api_B4s6jhmt.mjs';
+import { v as videoGenerationApi } from '../chunks/api_Zi8Etrro.mjs';
 import { v as videoSetupStorage } from '../chunks/videoSetupStorage_3qmsD2TP.mjs';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DlTLNYz3.mjs';
 export { renderers } from '../renderers.mjs';
 
 function GenerateVideo({ onBack }) {
@@ -460,7 +461,7 @@ function GenerateVideo({ onBack }) {
 
 const prerender = false;
 const $$Generate = createComponent(($$result, $$props, $$slots) => {
-  return renderTemplate`${renderComponent($$result, "Layout", $$Main, { "content": { title: "Generate Video" } }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<main class="min-h-screen bg-background"> <div class="container mx-auto px-4 py-8"> ${renderComponent($$result2, "Navbar", Navbar, { "currentStep": 3 })} <div class="max-w-7xl mx-auto mt-8"> ${renderComponent($$result2, "GenerateVideo", GenerateVideo, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/GenerateVideo", "client:component-export": "GenerateVideo" })} </div> </div> <footer class="bg-muted/50 border-t"> <div class="container mx-auto px-4 py-6"> <div class="text-center text-muted-foreground"> <p>&copy; 2025 Video Generator. All rights reserved.</p> </div> </div> </footer> </main> ` })}`;
+  return renderTemplate`${renderComponent($$result, "Layout", $$Main, { "content": { title: "Generate Video" } }, { "default": ($$result2) => renderTemplate` ${maybeRenderHead()}<main class="min-h-screen bg-background"> <div class="container mx-auto px-4 py-8"> ${renderComponent($$result2, "NavbarWithModal", NavbarWithModal, { "client:load": true, "currentStep": 3, "totalSteps": 4, "client:component-hydration": "load", "client:component-path": "@/components/NavbarWithModal", "client:component-export": "NavbarWithModal" })} <div class="max-w-7xl mx-auto mt-8"> ${renderComponent($$result2, "GenerateVideo", GenerateVideo, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/GenerateVideo", "client:component-export": "GenerateVideo" })} </div> </div> <footer class="bg-muted/50 border-t"> <div class="container mx-auto px-4 py-6"> <div class="text-center text-muted-foreground"> <p>&copy; 2025 Video Generator. All rights reserved.</p> </div> </div> </footer> </main> ` })}`;
 }, "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/generate.astro", void 0);
 
 const $$file = "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/generate.astro";
