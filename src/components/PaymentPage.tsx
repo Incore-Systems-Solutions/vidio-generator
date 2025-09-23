@@ -338,23 +338,29 @@ export function PaymentPage() {
     {
       id: "gopay",
       name: "Gopay",
-      description: "Pembayaran dengan Gopay",
+      description: isOTPVerified
+        ? "Pembayaran dengan Gopay"
+        : "Verifikasi email terlebih dahulu",
       icon: <Wallet className="w-6 h-6" />,
-      disabled: false,
+      disabled: !isOTPVerified,
     },
     {
       id: "qris",
       name: "QRIS",
-      description: "Pembayaran dengan QRIS",
+      description: isOTPVerified
+        ? "Pembayaran dengan QRIS"
+        : "Verifikasi email terlebih dahulu",
       icon: <QrCode className="w-6 h-6" />,
-      disabled: false,
+      disabled: !isOTPVerified,
     },
     {
       id: "credit-card",
       name: "Kartu Kredit dan Internasional",
-      description: "Pembayaran dengan Kartu Kredit dan Internasional",
+      description: isOTPVerified
+        ? "Pembayaran dengan Kartu Kredit dan Internasional"
+        : "Verifikasi email terlebih dahulu",
       icon: <CreditCard className="w-6 h-6" />,
-      disabled: false,
+      disabled: !isOTPVerified,
     },
   ];
 
@@ -775,6 +781,18 @@ export function PaymentPage() {
         </div>
       )}
 
+      {/* Email Verification Status */}
+      {!isOTPVerified && isPersonalInfoComplete && (
+        <div className="flex justify-center mb-8">
+          <div className="flex items-center p-4 bg-yellow-50 dark:bg-yellow-950/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+            <AlertCircle className="w-5 h-5 text-yellow-600 dark:text-yellow-400 mr-3" />
+            <span className="text-yellow-800 dark:text-yellow-200 font-medium">
+              Verifikasi email terlebih dahulu untuk memilih metode pembayaran
+            </span>
+          </div>
+        </div>
+      )}
+
       {/* Error Message */}
       {error && (
         <div className="flex justify-center mb-8">
@@ -800,12 +818,13 @@ export function PaymentPage() {
         <Button
           size="lg"
           className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-          // disabled={
-          //   !selectedPaymentMethod ||
-          //   !isPersonalInfoComplete ||
-          //   !selectedPackage ||
-          //   isProcessing
-          // }
+          disabled={
+            !selectedPaymentMethod ||
+            !isPersonalInfoComplete ||
+            !selectedPackage ||
+            !isOTPVerified ||
+            isProcessing
+          }
           onClick={handleContinuePayment}
         >
           {isProcessing ? "Memproses..." : "Bayar Sekarang"}
