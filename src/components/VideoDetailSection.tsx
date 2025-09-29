@@ -62,9 +62,16 @@ export function VideoDetailSection() {
 
   return (
     <div className="w-full">
-      <h2 className="text-2xl font-bold text-foreground mb-6">
-        Detail Video & Script
-      </h2>
+      <div className="mb-6">
+        <h2 className="text-2xl font-bold text-foreground mb-2">
+          Detail Video & Script
+        </h2>
+        <p className="text-sm text-muted-foreground">
+          <span className="text-red-500">*</span> Field wajib diisi |
+          <span className="text-gray-500 ml-2">(Opsional)</span> Field tidak
+          wajib diisi
+        </p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Informasi Dasar - Kiri */}
@@ -78,7 +85,7 @@ export function VideoDetailSection() {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Judul Video
+                Judul Video <span className="text-red-500">*</span>
               </label>
               <Input
                 placeholder="Masukkan judul video anda..."
@@ -89,7 +96,7 @@ export function VideoDetailSection() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Aspek Rasio
+                Aspek Rasio <span className="text-red-500">*</span>
               </label>
               <Select value={data.aspekRasio} onValueChange={updateAspectRatio}>
                 <SelectTrigger className="w-full">
@@ -104,7 +111,7 @@ export function VideoDetailSection() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Script/Naskah Video
+                Script/Naskah Video <span className="text-red-500">*</span>
               </label>
               <Textarea
                 placeholder="Masukkan script video anda..."
@@ -132,7 +139,9 @@ export function VideoDetailSection() {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium mb-2 block">Bahasa</label>
+              <label className="text-sm font-medium mb-2 block">
+                Bahasa <span className="text-gray-500">(Opsional)</span>
+              </label>
               <Select value={data.bahasa} onValueChange={updateBahasa}>
                 <SelectTrigger className="w-full">
                   <SelectValue placeholder="Pilih bahasa untuk video anda" />
@@ -148,7 +157,7 @@ export function VideoDetailSection() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Gaya Suara
+                Gaya Suara <span className="text-gray-500">(Opsional)</span>
               </label>
               <Select value={data.gayaSuara} onValueChange={updateGayaSuara}>
                 <SelectTrigger className="w-full">
@@ -165,7 +174,7 @@ export function VideoDetailSection() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Voice Over
+                Voice Over <span className="text-gray-500">(Opsional)</span>
               </label>
               <Select value={data.voiceOver} onValueChange={updateVoiceOver}>
                 <SelectTrigger className="w-full">
@@ -181,7 +190,8 @@ export function VideoDetailSection() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Tone/Nada Video
+                Tone/Nada Video{" "}
+                <span className="text-gray-500">(Opsional)</span>
               </label>
               <div className="grid grid-cols-2 gap-2">
                 {toneOptions.map((tone) => {
@@ -219,7 +229,8 @@ export function VideoDetailSection() {
           <CardContent className="space-y-4">
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Background Music
+                Background Music{" "}
+                <span className="text-gray-500">(Opsional)</span>
               </label>
               <Select
                 value={data.backgroundMusic}
@@ -241,7 +252,7 @@ export function VideoDetailSection() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Resolusi Video
+                Resolusi Video <span className="text-gray-500">(Opsional)</span>
               </label>
               <Select
                 value={data.resolusiVideo}
@@ -259,7 +270,8 @@ export function VideoDetailSection() {
 
             <div>
               <label className="text-sm font-medium mb-2 block">
-                Share Video Public
+                Share Video Public{" "}
+                <span className="text-gray-500">(Opsional)</span>
               </label>
               <Select value={data.isShare} onValueChange={updateIsShare}>
                 <SelectTrigger className="w-full">

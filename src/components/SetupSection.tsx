@@ -68,6 +68,15 @@ export function SetupSection() {
     setCharacterStyle(style);
   };
 
+  // Check if all required fields are filled
+  const isFormValid = () => {
+    return (
+      data.judulVideo.trim() !== "" &&
+      data.prompt.trim() !== "" &&
+      data.aspekRasio !== ""
+    );
+  };
+
   const handleContinueToPayment = () => {
     // Save required data to localStorage
     videoSetupStorage.save({
@@ -232,11 +241,17 @@ export function SetupSection() {
       </div>
 
       {/* Action Buttons */}
-      <div className="flex justify-center px-4">
+      <div className="flex flex-col items-center px-4">
+        {!isFormValid() && !uploading && (
+          <p className="text-sm text-red-500 mb-3 text-center">
+            Lengkapi field yang wajib diisi: Judul Video, Aspek Rasio, dan
+            Script
+          </p>
+        )}
         <Button
           size="lg"
           className="w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-sm sm:text-base"
-          disabled={!data.selectedCharacter || uploading}
+          disabled={uploading || !isFormValid()}
           onClick={handleContinueToPayment}
         >
           {uploading ? "Uploading..." : "Lanjutkan ke Pembayaran"}
