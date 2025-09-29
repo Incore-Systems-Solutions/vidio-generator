@@ -307,7 +307,7 @@ export function PaymentPage() {
   ];
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-gray-900 dark:to-gray-800">
+    <div className="w-full min-h-screen  dark:from-gray-900 dark:to-gray-800">
       <div className="max-w-7xl mx-auto px-4 py-8">
         {/* Header Section */}
         <div className="text-center mb-12">
@@ -323,231 +323,234 @@ export function PaymentPage() {
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Left Column - Pricing Information */}
-          <div>
-            <Card className="bg-card shadow-xl border-0 overflow-hidden">
-              <div className="bg-gradient-to-br from-purple-600 to-blue-600 p-6 text-white">
-                <div className="flex items-center mb-4">
-                  <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center mr-4">
-                    <Video className="w-6 h-6 text-white" />
+
+          <Card className="bg-card shadow-xl border-0">
+            {/* Full-width header */}
+            <div className="bg-gradient-to-br from-purple-600 to-blue-600 text-white px-8 py-8 flex flex-col items-center w-full">
+              <div className="flex items-center mb-4 w-full justify-center">
+                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mr-6">
+                  <Video className="w-8 h-8 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-3xl font-bold">Video AI</h2>
+                  <p className="text-white/80 text-lg">Harga tetap per video</p>
+                </div>
+              </div>
+              <div className="text-5xl font-extrabold mb-2 w-full text-center">
+                Rp 7.500
+              </div>
+              <p className="text-white/80 text-lg w-full text-center">
+                1 Video HD berkualitas tinggi
+              </p>
+            </div>
+
+            <CardContent className="p-6">
+              <div className="space-y-4 mb-6">
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                    <Check className="w-4 h-4 text-green-600" />
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold">Video AI</h2>
-                    <p className="text-white/80">Harga tetap per video</p>
+                    <p className="font-medium text-foreground">
+                      Video HD Berkualitas Tinggi
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Resolusi 720p atau 1080p sesuai pilihan
+                    </p>
                   </div>
                 </div>
-                <div className="text-4xl font-bold mb-2">Rp 10.000</div>
-                <p className="text-white/80">1 Video HD berkualitas tinggi</p>
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                    <Check className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">
+                      Karakter & Background Custom
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Pilihan karakter AI dan background sesuai keinginan
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start">
+                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
+                    <Check className="w-4 h-4 text-green-600" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-foreground">
+                      Download Langsung
+                    </p>
+                    <p className="text-sm text-muted-foreground">
+                      Unduh video setelah proses selesai
+                    </p>
+                  </div>
+                </div>
               </div>
 
-              <CardContent className="p-6">
-                <div className="space-y-4 mb-6">
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Video HD Berkualitas Tinggi
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Resolusi 720p atau 1080p sesuai pilihan
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Karakter & Background Custom
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Pilihan karakter AI dan background sesuai keinginan
-                      </p>
-                    </div>
-                  </div>
-                  <div className="flex items-start">
-                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                      <Check className="w-4 h-4 text-green-600" />
-                    </div>
-                    <div>
-                      <p className="font-medium text-foreground">
-                        Download Langsung
-                      </p>
-                      <p className="text-sm text-muted-foreground">
-                        Unduh video setelah proses selesai
-                      </p>
-                    </div>
+              <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
+                <div className="flex items-start">
+                  <Coins className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-semibold text-blue-800 dark:text-blue-200 mb-1">
+                      Rincian Penggunaan:
+                    </p>
+                    <p className="text-blue-700 dark:text-blue-300">
+                      • Minimal Transaksi: <strong>10.000</strong>
+                      <br />• Biaya produksi video: <strong>7.500</strong>
+                      <br />• Sisa <strong>2.500</strong> dikonversi menjadi
+                      koin untuk video berikutnya
+                    </p>
                   </div>
                 </div>
-
-                <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                  <div className="flex items-start">
-                    <Coins className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" />
-                    <div className="text-sm">
-                      <p className="font-semibold text-blue-800 dark:text-blue-200 mb-1">
-                        Rincian Penggunaan:
-                      </p>
-                      <p className="text-blue-700 dark:text-blue-300">
-                        • Biaya produksi video: <strong>7.500 koin</strong>
-                        <br />• Sisa <strong>2.500</strong> dikonversi menjadi
-                        koin untuk video berikutnya
-                      </p>
-                    </div>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
 
           {/* Right Column - Payment Information */}
-          <div>
-            <Card className="bg-card shadow-xl border-0">
-              <CardHeader className="pb-4">
-                <CardTitle className="flex items-center text-xl">
-                  <CreditCard className="w-6 h-6 text-purple-600 mr-3" />
-                  Informasi Pembayaran
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                {/* Personal Information */}
-                <div>
-                  <h3 className="font-semibold text-foreground mb-4 flex items-center">
-                    <User className="w-5 h-5 text-purple-600 mr-2" />
-                    Data Personal
-                  </h3>
-                  <div className="space-y-4">
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Email <span className="text-red-500">*</span>
-                      </label>
+
+          <Card className="bg-card shadow-xl border-0">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center text-xl">
+                <CreditCard className="w-6 h-6 text-purple-600 mr-3" />
+                Informasi Pembayaran
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-6">
+              {/* Personal Information */}
+              <div>
+                <h3 className="font-semibold text-foreground mb-4 flex items-center">
+                  <User className="w-5 h-5 text-purple-600 mr-2" />
+                  Data Personal
+                </h3>
+                <div className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Email <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="email"
+                      placeholder="Masukkan email anda..."
+                      value={email}
+                      onChange={(e) => {
+                        setEmail(e.target.value);
+                        handlePersonalInfoChange();
+                      }}
+                      className="w-full"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-foreground mb-2">
+                      Nomor Telepon <span className="text-red-500">*</span>
+                    </label>
+                    <div className="flex gap-2">
                       <Input
-                        type="email"
-                        placeholder="Masukkan email anda..."
-                        value={email}
+                        type="tel"
+                        placeholder="Masukkan nomor anda..."
+                        value={phoneNumber}
                         onChange={(e) => {
-                          setEmail(e.target.value);
+                          setPhoneNumber(e.target.value);
                           handlePersonalInfoChange();
                         }}
-                        className="w-full"
+                        className="flex-1"
                       />
-                    </div>
-                    <div>
-                      <label className="block text-sm font-medium text-foreground mb-2">
-                        Nomor Telepon <span className="text-red-500">*</span>
-                      </label>
-                      <div className="flex gap-2">
-                        <Input
-                          type="tel"
-                          placeholder="Masukkan nomor anda..."
-                          value={phoneNumber}
-                          onChange={(e) => {
-                            setPhoneNumber(e.target.value);
-                            handlePersonalInfoChange();
-                          }}
-                          className="flex-1"
-                        />
-                        <Button
-                          variant="default"
-                          disabled={email.trim() === ""}
-                          onClick={handleVerificationClick}
-                          className="bg-purple-600 hover:bg-purple-700"
-                        >
-                          Verifikasi
-                        </Button>
-                      </div>
+                      <Button
+                        variant="default"
+                        disabled={email.trim() === ""}
+                        onClick={handleVerificationClick}
+                        className="bg-purple-600 hover:bg-purple-700"
+                      >
+                        Verifikasi
+                      </Button>
                     </div>
                   </div>
                 </div>
+              </div>
 
-                {/* Payment Methods */}
-                <div>
-                  <h3 className="font-semibold text-foreground mb-4 flex items-center">
-                    <Wallet className="w-5 h-5 text-purple-600 mr-2" />
-                    Metode Pembayaran
-                  </h3>
-                  <div className="grid grid-cols-2 gap-3">
-                    {paymentMethods.map((method) => (
-                      <div
-                        key={method.id}
-                        className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                          method.disabled
-                            ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
-                            : selectedPaymentMethod === method.id
-                            ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20 shadow-md"
-                            : "border-gray-200 hover:border-purple-300 hover:shadow-sm"
-                        }`}
-                        onClick={() =>
-                          !method.disabled &&
-                          handlePaymentMethodSelect(method.id)
-                        }
-                      >
-                        <div className="flex items-center justify-between">
-                          <div className="flex items-center">
+              {/* Payment Methods */}
+              <div>
+                <h3 className="font-semibold text-foreground mb-4 flex items-center">
+                  <Wallet className="w-5 h-5 text-purple-600 mr-2" />
+                  Metode Pembayaran
+                </h3>
+                <div className="grid grid-cols-2 gap-3">
+                  {paymentMethods.map((method) => (
+                    <div
+                      key={method.id}
+                      className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                        method.disabled
+                          ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
+                          : selectedPaymentMethod === method.id
+                          ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20 shadow-md"
+                          : "border-gray-200 hover:border-purple-300 hover:shadow-sm"
+                      }`}
+                      onClick={() =>
+                        !method.disabled && handlePaymentMethodSelect(method.id)
+                      }
+                    >
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center">
+                          <div
+                            className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
+                              method.disabled
+                                ? "bg-gray-200"
+                                : selectedPaymentMethod === method.id
+                                ? "bg-purple-100"
+                                : "bg-gray-100"
+                            }`}
+                          >
                             <div
-                              className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
+                              className={
                                 method.disabled
-                                  ? "bg-gray-200"
+                                  ? "text-gray-400"
                                   : selectedPaymentMethod === method.id
-                                  ? "bg-purple-100"
-                                  : "bg-gray-100"
-                              }`}
+                                  ? "text-purple-600"
+                                  : "text-gray-600"
+                              }
                             >
-                              <div
-                                className={
-                                  method.disabled
-                                    ? "text-gray-400"
-                                    : selectedPaymentMethod === method.id
-                                    ? "text-purple-600"
-                                    : "text-gray-600"
-                                }
-                              >
-                                {method.icon}
-                              </div>
-                            </div>
-                            <div>
-                              <h4
-                                className={`font-medium ${
-                                  method.disabled
-                                    ? "text-gray-400"
-                                    : "text-foreground"
-                                }`}
-                              >
-                                {method.name}
-                              </h4>
-                              <p
-                                className={`text-sm ${
-                                  method.disabled
-                                    ? "text-gray-400"
-                                    : "text-muted-foreground"
-                                }`}
-                              >
-                                {method.description}
-                              </p>
-                              {method.balance && (
-                                <Badge
-                                  variant="secondary"
-                                  className="mt-1 text-xs"
-                                >
-                                  {method.balance}
-                                </Badge>
-                              )}
+                              {method.icon}
                             </div>
                           </div>
-                          {selectedPaymentMethod === method.id && (
-                            <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
-                              <Check className="w-4 h-4 text-white" />
-                            </div>
-                          )}
+                          <div>
+                            <h4
+                              className={`font-medium ${
+                                method.disabled
+                                  ? "text-gray-400"
+                                  : "text-foreground"
+                              }`}
+                            >
+                              {method.name}
+                            </h4>
+                            <p
+                              className={`text-sm ${
+                                method.disabled
+                                  ? "text-gray-400"
+                                  : "text-muted-foreground"
+                              }`}
+                            >
+                              {method.description}
+                            </p>
+                            {method.balance && (
+                              <Badge
+                                variant="secondary"
+                                className="mt-1 text-xs"
+                              >
+                                {method.balance}
+                              </Badge>
+                            )}
+                          </div>
                         </div>
+                        {selectedPaymentMethod === method.id && (
+                          <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
+                            <Check className="w-4 h-4 text-white" />
+                          </div>
+                        )}
                       </div>
-                    ))}
-                  </div>
+                    </div>
+                  ))}
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Order Summary Section - Full Width at Bottom */}
