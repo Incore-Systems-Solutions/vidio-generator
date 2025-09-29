@@ -8,13 +8,27 @@ const videoSetupStorage = {
   updatePaymentInfo: (paymentData) => {
     try {
       const existingData = videoSetupStorage.load();
-      if (existingData) {
-        const updatedData = {
-          ...existingData,
-          ...paymentData
-        };
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
-      }
+      const updatedData = {
+        // Provide defaults for required fields if existingData doesn't exist
+        prompt: "",
+        karakter_image: "",
+        background_image: "",
+        aspek_rasio: "",
+        judul_video: "",
+        bahasa: "",
+        gaya_suara: "",
+        voice_over: "",
+        tone: "",
+        background_music: "",
+        resolusi_video: "",
+        is_share: "n",
+        // Merge with existing data if available
+        ...existingData,
+        // Apply payment data
+        ...paymentData
+      };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedData));
+      console.log("Payment info updated successfully:", updatedData);
     } catch (error) {
       console.error("Error updating payment info:", error);
     }
@@ -36,6 +50,16 @@ const videoSetupStorage = {
   // Check if video setup data exists
   exists: () => {
     return localStorage.getItem(STORAGE_KEY) !== null;
+  },
+  // Debug function to inspect localStorage
+  debug: () => {
+    const data = localStorage.getItem(STORAGE_KEY);
+    console.log("videoSetupStorage debug:", {
+      key: STORAGE_KEY,
+      exists: data !== null,
+      rawData: data,
+      parsedData: data ? JSON.parse(data) : null
+    });
   }
 };
 

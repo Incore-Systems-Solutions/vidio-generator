@@ -8,7 +8,7 @@ import { UserCheck, User, Upload, Wand2, Palette, FileText, Volume2, Briefcase, 
 import { b as backgroundsApi, u as uploadApi, c as charactersApi, p as publicVideoGalleryApi } from '../chunks/api_Zi8Etrro.mjs';
 import { I as Input } from '../chunks/input_BNBZJNyb.mjs';
 import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem, T as Textarea } from '../chunks/select_8smLBtfp.mjs';
-import { v as videoSetupStorage } from '../chunks/videoSetupStorage_3qmsD2TP.mjs';
+import { v as videoSetupStorage } from '../chunks/videoSetupStorage_DUxbdP36.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
 
@@ -589,7 +589,15 @@ function VideoDetailSection() {
   ];
   const wordCount = script.split(/\s+/).filter((word) => word.length > 0).length;
   return /* @__PURE__ */ jsxs("div", { className: "w-full", children: [
-    /* @__PURE__ */ jsx("h2", { className: "text-2xl font-bold text-foreground mb-6", children: "Detail Video & Script" }),
+    /* @__PURE__ */ jsxs("div", { className: "mb-6", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-2xl font-bold text-foreground mb-2", children: "Detail Video & Script" }),
+      /* @__PURE__ */ jsxs("p", { className: "text-sm text-muted-foreground", children: [
+        /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" }),
+        " Field wajib diisi |",
+        /* @__PURE__ */ jsx("span", { className: "text-gray-500 ml-2", children: "(Opsional)" }),
+        " Field tidak wajib diisi"
+      ] })
+    ] }),
     /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
       /* @__PURE__ */ jsxs(Card, { children: [
         /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
@@ -598,7 +606,10 @@ function VideoDetailSection() {
         ] }) }),
         /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Judul Video" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Judul Video ",
+              /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+            ] }),
             /* @__PURE__ */ jsx(
               Input,
               {
@@ -609,7 +620,10 @@ function VideoDetailSection() {
             )
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Aspek Rasio" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Aspek Rasio ",
+              /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+            ] }),
             /* @__PURE__ */ jsxs(Select, { value: data.aspekRasio, onValueChange: updateAspectRatio, children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih rasio video anda" }) }),
               /* @__PURE__ */ jsxs(SelectContent, { children: [
@@ -619,7 +633,10 @@ function VideoDetailSection() {
             ] })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Script/Naskah Video" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Script/Naskah Video ",
+              /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+            ] }),
             /* @__PURE__ */ jsx(
               Textarea,
               {
@@ -646,7 +663,10 @@ function VideoDetailSection() {
         ] }) }),
         /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Bahasa" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Bahasa ",
+              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            ] }),
             /* @__PURE__ */ jsxs(Select, { value: data.bahasa, onValueChange: updateBahasa, children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih bahasa untuk video anda" }) }),
               /* @__PURE__ */ jsxs(SelectContent, { children: [
@@ -658,7 +678,10 @@ function VideoDetailSection() {
             ] })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Gaya Suara" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Gaya Suara ",
+              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            ] }),
             /* @__PURE__ */ jsxs(Select, { value: data.gayaSuara, onValueChange: updateGayaSuara, children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih gaya suara untuk video anda" }) }),
               /* @__PURE__ */ jsxs(SelectContent, { children: [
@@ -670,7 +693,10 @@ function VideoDetailSection() {
             ] })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Voice Over" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Voice Over ",
+              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            ] }),
             /* @__PURE__ */ jsxs(Select, { value: data.voiceOver, onValueChange: updateVoiceOver, children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih voice over untuk video anda" }) }),
               /* @__PURE__ */ jsxs(SelectContent, { children: [
@@ -681,7 +707,11 @@ function VideoDetailSection() {
             ] })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Tone/Nada Video" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Tone/Nada Video",
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            ] }),
             /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-2", children: toneOptions.map((tone) => {
               const Icon = tone.icon;
               return /* @__PURE__ */ jsxs(
@@ -709,7 +739,11 @@ function VideoDetailSection() {
         ] }) }),
         /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Background Music" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Background Music",
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            ] }),
             /* @__PURE__ */ jsxs(
               Select,
               {
@@ -730,7 +764,10 @@ function VideoDetailSection() {
             )
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Resolusi Video" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Resolusi Video ",
+              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            ] }),
             /* @__PURE__ */ jsxs(
               Select,
               {
@@ -747,7 +784,11 @@ function VideoDetailSection() {
             )
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("label", { className: "text-sm font-medium mb-2 block", children: "Share Video Public" }),
+            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+              "Share Video Public",
+              " ",
+              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            ] }),
             /* @__PURE__ */ jsxs(Select, { value: data.isShare, onValueChange: updateIsShare, children: [
               /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih visibility video" }) }),
               /* @__PURE__ */ jsxs(SelectContent, { children: [
@@ -855,6 +896,9 @@ function SetupSection() {
   const handleCharacterStyleChange = (style) => {
     setCharacterStyle(style);
   };
+  const isFormValid = () => {
+    return data.judulVideo.trim() !== "" && data.prompt.trim() !== "" && data.aspekRasio !== "";
+  };
   const handleContinueToPayment = () => {
     videoSetupStorage.save({
       prompt: data.prompt,
@@ -950,16 +994,19 @@ function SetupSection() {
     ] }),
     /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsx(BackgroundGallery, {}) }),
     /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsx(VideoDetailSection, {}) }),
-    /* @__PURE__ */ jsx("div", { className: "flex justify-center px-4", children: /* @__PURE__ */ jsx(
-      Button,
-      {
-        size: "lg",
-        className: "w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-sm sm:text-base",
-        disabled: !data.selectedCharacter || uploading,
-        onClick: handleContinueToPayment,
-        children: uploading ? "Uploading..." : "Lanjutkan ke Pembayaran"
-      }
-    ) })
+    /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center px-4", children: [
+      !isFormValid() && !uploading && /* @__PURE__ */ jsx("p", { className: "text-sm text-red-500 mb-3 text-center", children: "Lengkapi field yang wajib diisi: Judul Video, Aspek Rasio, dan Script" }),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          size: "lg",
+          className: "w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-sm sm:text-base",
+          disabled: uploading || !isFormValid(),
+          onClick: handleContinueToPayment,
+          children: uploading ? "Uploading..." : "Lanjutkan ke Pembayaran"
+        }
+      )
+    ] })
   ] });
 }
 

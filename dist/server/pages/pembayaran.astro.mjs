@@ -2,12 +2,12 @@ import { e as createComponent, f as createAstro, h as addAttribute, k as renderH
 import 'kleur/colors';
 import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DF7YqAOL.mjs';
 import { jsx, jsxs } from 'react/jsx-runtime';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { C as Card, a as CardHeader, b as CardTitle, B as Button, c as CardContent, d as Badge } from '../chunks/card_D8elN7z5.mjs';
 import { I as Input } from '../chunks/input_BNBZJNyb.mjs';
-import { X, Mail, Clock, AlertCircle, CheckCircle, Coins, Wallet, QrCode, CreditCard, Sparkles, Video, Check, User, ArrowLeft } from 'lucide-react';
+import { X, Mail, Clock, AlertCircle, CheckCircle, Coins, Wallet, QrCode, CreditCard, Video, Check, User, ArrowLeft, Play } from 'lucide-react';
 import { o as otpApi, a as videoStoreApi } from '../chunks/api_Zi8Etrro.mjs';
-import { v as videoSetupStorage } from '../chunks/videoSetupStorage_3qmsD2TP.mjs';
+import { v as videoSetupStorage } from '../chunks/videoSetupStorage_DUxbdP36.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
 
@@ -178,35 +178,49 @@ function PaymentPage() {
   const [verificationCode, setVerificationCode] = useState("");
   const [companyName, setCompanyName] = useState("");
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState(null);
   const [isPersonalInfoComplete, setIsPersonalInfoComplete] = useState(false);
   const [isOTPModalOpen, setIsOTPModalOpen] = useState(false);
   const [userQuota, setUserQuota] = useState(null);
   const [isOTPVerified, setIsOTPVerified] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState(null);
+  useEffect(() => {
+    videoSetupStorage.debug();
+    const existingData = videoSetupStorage.load();
+    console.log("Loading existing data from localStorage:", existingData);
+    if (existingData) {
+      if (existingData.email) {
+        setEmail(existingData.email);
+      }
+      if (existingData.no_wa) {
+        setPhoneNumber(existingData.no_wa);
+      }
+    }
+  }, []);
+  useEffect(() => {
+    handlePersonalInfoChange();
+  }, [email, phoneNumber]);
   const handlePersonalInfoChange = () => {
-    const isComplete = name.trim() !== "" && email.trim() !== "" && phoneNumber.trim() !== "";
+    const isComplete = email.trim() !== "" && phoneNumber.trim() !== "";
+    console.log("Personal info validation:", {
+      email: email.trim(),
+      phoneNumber: phoneNumber.trim(),
+      isComplete
+    });
     setIsPersonalInfoComplete(isComplete);
   };
   const handleOTPSuccess = async (quota) => {
     setUserQuota(quota);
     setIsOTPVerified(true);
     setIsOTPModalOpen(false);
-    const selectedPkg = pricingPackages.find(
-      (pkg) => pkg.id === selectedPackage
-    );
-    const packagePrice = selectedPkg ? parseInt(selectedPkg.currentPrice.replace(/[^\d]/g, "")) : null;
+    const fixedPrice = 1e4;
     videoSetupStorage.updatePaymentInfo({
       email,
       no_wa: phoneNumber,
       metode_pengiriman: "kuota",
       metode: null,
-      jumlah: packagePrice
+      jumlah: fixedPrice
     });
-    if (selectedPaymentMethod === "coins" && quota >= 25e3 && packagePrice) {
-      await handleCoinsPayment();
-    }
   };
   const handleVerificationClick = () => {
     if (email.trim() !== "") {
@@ -215,20 +229,16 @@ function PaymentPage() {
   };
   const handlePaymentMethodSelect = async (methodId) => {
     setSelectedPaymentMethod(methodId);
-    const selectedPkg = pricingPackages.find(
-      (pkg) => pkg.id === selectedPackage
-    );
-    const packagePrice = selectedPkg ? parseInt(selectedPkg.currentPrice.replace(/[^\d]/g, "")) : null;
+    const fixedPrice = 1e4;
     if (methodId === "coins") {
-      if (isOTPVerified && packagePrice) {
+      if (isOTPVerified) {
         videoSetupStorage.updatePaymentInfo({
           email,
           no_wa: phoneNumber,
           metode_pengiriman: "kuota",
           metode: null,
-          jumlah: packagePrice
+          jumlah: fixedPrice
         });
-        await handleCoinsPayment();
       }
     } else {
       let metode = null;
@@ -244,21 +254,7 @@ function PaymentPage() {
         no_wa: phoneNumber,
         metode_pengiriman: "pembayaran",
         metode,
-        jumlah: packagePrice
-      });
-    }
-  };
-  const handlePackageSelect = (packageId) => {
-    setSelectedPackage(packageId);
-    const selectedPkg = pricingPackages.find((pkg) => pkg.id === packageId);
-    const packagePrice = selectedPkg ? parseInt(selectedPkg.currentPrice.replace(/[^\d]/g, "")) : null;
-    if (packagePrice) {
-      videoSetupStorage.updatePaymentInfo({
-        email,
-        no_wa: phoneNumber,
-        metode_pengiriman: selectedPaymentMethod === "coins" ? "kuota" : "pembayaran",
-        metode: selectedPaymentMethod === "coins" ? null : selectedPaymentMethod === "gopay" ? "gopay" : selectedPaymentMethod === "qris" ? "other_qris" : selectedPaymentMethod === "credit-card" ? "kreem" : null,
-        jumlah: packagePrice
+        jumlah: fixedPrice
       });
     }
   };
@@ -357,50 +353,6 @@ function PaymentPage() {
       setIsProcessing(false);
     }
   };
-  const pricingPackages = [
-    {
-      id: "single",
-      title: "1 Video",
-      originalPrice: null,
-      currentPrice: "Rp 25.000",
-      quantity: "1 Video",
-      features: [
-        "1 Video HD (720p)",
-        "Mendapat 25000 koin",
-        "Pilihan karakter & environment",
-        "Download langsung"
-      ],
-      popular: false
-    },
-    {
-      id: "package-10",
-      title: "Paket 10 Video",
-      originalPrice: "Rp 250.000",
-      currentPrice: "Rp 200.000",
-      quantity: "10 Video",
-      features: [
-        "10 Video HD (720p)",
-        "Mendapat 200000 koin",
-        "Hemat 20% dari harga satuan",
-        "Valid 30 hari"
-      ],
-      popular: true
-    },
-    {
-      id: "package-pro",
-      title: "Paket Pro",
-      originalPrice: "Rp 500.000",
-      currentPrice: "Rp 450.000",
-      quantity: "20 video",
-      features: [
-        "20 Video HD (720p)",
-        "Mendapat 500000 koin",
-        "Hemat 20% dari harga satuan",
-        "Valid 30 hari"
-      ],
-      popular: false
-    }
-  ];
   const paymentMethods = [
     {
       id: "coins",
@@ -408,87 +360,108 @@ function PaymentPage() {
       description: isOTPVerified ? `Saldo: ${userQuota?.toLocaleString()} Koin` : "Verifikasi OTP terlebih dahulu",
       icon: /* @__PURE__ */ jsx(Coins, { className: "w-6 h-6" }),
       balance: userQuota ? `${userQuota.toLocaleString()} Koin` : "0 Koin",
-      disabled: !isOTPVerified || userQuota !== null && userQuota < 25e3
+      disabled: !isOTPVerified || userQuota !== null && userQuota < 7500
     },
     {
       id: "gopay",
       name: "Gopay",
-      description: "Pembayaran dengan Gopay",
+      description: isOTPVerified ? "Pembayaran dengan Gopay" : "Verifikasi email terlebih dahulu",
       icon: /* @__PURE__ */ jsx(Wallet, { className: "w-6 h-6" }),
-      disabled: false
+      disabled: !isOTPVerified
     },
     {
       id: "qris",
       name: "QRIS",
-      description: "Pembayaran dengan QRIS",
+      description: isOTPVerified ? "Pembayaran dengan QRIS" : "Verifikasi email terlebih dahulu",
       icon: /* @__PURE__ */ jsx(QrCode, { className: "w-6 h-6" }),
-      disabled: false
+      disabled: !isOTPVerified
     },
     {
       id: "credit-card",
       name: "Kartu Kredit dan Internasional",
-      description: "Pembayaran dengan Kartu Kredit dan Internasional",
+      description: isOTPVerified ? "Pembayaran dengan Kartu Kredit dan Internasional" : "Verifikasi email terlebih dahulu",
       icon: /* @__PURE__ */ jsx(CreditCard, { className: "w-6 h-6" }),
-      disabled: false
+      disabled: !isOTPVerified
     }
   ];
-  return /* @__PURE__ */ jsxs("div", { className: "w-full", children: [
+  return /* @__PURE__ */ jsx("div", { className: "w-full min-h-screen  dark:from-gray-900 dark:to-gray-800", children: /* @__PURE__ */ jsxs("div", { className: "max-w-7xl mx-auto px-4 py-8", children: [
     /* @__PURE__ */ jsxs("div", { className: "text-center mb-12", children: [
-      /* @__PURE__ */ jsx("h1", { className: "text-4xl font-bold text-foreground mb-4", children: "Pilih Paket & Pembayaran" }),
-      /* @__PURE__ */ jsx("p", { className: "text-lg text-muted-foreground max-w-3xl mx-auto", children: "Pilih paket yang sesuai dengan kebutuhan Anda dan metode pembayaran yang diinginkan. Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan video AI Anda." })
+      /* @__PURE__ */ jsx("h1", { className: "text-4xl font-bold text-foreground mb-4", children: "Pembayaran Video AI" }),
+      /* @__PURE__ */ jsx("p", { className: "text-lg text-muted-foreground max-w-3xl mx-auto", children: "Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan video AI Anda" })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "mb-12", children: [
-      /* @__PURE__ */ jsxs("div", { className: "text-center mb-8", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-2xl font-bold text-foreground mb-2", children: "Paket Harga" }),
-        /* @__PURE__ */ jsx("p", { className: "text-muted-foreground", children: "Pilih paket yang sesuai dengan kebutuhan Anda" })
-      ] }),
-      /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-6xl", children: /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-3 gap-6", children: pricingPackages.map((pkg) => /* @__PURE__ */ jsxs(
-        "div",
-        {
-          className: `relative p-6 border rounded-xl cursor-pointer transition-all ${selectedPackage === pkg.id ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20 shadow-lg" : "border-border hover:border-purple-300 hover:shadow-md"} ${pkg.popular ? "ring-2 ring-purple-200 dark:ring-purple-800" : ""}`,
-          onClick: () => handlePackageSelect(pkg.id),
-          children: [
-            pkg.popular && /* @__PURE__ */ jsx("div", { className: "absolute -top-3 left-1/2 transform -translate-x-1/2", children: /* @__PURE__ */ jsxs(Badge, { className: "bg-gradient-to-r from-purple-600 to-blue-600 text-white border-0 px-4 py-1", children: [
-              /* @__PURE__ */ jsx(Sparkles, { className: "w-3 h-3 mr-1" }),
-              "Terpopuler"
-            ] }) }),
-            /* @__PURE__ */ jsxs("div", { className: "text-center mb-6", children: [
-              /* @__PURE__ */ jsx("div", { className: "w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full flex items-center justify-center mx-auto mb-4", children: /* @__PURE__ */ jsx(Video, { className: "w-8 h-8 text-gray-600 dark:text-gray-400" }) }),
-              /* @__PURE__ */ jsx("h3", { className: "text-xl font-bold text-foreground mb-2", children: pkg.title }),
-              /* @__PURE__ */ jsxs("div", { className: "mb-2", children: [
-                pkg.originalPrice && /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground line-through mr-2", children: pkg.originalPrice }),
-                /* @__PURE__ */ jsx("span", { className: "text-2xl font-bold text-purple-600", children: pkg.currentPrice })
-              ] }),
-              /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: pkg.quantity })
-            ] }),
-            /* @__PURE__ */ jsx("div", { className: "space-y-3", children: pkg.features.map((feature, index) => /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
-              /* @__PURE__ */ jsx(Check, { className: "w-4 h-4 text-green-600 mr-3 flex-shrink-0" }),
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-foreground", children: feature })
-            ] }, index)) }),
-            selectedPackage === pkg.id && /* @__PURE__ */ jsx("div", { className: "mt-6 text-center", children: /* @__PURE__ */ jsx("div", { className: "w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center mx-auto", children: /* @__PURE__ */ jsx(Check, { className: "w-4 h-4 text-white" }) }) })
-          ]
-        },
-        pkg.id
-      )) }) }) })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "mb-12", children: [
-      /* @__PURE__ */ jsxs("div", { className: "text-center mb-8", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-2xl font-bold text-foreground mb-2", children: "Informasi Pembayaran" }),
-        /* @__PURE__ */ jsx("p", { className: "text-muted-foreground", children: "Lengkapi data diri dan pilih metode pembayaran untuk melanjutkan" })
-      ] }),
-      /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-7xl", children: /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-8", children: [
-        /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx(Card, { className: "bg-card shadow-lg h-full", children: /* @__PURE__ */ jsxs(CardContent, { className: "p-8", children: [
-          /* @__PURE__ */ jsxs("div", { className: "mb-8", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center mb-6", children: [
-              /* @__PURE__ */ jsx("div", { className: "w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3", children: /* @__PURE__ */ jsx(User, { className: "w-5 h-5 text-purple-600" }) }),
+    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12", children: [
+      /* @__PURE__ */ jsxs(Card, { className: "bg-card shadow-xl border-0", children: [
+        /* @__PURE__ */ jsxs("div", { className: "bg-gradient-to-br from-purple-600 to-blue-600 text-white px-8 py-8 flex flex-col items-center w-full", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center mb-4 w-full justify-center", children: [
+            /* @__PURE__ */ jsx("div", { className: "w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mr-6", children: /* @__PURE__ */ jsx(Video, { className: "w-8 h-8 text-white" }) }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsx("h2", { className: "text-3xl font-bold", children: "Video AI" }),
+              /* @__PURE__ */ jsx("p", { className: "text-white/80 text-lg", children: "Harga tetap per video" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "text-5xl font-extrabold mb-2 w-full text-center", children: "Rp 7.500" }),
+          /* @__PURE__ */ jsx("p", { className: "text-white/80 text-lg w-full text-center", children: "1 Video HD berkualitas tinggi" })
+        ] }),
+        /* @__PURE__ */ jsxs(CardContent, { className: "p-6", children: [
+          /* @__PURE__ */ jsxs("div", { className: "space-y-4 mb-6", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-start", children: [
+              /* @__PURE__ */ jsx("div", { className: "w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5", children: /* @__PURE__ */ jsx(Check, { className: "w-4 h-4 text-green-600" }) }),
               /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-foreground", children: "Data Personal" }),
-                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: "Informasi yang diperlukan untuk proses pembayaran" })
+                /* @__PURE__ */ jsx("p", { className: "font-medium text-foreground", children: "Video HD Berkualitas Tinggi" }),
+                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: "Resolusi 720p atau 1080p sesuai pilihan" })
               ] })
             ] }),
-            /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-6 mb-6", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-start", children: [
+              /* @__PURE__ */ jsx("div", { className: "w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5", children: /* @__PURE__ */ jsx(Check, { className: "w-4 h-4 text-green-600" }) }),
               /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx("label", { className: "block text-sm font-medium text-foreground mb-2", children: "Email" }),
+                /* @__PURE__ */ jsx("p", { className: "font-medium text-foreground", children: "Karakter & Background Custom" }),
+                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: "Pilihan karakter AI dan background sesuai keinginan" })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex items-start", children: [
+              /* @__PURE__ */ jsx("div", { className: "w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5", children: /* @__PURE__ */ jsx(Check, { className: "w-4 h-4 text-green-600" }) }),
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsx("p", { className: "font-medium text-foreground", children: "Download Langsung" }),
+                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: "Unduh video setelah proses selesai" })
+              ] })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsx("div", { className: "bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800", children: /* @__PURE__ */ jsxs("div", { className: "flex items-start", children: [
+            /* @__PURE__ */ jsx(Coins, { className: "w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" }),
+            /* @__PURE__ */ jsxs("div", { className: "text-sm", children: [
+              /* @__PURE__ */ jsx("p", { className: "font-semibold text-blue-800 dark:text-blue-200 mb-1", children: "Rincian Penggunaan:" }),
+              /* @__PURE__ */ jsxs("p", { className: "text-blue-700 dark:text-blue-300", children: [
+                "• Minimal Transaksi: ",
+                /* @__PURE__ */ jsx("strong", { children: "10.000" }),
+                /* @__PURE__ */ jsx("br", {}),
+                "• Biaya produksi video: ",
+                /* @__PURE__ */ jsx("strong", { children: "7.500" }),
+                /* @__PURE__ */ jsx("br", {}),
+                "• Sisa ",
+                /* @__PURE__ */ jsx("strong", { children: "2.500" }),
+                " dikonversi menjadi koin untuk video berikutnya"
+              ] })
+            ] })
+          ] }) })
+        ] })
+      ] }),
+      /* @__PURE__ */ jsxs(Card, { className: "bg-card shadow-xl border-0", children: [
+        /* @__PURE__ */ jsx(CardHeader, { className: "pb-4", children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center text-xl", children: [
+          /* @__PURE__ */ jsx(CreditCard, { className: "w-6 h-6 text-purple-600 mr-3" }),
+          "Informasi Pembayaran"
+        ] }) }),
+        /* @__PURE__ */ jsxs(CardContent, { className: "space-y-6", children: [
+          /* @__PURE__ */ jsxs("div", { children: [
+            /* @__PURE__ */ jsxs("h3", { className: "font-semibold text-foreground mb-4 flex items-center", children: [
+              /* @__PURE__ */ jsx(User, { className: "w-5 h-5 text-purple-600 mr-2" }),
+              "Data Personal"
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "space-y-4", children: [
+              /* @__PURE__ */ jsxs("div", { children: [
+                /* @__PURE__ */ jsxs("label", { className: "block text-sm font-medium text-foreground mb-2", children: [
+                  "Email ",
+                  /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+                ] }),
                 /* @__PURE__ */ jsx(
                   Input,
                   {
@@ -504,7 +477,10 @@ function PaymentPage() {
                 )
               ] }),
               /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx("label", { className: "block text-sm font-medium text-foreground mb-2", children: "Nomor Telepon" }),
+                /* @__PURE__ */ jsxs("label", { className: "block text-sm font-medium text-foreground mb-2", children: [
+                  "Nomor Telepon ",
+                  /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+                ] }),
                 /* @__PURE__ */ jsxs("div", { className: "flex gap-2", children: [
                   /* @__PURE__ */ jsx(
                     Input,
@@ -525,6 +501,7 @@ function PaymentPage() {
                       variant: "default",
                       disabled: email.trim() === "",
                       onClick: handleVerificationClick,
+                      className: "bg-purple-600 hover:bg-purple-700",
                       children: "Verifikasi"
                     }
                   )
@@ -533,137 +510,72 @@ function PaymentPage() {
             ] })
           ] }),
           /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center mb-6", children: [
-              /* @__PURE__ */ jsx("div", { className: "w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center mr-3", children: /* @__PURE__ */ jsx(CreditCard, { className: "w-5 h-5 text-purple-600" }) }),
-              /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-foreground", children: "Metode Pembayaran" }),
-                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: "Pilih metode pembayaran yang paling nyaman untuk Anda" })
-              ] })
+            /* @__PURE__ */ jsxs("h3", { className: "font-semibold text-foreground mb-4 flex items-center", children: [
+              /* @__PURE__ */ jsx(Wallet, { className: "w-5 h-5 text-purple-600 mr-2" }),
+              "Metode Pembayaran"
             ] }),
-            /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-4", children: paymentMethods.map((method) => /* @__PURE__ */ jsx(
+            /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-3", children: paymentMethods.map((method) => /* @__PURE__ */ jsx(
               "div",
               {
-                className: `p-4 border rounded-xl cursor-pointer transition-all ${method.disabled ? "border-border bg-muted cursor-not-allowed opacity-60" : selectedPaymentMethod === method.id ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20" : "border-border hover:border-purple-300 hover:bg-card/50"}`,
+                className: `p-4 border-2 rounded-xl cursor-pointer transition-all ${method.disabled ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60" : selectedPaymentMethod === method.id ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20 shadow-md" : "border-gray-200 hover:border-purple-300 hover:shadow-sm"}`,
                 onClick: () => !method.disabled && handlePaymentMethodSelect(method.id),
-                children: /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center text-center space-y-3", children: [
-                  /* @__PURE__ */ jsx(
-                    "div",
-                    {
-                      className: `w-12 h-12 rounded-xl flex items-center justify-center ${method.disabled ? "bg-muted" : "bg-purple-100 dark:bg-purple-900/30"}`,
-                      children: /* @__PURE__ */ jsx(
-                        "div",
-                        {
-                          className: method.disabled ? "text-muted-foreground" : "text-purple-600 dark:text-purple-400",
-                          children: method.icon
-                        }
-                      )
-                    }
-                  ),
-                  /* @__PURE__ */ jsxs("div", { children: [
+                children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+                  /* @__PURE__ */ jsxs("div", { className: "flex items-center", children: [
                     /* @__PURE__ */ jsx(
-                      "h3",
+                      "div",
                       {
-                        className: `font-semibold text-sm ${method.disabled ? "text-muted-foreground" : "text-foreground"}`,
-                        children: method.name
+                        className: `w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${method.disabled ? "bg-gray-200" : selectedPaymentMethod === method.id ? "bg-purple-100" : "bg-gray-100"}`,
+                        children: /* @__PURE__ */ jsx(
+                          "div",
+                          {
+                            className: method.disabled ? "text-gray-400" : selectedPaymentMethod === method.id ? "text-purple-600" : "text-gray-600",
+                            children: method.icon
+                          }
+                        )
                       }
                     ),
-                    /* @__PURE__ */ jsx(
-                      "p",
-                      {
-                        className: `text-xs ${method.disabled ? "text-muted-foreground" : "text-muted-foreground"}`,
-                        children: method.description
-                      }
-                    )
+                    /* @__PURE__ */ jsxs("div", { children: [
+                      /* @__PURE__ */ jsx(
+                        "h4",
+                        {
+                          className: `font-medium ${method.disabled ? "text-gray-400" : "text-foreground"}`,
+                          children: method.name
+                        }
+                      ),
+                      /* @__PURE__ */ jsx(
+                        "p",
+                        {
+                          className: `text-sm ${method.disabled ? "text-gray-400" : "text-muted-foreground"}`,
+                          children: method.description
+                        }
+                      ),
+                      method.balance && /* @__PURE__ */ jsx(
+                        Badge,
+                        {
+                          variant: "secondary",
+                          className: "mt-1 text-xs",
+                          children: method.balance
+                        }
+                      )
+                    ] })
                   ] }),
-                  method.balance && /* @__PURE__ */ jsx(
-                    Badge,
-                    {
-                      variant: "secondary",
-                      className: "bg-muted text-muted-foreground text-xs",
-                      children: method.balance
-                    }
-                  )
+                  selectedPaymentMethod === method.id && /* @__PURE__ */ jsx("div", { className: "w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx(Check, { className: "w-4 h-4 text-white" }) })
                 ] })
               },
               method.id
             )) })
           ] })
-        ] }) }) }),
-        (selectedPackage || selectedPaymentMethod || isPersonalInfoComplete) && /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsxs(Card, { className: "bg-card shadow-lg h-full", children: [
-          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsx(CardTitle, { className: "text-xl font-semibold text-foreground", children: "Ringkasan Pesanan" }) }),
-          /* @__PURE__ */ jsxs(CardContent, { className: "space-y-6", children: [
-            selectedPackage && /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center p-4 bg-gray-50 dark:bg-gray-800 rounded-lg", children: [
-              /* @__PURE__ */ jsxs("div", { children: [
-                /* @__PURE__ */ jsx("h3", { className: "font-semibold text-foreground", children: pricingPackages.find(
-                  (pkg) => pkg.id === selectedPackage
-                )?.title }),
-                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: pricingPackages.find(
-                  (pkg) => pkg.id === selectedPackage
-                )?.quantity })
-              ] }),
-              /* @__PURE__ */ jsx("div", { className: "text-right", children: /* @__PURE__ */ jsx("p", { className: "text-lg font-bold text-purple-600", children: pricingPackages.find(
-                (pkg) => pkg.id === selectedPackage
-              )?.currentPrice }) })
-            ] }),
-            selectedPackage && /* @__PURE__ */ jsxs("div", { className: "flex justify-between items-center p-4 bg-purple-50 dark:bg-purple-950/20 rounded-lg border border-purple-200 dark:border-purple-800", children: [
-              /* @__PURE__ */ jsx("h3", { className: "text-lg font-semibold text-foreground", children: "Total" }),
-              /* @__PURE__ */ jsx("p", { className: "text-xl font-bold text-purple-600", children: pricingPackages.find(
-                (pkg) => pkg.id === selectedPackage
-              )?.currentPrice })
-            ] }),
-            selectedPaymentMethod && /* @__PURE__ */ jsxs("div", { className: "p-4 bg-gray-50 dark:bg-gray-800 rounded-lg", children: [
-              /* @__PURE__ */ jsx("h3", { className: "font-semibold text-foreground mb-2", children: "Metode Pembayaran" }),
-              /* @__PURE__ */ jsx("p", { className: "text-muted-foreground", children: paymentMethods.find(
-                (method) => method.id === selectedPaymentMethod
-              )?.name })
-            ] }),
-            isPersonalInfoComplete && /* @__PURE__ */ jsxs("div", { className: "p-4 bg-gray-50 dark:bg-gray-800 rounded-lg", children: [
-              /* @__PURE__ */ jsx("h3", { className: "font-semibold text-foreground mb-3", children: "Data Pembeli" }),
-              /* @__PURE__ */ jsxs("div", { className: "space-y-2", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-                  /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Nama:" }),
-                  /* @__PURE__ */ jsx("span", { className: "text-sm font-medium text-foreground", children: name })
-                ] }),
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-                  /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Email:" }),
-                  /* @__PURE__ */ jsx("span", { className: "text-sm font-medium text-foreground", children: email })
-                ] }),
-                /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-                  /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Telepon:" }),
-                  /* @__PURE__ */ jsx("span", { className: "text-sm font-medium text-foreground", children: phoneNumber })
-                ] }),
-                companyName && /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-                  /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Perusahaan:" }),
-                  /* @__PURE__ */ jsx("span", { className: "text-sm font-medium text-foreground", children: companyName })
-                ] }),
-                isOTPVerified && userQuota !== null && /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-                  /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Saldo Koin:" }),
-                  /* @__PURE__ */ jsxs("span", { className: "text-sm font-medium text-foreground", children: [
-                    userQuota.toLocaleString(),
-                    " Koin"
-                  ] })
-                ] })
-              ] })
-            ] })
-          ] })
-        ] }) })
-      ] }) }) })
+        ] })
+      ] })
     ] }),
-    isPersonalInfoComplete && /* @__PURE__ */ jsx("div", { className: "flex justify-center mb-8", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg", children: [
-      /* @__PURE__ */ jsx(CheckCircle, { className: "w-5 h-5 text-green-600 dark:text-green-400 mr-3" }),
-      /* @__PURE__ */ jsx("span", { className: "text-green-800 dark:text-green-200 font-medium", children: "Data diri telah lengkap" })
-    ] }) }),
-    error && /* @__PURE__ */ jsx("div", { className: "flex justify-center mb-8", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg", children: [
-      /* @__PURE__ */ jsx(AlertCircle, { className: "w-5 h-5 text-red-600 dark:text-red-400 mr-3" }),
-      /* @__PURE__ */ jsx("span", { className: "text-red-800 dark:text-red-200 font-medium", children: error })
-    ] }) }),
     /* @__PURE__ */ jsxs("div", { className: "flex justify-center space-x-4", children: [
       /* @__PURE__ */ jsxs(
         Button,
         {
           variant: "outline",
           size: "lg",
-          className: "flex items-center space-x-2",
+          className: "flex items-center space-x-2 px-8",
+          onClick: () => window.location.href = "/",
           children: [
             /* @__PURE__ */ jsx(ArrowLeft, { className: "w-4 h-4" }),
             /* @__PURE__ */ jsx("span", { children: "Kembali" })
@@ -674,9 +586,34 @@ function PaymentPage() {
         Button,
         {
           size: "lg",
-          className: "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700",
-          onClick: handleContinuePayment,
-          children: isProcessing ? "Memproses..." : "Bayar Sekarang"
+          className: `px-8 ${selectedPaymentMethod === "coins" ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700" : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"}`,
+          disabled: !selectedPaymentMethod || !isPersonalInfoComplete || selectedPaymentMethod === "coins" && (!isOTPVerified || userQuota !== null && userQuota < 7500) || selectedPaymentMethod !== "coins" && !isOTPVerified || isProcessing,
+          onClick: () => {
+            console.log("Payment button clicked with state:", {
+              selectedPaymentMethod,
+              isPersonalInfoComplete,
+              isOTPVerified,
+              userQuota,
+              email,
+              phoneNumber,
+              videoData: videoSetupStorage.load()
+            });
+            if (selectedPaymentMethod === "coins") {
+              handleCoinsPayment();
+            } else {
+              handleContinuePayment();
+            }
+          },
+          children: isProcessing ? /* @__PURE__ */ jsxs("span", { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx("div", { className: "w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent" }),
+            /* @__PURE__ */ jsx("span", { children: "Memproses..." })
+          ] }) : selectedPaymentMethod === "coins" ? /* @__PURE__ */ jsxs("span", { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx(Play, { className: "w-4 h-4" }),
+            /* @__PURE__ */ jsx("span", { children: "Generate Video" })
+          ] }) : /* @__PURE__ */ jsxs("span", { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx(CreditCard, { className: "w-4 h-4" }),
+            /* @__PURE__ */ jsx("span", { children: "Bayar Sekarang" })
+          ] })
         }
       )
     ] }),
@@ -689,7 +626,7 @@ function PaymentPage() {
         onSuccess: handleOTPSuccess
       }
     )
-  ] });
+  ] }) });
 }
 
 const $$Astro = createAstro();

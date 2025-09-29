@@ -1,6 +1,6 @@
 import { e as createComponent, f as createAstro, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DLHOh8jC.mjs';
 import 'kleur/colors';
-import { $ as $$Main } from '../chunks/main_BaaGVY51.mjs';
+import { $ as $$Main } from '../chunks/main_DRZAopNz.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState } from 'react';
 import { B as Button, C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as Badge } from '../chunks/card_D8elN7z5.mjs';
