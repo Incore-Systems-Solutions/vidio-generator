@@ -183,7 +183,7 @@ export function SetupSection() {
       <div className="mb-6 sm:mb-8">
         <div className="text-center mb-6 sm:mb-8">
           <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
-            Pilih Karakter AI Anda
+            Pilih Avatar / Karakter AI - (Opsional)
           </h2>
           <p className="text-sm sm:text-base text-muted-foreground px-4">
             Pilih karakter yang sesuai dengan kebutuhan video Anda

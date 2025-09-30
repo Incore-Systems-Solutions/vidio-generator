@@ -113,7 +113,7 @@ export function BackgroundGallery() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
         <h2 className="text-xl sm:text-2xl font-bold text-foreground">
-          Galeri Background
+          Pilih Latar Belakang - (Opsional)
         </h2>
       </div>
 
