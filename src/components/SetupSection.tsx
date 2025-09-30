@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from "react";
 import { CharacterCard } from "./CharacterCard";
-import { FilterRow } from "./FilterRow";
+// import { FilterRow } from "./FilterRow";
 import { BackgroundGallery } from "./BackgroundGallery";
 import { VideoDetailSection } from "./VideoDetailSection";
 import { Button } from "@/components/ui/button";
 import { charactersApi, uploadApi, type Character } from "@/lib/api";
 import { useVideoSetup } from "@/contexts/VideoSetupContext";
 import { videoSetupStorage } from "@/lib/videoSetupStorage";
+import { ChevronDown, ChevronUp, User } from "lucide-react";
 
 export function SetupSection() {
   const { data, updateCharacter } = useVideoSetup();
@@ -16,6 +17,10 @@ export function SetupSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [uploading, setUploading] = useState(false);
+  const [isCharacterSectionOpen, setIsCharacterSectionOpen] = useState(false);
+  const [isBackgroundSectionOpen, setIsBackgroundSectionOpen] = useState(false);
+  const [isVideoDetailSectionOpen, setIsVideoDetailSectionOpen] =
+    useState(false);
 
   useEffect(() => {
     const fetchCharacters = async () => {
@@ -166,7 +171,7 @@ export function SetupSection() {
       </div>
 
       {/* Filter Section */}
-      <div className="mb-8 sm:mb-12">
+      {/* <div className="mb-8 sm:mb-12">
         <div className="flex justify-center">
           <div className="w-full max-w-6xl">
             <FilterRow
@@ -177,56 +182,94 @@ export function SetupSection() {
             />
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Character Selection Section */}
       <div className="mb-6 sm:mb-8">
-        <div className="text-center mb-6 sm:mb-8">
-          <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
-            Pilih Avatar / Karakter AI - (Opsional)
-          </h2>
-          <p className="text-sm sm:text-base text-muted-foreground px-4">
-            Pilih karakter yang sesuai dengan kebutuhan video Anda
-          </p>
-        </div>
+        <div className="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700">
+          {/* Accordion Header */}
+          <button
+            onClick={() => setIsCharacterSectionOpen(!isCharacterSectionOpen)}
+            className="w-full px-4 py-4 sm:px-6 sm:py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-lg"
+          >
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-3 flex-1 justify-center">
+                <div className="p-2 bg-purple-100 dark:bg-purple-900 rounded-lg">
+                  <User className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                </div>
+                <div className="text-center">
+                  <h2 className="text-lg sm:text-xl font-semibold text-foreground">
+                    Pilih Avatar / Karakter AI - Opsional
+                  </h2>
+                  <p className="text-sm text-muted-foreground">
+                    {data.selectedCharacter
+                      ? `Karakter dipilih: ${
+                          characters.find(
+                            (c) => c.id === data.selectedCharacter
+                          )?.title || "Custom"
+                        }`
+                      : "Pilih karakter yang sesuai dengan kebutuhan video Anda (Opsional)"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-center space-x-2">
+                {data.selectedCharacter && (
+                  <div className="px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full">
+                    Dipilih
+                  </div>
+                )}
+                {isCharacterSectionOpen ? (
+                  <ChevronUp className="w-5 h-5 text-gray-500" />
+                ) : (
+                  <ChevronDown className="w-5 h-5 text-gray-500" />
+                )}
+              </div>
+            </div>
+          </button>
 
-        <div className="flex justify-center">
-          <div className="w-full max-w-7xl">
-            {loading ? (
-              <div className="text-center py-6 sm:py-8">
-                <div className="text-sm sm:text-base text-muted-foreground">
-                  Loading characters...
+          {/* Accordion Content */}
+          {isCharacterSectionOpen && (
+            <div className="px-4 pb-4 sm:px-6 sm:pb-6">
+              <div className="flex justify-center">
+                <div className="w-full max-w-7xl">
+                  {loading ? (
+                    <div className="text-center py-6 sm:py-8">
+                      <div className="text-sm sm:text-base text-muted-foreground">
+                        Loading characters...
+                      </div>
+                    </div>
+                  ) : uploading ? (
+                    <div className="text-center py-6 sm:py-8">
+                      <div className="text-sm sm:text-base text-muted-foreground">
+                        Uploading image...
+                      </div>
+                    </div>
+                  ) : error ? (
+                    <div className="text-center py-6 sm:py-8">
+                      <div className="text-sm sm:text-base text-red-500">
+                        Error: {error}
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+                      {characters.map((character) => (
+                        <CharacterCard
+                          key={character.id}
+                          type={character.type}
+                          title={character.title}
+                          description={character.description || undefined}
+                          image={character.image || undefined}
+                          tags={character.tags || undefined}
+                          isSelected={data.selectedCharacter === character.id}
+                          onClick={() => handleCharacterSelect(character.id)}
+                        />
+                      ))}
+                    </div>
+                  )}
                 </div>
               </div>
-            ) : uploading ? (
-              <div className="text-center py-6 sm:py-8">
-                <div className="text-sm sm:text-base text-muted-foreground">
-                  Uploading image...
-                </div>
-              </div>
-            ) : error ? (
-              <div className="text-center py-6 sm:py-8">
-                <div className="text-sm sm:text-base text-red-500">
-                  Error: {error}
-                </div>
-              </div>
-            ) : (
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
-                {characters.map((character) => (
-                  <CharacterCard
-                    key={character.id}
-                    type={character.type}
-                    title={character.title}
-                    description={character.description || undefined}
-                    image={character.image || undefined}
-                    tags={character.tags || undefined}
-                    isSelected={data.selectedCharacter === character.id}
-                    onClick={() => handleCharacterSelect(character.id)}
-                  />
-                ))}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
 

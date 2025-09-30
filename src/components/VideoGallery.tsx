@@ -184,11 +184,10 @@ export function VideoGallery({ onVideoClick }: VideoGalleryProps) {
       {/* Header */}
       <div className="text-center mb-12">
         <h2 className="text-4xl font-light text-foreground mb-6 tracking-tight">
-          Video Gallery
+          Galeri Video
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed">
-          Discover creative videos from our community. Find inspiration for your
-          next project.
+          Klik Video untuk Lihat Detail Video dan Promptnya.
         </p>
       </div>
 
