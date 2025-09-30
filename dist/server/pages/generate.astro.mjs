@@ -1,6 +1,6 @@
 import { e as createComponent, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DLHOh8jC.mjs';
 import 'kleur/colors';
-import { $ as $$Main } from '../chunks/main_DRZAopNz.mjs';
+import { $ as $$Main } from '../chunks/main_D71SOSeP.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { B as Button, d as Badge, C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/card_D8elN7z5.mjs';

@@ -3,8 +3,8 @@ import 'kleur/colors';
 import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DF7YqAOL.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { createContext, useState, useEffect, useContext } from 'react';
-import { C as Card, B as Button, d as Badge, c as CardContent$1, a as CardHeader, b as CardTitle, e as cn } from '../chunks/card_D8elN7z5.mjs';
-import { UserCheck, User, Upload, Wand2, Palette, FileText, Volume2, Briefcase, Smile, GraduationCap, BarChart3, BookOpen, Newspaper, Mic, Star, Lightbulb, Loader2, Play } from 'lucide-react';
+import { C as Card, B as Button, d as Badge, a as CardHeader, b as CardTitle, c as CardContent$1, e as cn } from '../chunks/card_D8elN7z5.mjs';
+import { UserCheck, User, Upload, Wand2, Image, ChevronUp, ChevronDown, FileText, Volume2, Briefcase, Smile, GraduationCap, BarChart3, BookOpen, Newspaper, Mic, Star, Lightbulb, Loader2, Play } from 'lucide-react';
 import { b as backgroundsApi, u as uploadApi, c as charactersApi, p as publicVideoGalleryApi } from '../chunks/api_Zi8Etrro.mjs';
 import { I as Input } from '../chunks/input_BNBZJNyb.mjs';
 import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem, T as Textarea } from '../chunks/select_8smLBtfp.mjs';
@@ -257,129 +257,6 @@ function CharacterCard({
   );
 }
 
-function FilterRow({
-  characterType,
-  characterStyle,
-  onCharacterTypeChange,
-  onCharacterStyleChange
-}) {
-  const characterTypeOptions = [
-    { id: "all", label: "Semua", isActive: characterType === "all" },
-    { id: "male", label: "Pria", isActive: characterType === "male" },
-    { id: "female", label: "Wanita", isActive: characterType === "female" }
-  ];
-  const characterStyleOptions = [
-    { id: "all", label: "Semua", isActive: characterStyle === "all" },
-    {
-      id: "realistic",
-      label: "Realistis",
-      isActive: characterStyle === "realistic"
-    },
-    { id: "anime", label: "Anime", isActive: characterStyle === "anime" },
-    { id: "cartoon", label: "Kartun", isActive: characterStyle === "cartoon" },
-    { id: "3d", label: "3D", isActive: characterStyle === "3d" }
-  ];
-  return /* @__PURE__ */ jsx(Card, { className: "w-full", children: /* @__PURE__ */ jsxs(CardContent$1, { className: "p-3 sm:p-4", children: [
-    /* @__PURE__ */ jsxs("div", { className: "flex flex-col space-y-4 lg:hidden", children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex flex-col space-y-3", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2 sm:space-x-3", children: [
-          /* @__PURE__ */ jsx("div", { className: "p-1.5 sm:p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg", children: /* @__PURE__ */ jsx(User, { className: "w-4 h-4 sm:w-5 sm:h-5 text-purple-600" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "text-sm sm:text-base font-semibold text-foreground", children: "Jenis Karakter" })
-        ] }),
-        /* @__PURE__ */ jsx("div", { className: "flex flex-wrap items-center gap-2", children: characterTypeOptions.map((option) => /* @__PURE__ */ jsxs(
-          Button,
-          {
-            variant: option.isActive ? "default" : "outline",
-            size: "sm",
-            onClick: () => onCharacterTypeChange(option.id),
-            className: `
-                    relative transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2
-                    ${option.isActive ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md" : "hover:border-purple-300 hover:text-purple-600"}
-                  `,
-            children: [
-              option.isActive && /* @__PURE__ */ jsx("div", { className: "absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-white rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-1 h-1 sm:w-1.5 sm:h-1.5 bg-purple-600 rounded-full" }) }),
-              option.label
-            ]
-          },
-          option.id
-        )) })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "flex flex-col space-y-3", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2 sm:space-x-3", children: [
-          /* @__PURE__ */ jsx("div", { className: "p-1.5 sm:p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg", children: /* @__PURE__ */ jsx(Palette, { className: "w-4 h-4 sm:w-5 sm:h-5 text-purple-600" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "text-sm sm:text-base font-semibold text-foreground", children: "Gaya Karakter" })
-        ] }),
-        /* @__PURE__ */ jsx("div", { className: "flex flex-wrap items-center gap-2", children: characterStyleOptions.map((option) => /* @__PURE__ */ jsxs(
-          Button,
-          {
-            variant: option.isActive ? "default" : "outline",
-            size: "sm",
-            onClick: () => onCharacterStyleChange(option.id),
-            className: `
-                    relative transition-all duration-200 text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2
-                    ${option.isActive ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md" : "hover:border-purple-300 hover:text-purple-600"}
-                  `,
-            children: [
-              option.isActive && /* @__PURE__ */ jsx("div", { className: "absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-white rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-1 h-1 sm:w-1.5 sm:h-1.5 bg-purple-600 rounded-full" }) }),
-              option.label
-            ]
-          },
-          option.id
-        )) })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "hidden lg:flex items-center justify-between", children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
-          /* @__PURE__ */ jsx("div", { className: "p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg", children: /* @__PURE__ */ jsx(User, { className: "w-5 h-5 text-purple-600" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "text-base font-semibold text-foreground", children: "Jenis Karakter" })
-        ] }),
-        /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: characterTypeOptions.map((option) => /* @__PURE__ */ jsxs(
-          Button,
-          {
-            variant: option.isActive ? "default" : "outline",
-            size: "sm",
-            onClick: () => onCharacterTypeChange(option.id),
-            className: `
-                    relative transition-all duration-200
-                    ${option.isActive ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md" : "hover:border-purple-300 hover:text-purple-600"}
-                  `,
-            children: [
-              option.isActive && /* @__PURE__ */ jsx("div", { className: "absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-1.5 h-1.5 bg-purple-600 rounded-full" }) }),
-              option.label
-            ]
-          },
-          option.id
-        )) })
-      ] }),
-      /* @__PURE__ */ jsx("div", { className: "h-8 w-px bg-border mx-4" }),
-      /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-4", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
-          /* @__PURE__ */ jsx("div", { className: "p-2 bg-purple-100 dark:bg-purple-900/20 rounded-lg", children: /* @__PURE__ */ jsx(Palette, { className: "w-5 h-5 text-purple-600" }) }),
-          /* @__PURE__ */ jsx("h3", { className: "text-base font-semibold text-foreground", children: "Gaya Karakter" })
-        ] }),
-        /* @__PURE__ */ jsx("div", { className: "flex items-center gap-2", children: characterStyleOptions.map((option) => /* @__PURE__ */ jsxs(
-          Button,
-          {
-            variant: option.isActive ? "default" : "outline",
-            size: "sm",
-            onClick: () => onCharacterStyleChange(option.id),
-            className: `
-                    relative transition-all duration-200
-                    ${option.isActive ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white shadow-md" : "hover:border-purple-300 hover:text-purple-600"}
-                  `,
-            children: [
-              option.isActive && /* @__PURE__ */ jsx("div", { className: "absolute -top-1 -right-1 w-3 h-3 bg-white rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-1.5 h-1.5 bg-purple-600 rounded-full" }) }),
-              option.label
-            ]
-          },
-          option.id
-        )) })
-      ] })
-    ] })
-  ] }) });
-}
-
 function BackgroundCard({
   type,
   title,
@@ -467,6 +344,7 @@ function BackgroundGallery() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   useEffect(() => {
     const fetchBackgrounds = async () => {
       try {
@@ -540,12 +418,33 @@ function BackgroundGallery() {
       updateBackground(backgroundId, background?.image || null);
     }
   };
-  return /* @__PURE__ */ jsxs("div", { className: "w-full", children: [
-    /* @__PURE__ */ jsx("div", { className: "flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0", children: /* @__PURE__ */ jsx("h2", { className: "text-xl sm:text-2xl font-bold text-foreground", children: "Galeri Background" }) }),
-    loading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Loading backgrounds..." }) }) : uploading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Uploading image..." }) }) : error ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsxs("div", { className: "text-sm sm:text-base text-red-500", children: [
+  return /* @__PURE__ */ jsx("div", { className: "w-full", children: /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700", children: [
+    /* @__PURE__ */ jsx(
+      "button",
+      {
+        onClick: () => setIsOpen(!isOpen),
+        className: "w-full px-4 py-4 sm:px-6 sm:py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-lg",
+        children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3 flex-1 justify-center", children: [
+            /* @__PURE__ */ jsx("div", { className: "p-2 bg-blue-100 dark:bg-blue-900 rounded-lg", children: /* @__PURE__ */ jsx(Image, { className: "w-5 h-5 text-blue-600 dark:text-blue-400" }) }),
+            /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+              /* @__PURE__ */ jsx("h2", { className: "text-lg sm:text-xl font-semibold text-foreground", children: "Pilih Latar Belakang - Opsional" }),
+              /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: data.selectedBackground ? `Background dipilih: ${backgrounds.find(
+                (bg) => bg.id === data.selectedBackground
+              )?.title || "Custom"}` : "Pilih latar belakang yang sesuai dengan kebutuhan video Anda (Opsional)" })
+            ] })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
+            data.selectedBackground && /* @__PURE__ */ jsx("div", { className: "px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full", children: "Dipilih" }),
+            isOpen ? /* @__PURE__ */ jsx(ChevronUp, { className: "w-5 h-5 text-gray-500" }) : /* @__PURE__ */ jsx(ChevronDown, { className: "w-5 h-5 text-gray-500" })
+          ] })
+        ] })
+      }
+    ),
+    isOpen && /* @__PURE__ */ jsx("div", { className: "px-4 pb-4 sm:px-6 sm:pb-6", children: /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-7xl", children: loading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Loading backgrounds..." }) }) : uploading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Uploading image..." }) }) : error ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsxs("div", { className: "text-sm sm:text-base text-red-500", children: [
       "Error: ",
       error
-    ] }) }) : /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4", children: backgrounds.map((background) => /* @__PURE__ */ jsx(
+    ] }) }) : /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6", children: backgrounds.map((background) => /* @__PURE__ */ jsx(
       BackgroundCard,
       {
         type: background.type,
@@ -557,8 +456,8 @@ function BackgroundGallery() {
         onClick: () => handleBackgroundSelect(background.id)
       },
       background.id
-    )) })
-  ] });
+    )) }) }) }) })
+  ] }) });
 }
 
 function VideoDetailSection() {
@@ -589,263 +488,287 @@ function VideoDetailSection() {
   ];
   const wordCount = script.split(/\s+/).filter((word) => word.length > 0).length;
   return /* @__PURE__ */ jsxs("div", { className: "w-full", children: [
-    /* @__PURE__ */ jsxs("div", { className: "mb-6", children: [
-      /* @__PURE__ */ jsx("h2", { className: "text-2xl font-bold text-foreground mb-2", children: "Detail Video & Script" }),
-      /* @__PURE__ */ jsxs("p", { className: "text-sm text-muted-foreground", children: [
+    /* @__PURE__ */ jsxs("div", { className: "text-center mb-6 sm:mb-8", children: [
+      /* @__PURE__ */ jsx("h2", { className: "text-xl sm:text-2xl font-bold text-foreground mb-2", children: "Detail Video & Script" }),
+      /* @__PURE__ */ jsxs("p", { className: "text-sm sm:text-base text-muted-foreground px-4", children: [
         /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" }),
         " Field wajib diisi |",
         /* @__PURE__ */ jsx("span", { className: "text-gray-500 ml-2", children: "(Opsional)" }),
         " Field tidak wajib diisi"
       ] })
     ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
-      /* @__PURE__ */ jsxs(Card, { children: [
-        /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-          /* @__PURE__ */ jsx(FileText, { className: "w-5 h-5" }),
-          /* @__PURE__ */ jsx("span", { children: "Informasi Dasar" })
-        ] }) }),
-        /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Judul Video ",
-              /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
-            ] }),
-            /* @__PURE__ */ jsx(
-              Input,
-              {
-                placeholder: "Masukkan judul video anda...",
-                value: data.judulVideo,
-                onChange: (e) => updateJudulVideo(e.target.value)
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Aspek Rasio ",
-              /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
-            ] }),
-            /* @__PURE__ */ jsxs(Select, { value: data.aspekRasio, onValueChange: updateAspectRatio, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih rasio video anda" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "16:9", children: "16:9 (Widescreen)" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "9:16", children: "9:16 (Vertical)" })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Script/Naskah Video ",
-              /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
-            ] }),
-            /* @__PURE__ */ jsx(
-              Textarea,
-              {
-                placeholder: "Masukkan script video anda...",
-                value: script,
-                onChange: (e) => {
-                  setScript(e.target.value);
-                  updatePrompt(e.target.value);
-                },
-                className: "min-h-32"
-              }
-            ),
-            /* @__PURE__ */ jsxs("p", { className: "text-sm text-muted-foreground mt-2", children: [
-              wordCount,
-              " kata"
-            ] })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs(Card, { children: [
-        /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-          /* @__PURE__ */ jsx(Volume2, { className: "w-5 h-5" }),
-          /* @__PURE__ */ jsx("span", { children: "Pengaturan Suara & Bahasa" })
-        ] }) }),
-        /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Bahasa ",
-              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-            ] }),
-            /* @__PURE__ */ jsxs(Select, { value: data.bahasa, onValueChange: updateBahasa, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih bahasa untuk video anda" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "id", children: "Bahasa Indonesia" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "en", children: "English" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "es", children: "Español" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "fr", children: "Français" })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Gaya Suara ",
-              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-            ] }),
-            /* @__PURE__ */ jsxs(Select, { value: data.gayaSuara, onValueChange: updateGayaSuara, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih gaya suara untuk video anda" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "natural", children: "Natural" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "energetic", children: "Energetic" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "calm", children: "Calm" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "professional", children: "Professional" })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Voice Over ",
-              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-            ] }),
-            /* @__PURE__ */ jsxs(Select, { value: data.voiceOver, onValueChange: updateVoiceOver, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih voice over untuk video anda" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "male", children: "Male Voice" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "female", children: "Female Voice" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "child", children: "Child Voice" })
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Tone/Nada Video",
-              " ",
-              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-            ] }),
-            /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-2", children: toneOptions.map((tone) => {
-              const Icon = tone.icon;
-              return /* @__PURE__ */ jsxs(
-                Button,
+    /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsxs("div", { className: "w-full max-w-7xl", children: [
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
+        /* @__PURE__ */ jsxs(Card, { children: [
+          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx(FileText, { className: "w-5 h-5" }),
+            /* @__PURE__ */ jsx("span", { children: "Informasi Dasar" })
+          ] }) }),
+          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Judul Video ",
+                /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+              ] }),
+              /* @__PURE__ */ jsx(
+                Input,
                 {
-                  variant: data.tone === tone.id ? "default" : "outline",
-                  size: "sm",
-                  onClick: () => updateTone(tone.id),
-                  className: `flex items-center space-x-2 ${data.tone === tone.id ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700" : ""}`,
+                  placeholder: "Masukkan judul video anda...",
+                  value: data.judulVideo,
+                  onChange: (e) => updateJudulVideo(e.target.value)
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Aspek Rasio ",
+                /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+              ] }),
+              /* @__PURE__ */ jsxs(
+                Select,
+                {
+                  value: data.aspekRasio,
+                  onValueChange: updateAspectRatio,
                   children: [
-                    /* @__PURE__ */ jsx(Icon, { className: "w-4 h-4" }),
-                    /* @__PURE__ */ jsx("span", { children: tone.label })
+                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih rasio video anda" }) }),
+                    /* @__PURE__ */ jsxs(SelectContent, { children: [
+                      /* @__PURE__ */ jsx(SelectItem, { value: "16:9", children: "16:9 (Widescreen)" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "9:16", children: "9:16 (Vertical)" })
+                    ] })
                   ]
-                },
-                tone.id
-              );
-            }) })
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Script/Naskah Video ",
+                /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
+              ] }),
+              /* @__PURE__ */ jsx(
+                Textarea,
+                {
+                  placeholder: "Masukkan script video anda...",
+                  value: script,
+                  onChange: (e) => {
+                    setScript(e.target.value);
+                    updatePrompt(e.target.value);
+                  },
+                  className: "min-h-32"
+                }
+              ),
+              /* @__PURE__ */ jsxs("p", { className: "text-sm text-muted-foreground mt-2", children: [
+                wordCount,
+                " kata"
+              ] })
+            ] })
           ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs(Card, { children: [
-        /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-          /* @__PURE__ */ jsx(Mic, { className: "w-5 h-5" }),
-          /* @__PURE__ */ jsx("span", { children: "Pengaturan Lanjutan" })
-        ] }) }),
-        /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Background Music",
-              " ",
-              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+        ] }),
+        /* @__PURE__ */ jsxs(Card, { children: [
+          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx(Volume2, { className: "w-5 h-5" }),
+            /* @__PURE__ */ jsx("span", { children: "Pengaturan Suara & Bahasa" })
+          ] }) }),
+          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Bahasa ",
+                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+              ] }),
+              /* @__PURE__ */ jsxs(Select, { value: data.bahasa, onValueChange: updateBahasa, children: [
+                /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih bahasa untuk video anda" }) }),
+                /* @__PURE__ */ jsxs(SelectContent, { children: [
+                  /* @__PURE__ */ jsx(SelectItem, { value: "id", children: "Bahasa Indonesia" }),
+                  /* @__PURE__ */ jsx(SelectItem, { value: "en", children: "English" }),
+                  /* @__PURE__ */ jsx(SelectItem, { value: "es", children: "Español" }),
+                  /* @__PURE__ */ jsx(SelectItem, { value: "fr", children: "Français" })
+                ] })
+              ] })
             ] }),
-            /* @__PURE__ */ jsxs(
-              Select,
-              {
-                value: data.backgroundMusic,
-                onValueChange: updateBackgroundMusic,
-                children: [
-                  /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih background music" }) }),
-                  /* @__PURE__ */ jsxs(SelectContent, { children: [
-                    /* @__PURE__ */ jsx(SelectItem, { value: "upbeat", children: "Upbeat" }),
-                    /* @__PURE__ */ jsx(SelectItem, { value: "calm", children: "Calm" }),
-                    /* @__PURE__ */ jsx(SelectItem, { value: "dramatic", children: "Dramatic" }),
-                    /* @__PURE__ */ jsx(SelectItem, { value: "corporate", children: "Corporate" }),
-                    /* @__PURE__ */ jsx(SelectItem, { value: "ambient", children: "Ambient" }),
-                    /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "Tidak ada musik" })
-                  ] })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Resolusi Video ",
-              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Gaya Suara ",
+                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+              ] }),
+              /* @__PURE__ */ jsxs(
+                Select,
+                {
+                  value: data.gayaSuara,
+                  onValueChange: updateGayaSuara,
+                  children: [
+                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih gaya suara untuk video anda" }) }),
+                    /* @__PURE__ */ jsxs(SelectContent, { children: [
+                      /* @__PURE__ */ jsx(SelectItem, { value: "natural", children: "Natural" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "energetic", children: "Energetic" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "calm", children: "Calm" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "professional", children: "Professional" })
+                    ] })
+                  ]
+                }
+              )
             ] }),
-            /* @__PURE__ */ jsxs(
-              Select,
-              {
-                value: data.resolusiVideo,
-                onValueChange: updateResolusiVideo,
-                children: [
-                  /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih resolusi video" }) }),
-                  /* @__PURE__ */ jsxs(SelectContent, { children: [
-                    /* @__PURE__ */ jsx(SelectItem, { value: "1080p", children: "1080p (Full HD)" }),
-                    /* @__PURE__ */ jsx(SelectItem, { value: "720p", children: "720p (HD)" })
-                  ] })
-                ]
-              }
-            )
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-              "Share Video Public",
-              " ",
-              /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Voice Over ",
+                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+              ] }),
+              /* @__PURE__ */ jsxs(
+                Select,
+                {
+                  value: data.voiceOver,
+                  onValueChange: updateVoiceOver,
+                  children: [
+                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih voice over untuk video anda" }) }),
+                    /* @__PURE__ */ jsxs(SelectContent, { children: [
+                      /* @__PURE__ */ jsx(SelectItem, { value: "male", children: "Male Voice" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "female", children: "Female Voice" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "child", children: "Child Voice" })
+                    ] })
+                  ]
+                }
+              )
             ] }),
-            /* @__PURE__ */ jsxs(Select, { value: data.isShare, onValueChange: updateIsShare, children: [
-              /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih visibility video" }) }),
-              /* @__PURE__ */ jsxs(SelectContent, { children: [
-                /* @__PURE__ */ jsx(SelectItem, { value: "y", children: "Share Public" }),
-                /* @__PURE__ */ jsx(SelectItem, { value: "n", children: "Private" })
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Tone/Nada Video",
+                " ",
+                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+              ] }),
+              /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-2", children: toneOptions.map((tone) => {
+                const Icon = tone.icon;
+                return /* @__PURE__ */ jsxs(
+                  Button,
+                  {
+                    variant: data.tone === tone.id ? "default" : "outline",
+                    size: "sm",
+                    onClick: () => updateTone(tone.id),
+                    className: `flex items-center space-x-2 ${data.tone === tone.id ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700" : ""}`,
+                    children: [
+                      /* @__PURE__ */ jsx(Icon, { className: "w-4 h-4" }),
+                      /* @__PURE__ */ jsx("span", { children: tone.label })
+                    ]
+                  },
+                  tone.id
+                );
+              }) })
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs(Card, { children: [
+          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx(Mic, { className: "w-5 h-5" }),
+            /* @__PURE__ */ jsx("span", { children: "Pengaturan Lanjutan" })
+          ] }) }),
+          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Background Music",
+                " ",
+                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+              ] }),
+              /* @__PURE__ */ jsxs(
+                Select,
+                {
+                  value: data.backgroundMusic,
+                  onValueChange: updateBackgroundMusic,
+                  children: [
+                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih background music" }) }),
+                    /* @__PURE__ */ jsxs(SelectContent, { children: [
+                      /* @__PURE__ */ jsx(SelectItem, { value: "upbeat", children: "Upbeat" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "calm", children: "Calm" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "dramatic", children: "Dramatic" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "corporate", children: "Corporate" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "ambient", children: "Ambient" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "Tidak ada musik" })
+                    ] })
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Resolusi Video",
+                " ",
+                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+              ] }),
+              /* @__PURE__ */ jsxs(
+                Select,
+                {
+                  value: data.resolusiVideo,
+                  onValueChange: updateResolusiVideo,
+                  children: [
+                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih resolusi video" }) }),
+                    /* @__PURE__ */ jsxs(SelectContent, { children: [
+                      /* @__PURE__ */ jsx(SelectItem, { value: "1080p", children: "1080p (Full HD)" }),
+                      /* @__PURE__ */ jsx(SelectItem, { value: "720p", children: "720p (HD)" })
+                    ] })
+                  ]
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
+                "Share Video Public",
+                " ",
+                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
+              ] }),
+              /* @__PURE__ */ jsxs(Select, { value: data.isShare, onValueChange: updateIsShare, children: [
+                /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih visibility video" }) }),
+                /* @__PURE__ */ jsxs(SelectContent, { children: [
+                  /* @__PURE__ */ jsx(SelectItem, { value: "y", children: "Share Public" }),
+                  /* @__PURE__ */ jsx(SelectItem, { value: "n", children: "Private" })
+                ] })
               ] })
             ] })
           ] })
         ] })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6", children: [
-      /* @__PURE__ */ jsxs(Card, { children: [
-        /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-          /* @__PURE__ */ jsx(Star, { className: "w-5 h-5" }),
-          /* @__PURE__ */ jsx("span", { children: "Preview" })
-        ] }) }),
-        /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-3", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-            /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Bahasa:" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.bahasa || "Belum dipilih" })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-            /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Gaya Suara:" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.gayaSuara || "Belum dipilih" })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-            /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Tone:" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.tone || "Belum dipilih" })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-            /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Background Musik:" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.backgroundMusic || "Belum dipilih" })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-            /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Resolusi:" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.resolusiVideo || "Belum dipilih" })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-            /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Voice Over:" }),
-            /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.voiceOver || "Belum dipilih" })
-          ] })
-        ] })
       ] }),
-      /* @__PURE__ */ jsxs(Card, { children: [
-        /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-          /* @__PURE__ */ jsx(Lightbulb, { className: "w-5 h-5" }),
-          /* @__PURE__ */ jsx("span", { children: "Tips" })
-        ] }) }),
-        /* @__PURE__ */ jsx(CardContent$1, { children: /* @__PURE__ */ jsxs("ul", { className: "space-y-2 text-sm text-muted-foreground", children: [
-          /* @__PURE__ */ jsx("li", { children: "• Gunakan kalimat yang jelas dan tidak terlalu panjang" }),
-          /* @__PURE__ */ jsx("li", { children: "• Tambahkan jeda dengan tanda koma atau titik" }),
-          /* @__PURE__ */ jsx("li", { children: "• Hindari singkatan yang sulit diucapkan" }),
-          /* @__PURE__ */ jsx("li", { children: "• Jelaskan script dengan detail agar menghasilkan video yang diinginkan" })
-        ] }) })
+      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6", children: [
+        /* @__PURE__ */ jsxs(Card, { children: [
+          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx(Star, { className: "w-5 h-5" }),
+            /* @__PURE__ */ jsx("span", { children: "Preview" })
+          ] }) }),
+          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-3", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Bahasa:" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.bahasa || "Belum dipilih" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Gaya Suara:" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.gayaSuara || "Belum dipilih" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Tone:" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.tone || "Belum dipilih" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Background Musik:" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.backgroundMusic || "Belum dipilih" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Resolusi:" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.resolusiVideo || "Belum dipilih" })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
+              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Voice Over:" }),
+              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.voiceOver || "Belum dipilih" })
+            ] })
+          ] })
+        ] }),
+        /* @__PURE__ */ jsxs(Card, { children: [
+          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
+            /* @__PURE__ */ jsx(Lightbulb, { className: "w-5 h-5" }),
+            /* @__PURE__ */ jsx("span", { children: "Tips" })
+          ] }) }),
+          /* @__PURE__ */ jsx(CardContent$1, { children: /* @__PURE__ */ jsxs("ul", { className: "space-y-2 text-sm text-muted-foreground", children: [
+            /* @__PURE__ */ jsx("li", { children: "• Gunakan kalimat yang jelas dan tidak terlalu panjang" }),
+            /* @__PURE__ */ jsx("li", { children: "• Tambahkan jeda dengan tanda koma atau titik" }),
+            /* @__PURE__ */ jsx("li", { children: "• Hindari singkatan yang sulit diucapkan" }),
+            /* @__PURE__ */ jsx("li", { children: "• Jelaskan script dengan detail agar menghasilkan video yang diinginkan" })
+          ] }) })
+        ] })
       ] })
-    ] })
+    ] }) })
   ] });
 }
 
@@ -857,6 +780,9 @@ function SetupSection() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [isCharacterSectionOpen, setIsCharacterSectionOpen] = useState(false);
+  const [isBackgroundSectionOpen, setIsBackgroundSectionOpen] = useState(false);
+  const [isVideoDetailSectionOpen, setIsVideoDetailSectionOpen] = useState(false);
   useEffect(() => {
     const fetchCharacters = async () => {
       try {
@@ -890,12 +816,6 @@ function SetupSection() {
     data.selectedCharacter,
     updateCharacter
   ]);
-  const handleCharacterTypeChange = (type) => {
-    setCharacterType(type);
-  };
-  const handleCharacterStyleChange = (style) => {
-    setCharacterStyle(style);
-  };
   const isFormValid = () => {
     return data.judulVideo.trim() !== "" && data.prompt.trim() !== "" && data.aspekRasio !== "";
   };
@@ -961,21 +881,30 @@ function SetupSection() {
       /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4", children: "Setup Video AI Anda" }),
       /* @__PURE__ */ jsx("p", { className: "text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto px-4", children: "Lengkapi semua pengaturan untuk video AI Anda dalam satu langkah. Pilih karakter, tulis script, dan tentukan environment untuk hasil terbaik." })
     ] }),
-    /* @__PURE__ */ jsx("div", { className: "mb-8 sm:mb-12", children: /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-6xl", children: /* @__PURE__ */ jsx(
-      FilterRow,
-      {
-        characterType,
-        characterStyle,
-        onCharacterTypeChange: handleCharacterTypeChange,
-        onCharacterStyleChange: handleCharacterStyleChange
-      }
-    ) }) }) }),
-    /* @__PURE__ */ jsxs("div", { className: "mb-6 sm:mb-8", children: [
-      /* @__PURE__ */ jsxs("div", { className: "text-center mb-6 sm:mb-8", children: [
-        /* @__PURE__ */ jsx("h2", { className: "text-xl sm:text-2xl font-bold text-foreground mb-2", children: "Pilih Karakter AI Anda" }),
-        /* @__PURE__ */ jsx("p", { className: "text-sm sm:text-base text-muted-foreground px-4", children: "Pilih karakter yang sesuai dengan kebutuhan video Anda" })
-      ] }),
-      /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-7xl", children: loading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Loading characters..." }) }) : uploading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Uploading image..." }) }) : error ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsxs("div", { className: "text-sm sm:text-base text-red-500", children: [
+    /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700", children: [
+      /* @__PURE__ */ jsx(
+        "button",
+        {
+          onClick: () => setIsCharacterSectionOpen(!isCharacterSectionOpen),
+          className: "w-full px-4 py-4 sm:px-6 sm:py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-lg",
+          children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3 flex-1 justify-center", children: [
+              /* @__PURE__ */ jsx("div", { className: "p-2 bg-purple-100 dark:bg-purple-900 rounded-lg", children: /* @__PURE__ */ jsx(User, { className: "w-5 h-5 text-purple-600 dark:text-purple-400" }) }),
+              /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+                /* @__PURE__ */ jsx("h2", { className: "text-lg sm:text-xl font-semibold text-foreground", children: "Pilih Avatar / Karakter AI - Opsional" }),
+                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: data.selectedCharacter ? `Karakter dipilih: ${characters.find(
+                  (c) => c.id === data.selectedCharacter
+                )?.title || "Custom"}` : "Pilih karakter yang sesuai dengan kebutuhan video Anda (Opsional)" })
+              ] })
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
+              data.selectedCharacter && /* @__PURE__ */ jsx("div", { className: "px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full", children: "Dipilih" }),
+              isCharacterSectionOpen ? /* @__PURE__ */ jsx(ChevronUp, { className: "w-5 h-5 text-gray-500" }) : /* @__PURE__ */ jsx(ChevronDown, { className: "w-5 h-5 text-gray-500" })
+            ] })
+          ] })
+        }
+      ),
+      isCharacterSectionOpen && /* @__PURE__ */ jsx("div", { className: "px-4 pb-4 sm:px-6 sm:pb-6", children: /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-7xl", children: loading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Loading characters..." }) }) : uploading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Uploading image..." }) }) : error ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsxs("div", { className: "text-sm sm:text-base text-red-500", children: [
         "Error: ",
         error
       ] }) }) : /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6", children: characters.map((character) => /* @__PURE__ */ jsx(
@@ -990,8 +919,8 @@ function SetupSection() {
           onClick: () => handleCharacterSelect(character.id)
         },
         character.id
-      )) }) }) })
-    ] }),
+      )) }) }) }) })
+    ] }) }),
     /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsx(BackgroundGallery, {}) }),
     /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsx(VideoDetailSection, {}) }),
     /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center px-4", children: [
@@ -1125,8 +1054,8 @@ function VideoGallery({ onVideoClick }) {
   };
   return /* @__PURE__ */ jsxs("div", { className: "w-full", children: [
     /* @__PURE__ */ jsxs("div", { className: "text-center mb-12", children: [
-      /* @__PURE__ */ jsx("h2", { className: "text-4xl font-light text-foreground mb-6 tracking-tight", children: "Video Gallery" }),
-      /* @__PURE__ */ jsx("p", { className: "text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed", children: "Discover creative videos from our community. Find inspiration for your next project." })
+      /* @__PURE__ */ jsx("h2", { className: "text-4xl font-light text-foreground mb-6 tracking-tight", children: "Galeri Video" }),
+      /* @__PURE__ */ jsx("p", { className: "text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed", children: "Klik Video untuk Lihat Detail Video dan Promptnya." })
     ] }),
     loading && /* @__PURE__ */ jsx("div", { className: "flex justify-center items-center py-16", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
       /* @__PURE__ */ jsx(Loader2, { className: "w-6 h-6 animate-spin text-gray-400" }),
