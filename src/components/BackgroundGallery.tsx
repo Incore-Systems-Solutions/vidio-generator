@@ -111,47 +111,54 @@ export function BackgroundGallery() {
   return (
     <div className="w-full">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 sm:mb-6 gap-3 sm:gap-0">
-        <h2 className="text-xl sm:text-2xl font-bold text-foreground">
+      <div className="text-center mb-6 sm:mb-8">
+        <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-2">
           Pilih Latar Belakang - (Opsional)
         </h2>
+        <p className="text-sm sm:text-base text-muted-foreground px-4">
+          Pilih latar belakang yang sesuai dengan kebutuhan video Anda
+        </p>
       </div>
 
       {/* Background Grid */}
-      {loading ? (
-        <div className="text-center py-6 sm:py-8">
-          <div className="text-sm sm:text-base text-muted-foreground">
-            Loading backgrounds...
-          </div>
+      <div className="flex justify-center">
+        <div className="w-full max-w-7xl">
+          {loading ? (
+            <div className="text-center py-6 sm:py-8">
+              <div className="text-sm sm:text-base text-muted-foreground">
+                Loading backgrounds...
+              </div>
+            </div>
+          ) : uploading ? (
+            <div className="text-center py-6 sm:py-8">
+              <div className="text-sm sm:text-base text-muted-foreground">
+                Uploading image...
+              </div>
+            </div>
+          ) : error ? (
+            <div className="text-center py-6 sm:py-8">
+              <div className="text-sm sm:text-base text-red-500">
+                Error: {error}
+              </div>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6">
+              {backgrounds.map((background) => (
+                <BackgroundCard
+                  key={background.id}
+                  type={background.type}
+                  title={background.title}
+                  description={background.description || undefined}
+                  image={background.image || undefined}
+                  tags={background.tags || undefined}
+                  isSelected={data.selectedBackground === background.id}
+                  onClick={() => handleBackgroundSelect(background.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
-      ) : uploading ? (
-        <div className="text-center py-6 sm:py-8">
-          <div className="text-sm sm:text-base text-muted-foreground">
-            Uploading image...
-          </div>
-        </div>
-      ) : error ? (
-        <div className="text-center py-6 sm:py-8">
-          <div className="text-sm sm:text-base text-red-500">
-            Error: {error}
-          </div>
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
-          {backgrounds.map((background) => (
-            <BackgroundCard
-              key={background.id}
-              type={background.type}
-              title={background.title}
-              description={background.description || undefined}
-              image={background.image || undefined}
-              tags={background.tags || undefined}
-              isSelected={data.selectedBackground === background.id}
-              onClick={() => handleBackgroundSelect(background.id)}
-            />
-          ))}
-        </div>
-      )}
+      </div>
     </div>
   );
 }
