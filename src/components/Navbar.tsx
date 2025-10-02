@@ -75,10 +75,13 @@ export function Navbar({
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             {/* Logo/Brand */}
             <div className="flex items-center">
-              <Badge className="px-3 sm:px-4 md:px-6 py-2 sm:py-3 text-sm sm:text-base font-bold bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg">
-                <span className="hidden sm:inline">VIDEO GENERATOR</span>
-                <span className="sm:hidden">VG</span>
-              </Badge>
+              <div className="flex items-center space-x-2">
+                <img
+                  src="/logo.svg"
+                  alt="Instant VideoApp"
+                  className="h-8 sm:h-10 md:h-12 w-auto"
+                />
+              </div>
             </div>
 
             {/* Right Side Actions */}
