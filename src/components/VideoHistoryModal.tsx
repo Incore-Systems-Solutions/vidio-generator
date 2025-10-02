@@ -21,6 +21,9 @@ import {
   Play,
   ChevronLeft,
   ChevronRight,
+  Merge,
+  Check,
+  List,
 } from "lucide-react";
 import {
   videoHistoryApi,
@@ -51,6 +54,12 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
   const [totalVideos, setTotalVideos] = useState(0);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
+  // Tab and merge functionality
+  const [activeTab, setActiveTab] = useState<"list" | "merge">("list");
+  const [selectedVideos, setSelectedVideos] = useState<string[]>([]);
+  const [merging, setMerging] = useState(false);
+  const [mergeResult, setMergeResult] = useState<any>(null);
+
   // Reset modal when opened
   useEffect(() => {
     if (isOpen) {
@@ -64,6 +73,9 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
       setVideoList([]);
       setCoinData(null);
       setCurrentPage(1);
+      setActiveTab("list");
+      setSelectedVideos([]);
+      setMergeResult(null);
     }
   }, [isOpen]);
 
@@ -207,6 +219,69 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
   const handleVideoAction = (video: VideoHistoryItem) => {
     if (video.status_video === "success" && video.url_video) {
       window.open(video.url_video, "_blank");
+    }
+  };
+
+  const handleVideoSelect = (videoUrl: string) => {
+    setSelectedVideos((prev) => {
+      if (prev.includes(videoUrl)) {
+        return prev.filter((url) => url !== videoUrl);
+      } else {
+        return [...prev, videoUrl];
+      }
+    });
+  };
+
+  const handleMergeVideos = async () => {
+    if (selectedVideos.length < 2) {
+      setError("Pilih minimal 2 video untuk digabungkan");
+      return;
+    }
+
+    if (!xApiKey) {
+      setError("API key tidak tersedia");
+      return;
+    }
+
+    try {
+      setMerging(true);
+      setError(null);
+
+      const response = await fetch(
+        `${
+          import.meta.env.PUBLIC_API_BASE_URL ||
+          "https://api.instantvideoapp.com"
+        }/api/video-ai/merge-video`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": xApiKey,
+          },
+          body: JSON.stringify({
+            url: selectedVideos,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (result.status) {
+        setMergeResult(result.data);
+        setSelectedVideos([]);
+      } else {
+        throw new Error(result.message || "Gagal menggabungkan video");
+      }
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Gagal menggabungkan video"
+      );
+    } finally {
+      setMerging(false);
     }
   };
 
@@ -423,27 +498,85 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                 </Card>
               )}
 
-              {/* Video List */}
+              {/* Tab Navigation */}
+              <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+                <button
+                  onClick={() => setActiveTab("list")}
+                  className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "list"
+                      ? "bg-white dark:bg-gray-700 text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <List className="w-4 h-4" />
+                  <span>List Video</span>
+                </button>
+                <button
+                  onClick={() => setActiveTab("merge")}
+                  className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                    activeTab === "merge"
+                      ? "bg-white dark:bg-gray-700 text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  }`}
+                >
+                  <Merge className="w-4 h-4" />
+                  <span>Merge Video</span>
+                </button>
+              </div>
+
+              {/* Video List/Merge */}
               <Card>
                 <CardHeader>
                   <CardTitle className="flex items-center justify-between">
                     <div className="flex items-center space-x-2">
-                      <Video className="w-5 h-5" />
-                      <span>Daftar Video ({totalVideos})</span>
+                      {activeTab === "list" ? (
+                        <>
+                          <Video className="w-5 h-5" />
+                          <span>Daftar Video ({totalVideos})</span>
+                        </>
+                      ) : (
+                        <>
+                          <Merge className="w-5 h-5" />
+                          <span>
+                            Merge Video ({selectedVideos.length} dipilih)
+                          </span>
+                        </>
+                      )}
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => loadHistoryData(xApiKey!)}
-                      disabled={loadingHistory}
-                    >
-                      <RefreshCw
-                        className={`w-4 h-4 mr-2 ${
-                          loadingHistory ? "animate-spin" : ""
-                        }`}
-                      />
-                      Refresh
-                    </Button>
+                    <div className="flex items-center space-x-2">
+                      {activeTab === "merge" && selectedVideos.length >= 2 && (
+                        <Button
+                          onClick={handleMergeVideos}
+                          disabled={merging}
+                          className="bg-green-600 hover:bg-green-700"
+                        >
+                          {merging ? (
+                            <>
+                              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
+                              Menggabungkan...
+                            </>
+                          ) : (
+                            <>
+                              <Merge className="w-4 h-4 mr-2" />
+                              Gabungkan Video
+                            </>
+                          )}
+                        </Button>
+                      )}
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => loadHistoryData(xApiKey!)}
+                        disabled={loadingHistory}
+                      >
+                        <RefreshCw
+                          className={`w-4 h-4 mr-2 ${
+                            loadingHistory ? "animate-spin" : ""
+                          }`}
+                        />
+                        Refresh
+                      </Button>
+                    </div>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -461,47 +594,151 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                     </div>
                   ) : (
                     <div className="space-y-4">
+                      {/* Merge Result */}
+                      {mergeResult && activeTab === "merge" && (
+                        <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                          <div className="flex items-center space-x-2 mb-2">
+                            <CheckCircle className="w-5 h-5 text-green-600" />
+                            <h3 className="font-semibold text-green-800 dark:text-green-200">
+                              Video Berhasil Digabungkan!
+                            </h3>
+                          </div>
+                          <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                            {mergeResult.list_merge_video?.length || 0} video
+                            telah berhasil digabungkan
+                          </p>
+                          <div className="flex space-x-2">
+                            <Button
+                              size="sm"
+                              onClick={() =>
+                                window.open(
+                                  mergeResult.final_url_merge_video,
+                                  "_blank"
+                                )
+                              }
+                              className="bg-green-600 hover:bg-green-700"
+                            >
+                              <Eye className="w-4 h-4 mr-1" />
+                              Lihat Video
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() =>
+                                window.open(
+                                  mergeResult.final_url_merge_video,
+                                  "_blank"
+                                )
+                              }
+                            >
+                              <Download className="w-4 h-4 mr-1" />
+                              Download
+                            </Button>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Error Display */}
+                      {error && (
+                        <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
+                          <div className="flex items-center space-x-2">
+                            <AlertCircle className="w-4 h-4 text-red-600" />
+                            <span className="text-sm text-red-800 dark:text-red-200">
+                              {error}
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                      {/* Video List */}
                       {videoList.map((video) => (
                         <div
                           key={video.id}
-                          className="p-4 border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-colors"
+                          className={`p-4 border rounded-lg transition-colors ${
+                            activeTab === "merge" &&
+                            video.status_video === "success" &&
+                            video.url_video
+                              ? "hover:bg-blue-50 dark:hover:bg-blue-950/20 cursor-pointer"
+                              : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                          } ${
+                            activeTab === "merge" &&
+                            selectedVideos.includes(video.url_video || "")
+                              ? "bg-blue-50 dark:bg-blue-950/20 border-blue-300 dark:border-blue-700"
+                              : ""
+                          }`}
+                          onClick={() => {
+                            if (
+                              activeTab === "merge" &&
+                              video.status_video === "success" &&
+                              video.url_video
+                            ) {
+                              handleVideoSelect(video.url_video);
+                            }
+                          }}
                         >
                           <div className="flex items-start justify-between">
-                            <div className="flex-1">
-                              <div className="flex items-center space-x-2 mb-2">
-                                <Badge
-                                  className={getStatusColor(video.status_video)}
-                                >
-                                  {getStatusIcon(video.status_video)}
-                                  <span className="ml-1">
-                                    {getStatusText(video.status_video)}
-                                  </span>
-                                </Badge>
-                                <Badge variant="outline">
-                                  {video.model_ai}
-                                </Badge>
-                                <Badge variant="outline">
-                                  {video.aspect_ratio}
-                                </Badge>
-                              </div>
+                            <div className="flex items-start space-x-3 flex-1">
+                              {/* Checkbox for merge tab */}
+                              {activeTab === "merge" &&
+                                video.status_video === "success" &&
+                                video.url_video && (
+                                  <div className="flex items-center pt-1">
+                                    <div
+                                      className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                        selectedVideos.includes(video.url_video)
+                                          ? "bg-blue-600 border-blue-600"
+                                          : "border-gray-300 dark:border-gray-600"
+                                      }`}
+                                    >
+                                      {selectedVideos.includes(
+                                        video.url_video
+                                      ) && (
+                                        <Check className="w-3 h-3 text-white" />
+                                      )}
+                                    </div>
+                                  </div>
+                                )}
 
-                              <p className="text-sm text-foreground mb-2 line-clamp-2">
-                                {video.prompt}
-                              </p>
-
-                              <div className="flex items-center space-x-4 text-xs text-muted-foreground">
-                                <div className="flex items-center space-x-1">
-                                  <Calendar className="w-3 h-3" />
-                                  <span>{formatDate(video.created_at)}</span>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2 mb-2">
+                                  <Badge
+                                    className={getStatusColor(
+                                      video.status_video
+                                    )}
+                                  >
+                                    {getStatusIcon(video.status_video)}
+                                    <span className="ml-1">
+                                      {getStatusText(video.status_video)}
+                                    </span>
+                                  </Badge>
+                                  <Badge variant="outline">
+                                    {video.model_ai}
+                                  </Badge>
+                                  <Badge variant="outline">
+                                    {video.aspect_ratio}
+                                  </Badge>
                                 </div>
-                                <div className="flex items-center space-x-1">
-                                  <Settings className="w-3 h-3" />
-                                  <span>{video.resolusi_video}</span>
+
+                                <p className="text-sm text-foreground mb-2 line-clamp-2">
+                                  {video.prompt}
+                                </p>
+
+                                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                                  <div className="flex items-center space-x-1">
+                                    <Calendar className="w-3 h-3" />
+                                    <span>{formatDate(video.created_at)}</span>
+                                  </div>
+                                  <div className="flex items-center space-x-1">
+                                    <Settings className="w-3 h-3" />
+                                    <span>{video.resolusi_video}</span>
+                                  </div>
                                 </div>
                               </div>
                             </div>
 
-                            {video.status_video === "success" &&
+                            {/* Action buttons for list tab */}
+                            {activeTab === "list" &&
+                              video.status_video === "success" &&
                               video.url_video && (
                                 <div className="flex space-x-2 ml-4">
                                   <Button
