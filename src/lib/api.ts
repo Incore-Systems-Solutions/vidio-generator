@@ -559,6 +559,84 @@ export const publicVideoGalleryApi = {
     }
   },
 };
+// Chat AI API
+export interface ChatAIInitResponse {
+  status: boolean;
+  message: string;
+  data: {
+    uuid: string;
+    message: {
+      role: "assistant";
+      content: string;
+    };
+  };
+}
+
+export interface ChatAIReplyResponse {
+  status: boolean;
+  message: string;
+  data: {
+    is_done: boolean;
+    message: {
+      role: "assistant";
+      content: string;
+    };
+  };
+}
+
+export const chatAIApi = {
+  async initChat(xApiKey: string): Promise<ChatAIInitResponse> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/chat-ai`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": xApiKey,
+        },
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to initialize chat");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error initializing chat:", error);
+      throw error;
+    }
+  },
+
+  async sendReply(
+    uuid: string,
+    message: string,
+    xApiKey: string
+  ): Promise<ChatAIReplyResponse> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/chat-ai/replies/${uuid}`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": xApiKey,
+        },
+        body: JSON.stringify({ message }),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to send reply");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error sending reply:", error);
+      throw error;
+    }
+  },
+};
+
 export const videoHistoryApi = {
   async requestOTP(
     username: string

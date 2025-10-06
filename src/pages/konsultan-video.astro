@@ -1,0 +1,36 @@
+---
+import { Navbar } from "@/components/Navbar"
+import { VideoConsultant } from "@/components/VideoConsultant"
+import "../styles/global.css"
+---
+
+<html lang="en" class="scroll-smooth">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Konsultan Video AI - Video Generator</title>
+		<meta name="description" content="Chat dengan AI assistant kami untuk mendapatkan bantuan dalam membuat video yang sempurna. Dapatkan tips, trik, dan panduan lengkap." />
+	</head>
+
+	<body class="min-h-screen bg-background antialiased">
+		<!-- Navigation -->
+		<Navbar client:load currentStep={0} totalSteps={4} />
+
+		<!-- Main Content -->
+		<main class="flex-1">
+			<VideoConsultant client:load />
+		</main>
+
+		<!-- Footer -->
+		<footer class="border-t py-12 mt-12">
+			<div class="container mx-auto px-4">
+				<div class="text-center text-muted-foreground">
+					<p>&copy; 2024 Video Generator. All rights reserved.</p>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
+

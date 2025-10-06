@@ -11,6 +11,7 @@ import {
   Download,
   CheckCircle2,
   History,
+  MessageCircle,
 } from "lucide-react";
 
 interface Step {
@@ -86,6 +87,18 @@ export function Navbar({
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-2 sm:space-x-4">
+              {/* Konsultan Video Button */}
+              <Button
+                variant="outline"
+                size="sm"
+                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-3"
+                onClick={() => (window.location.href = "/konsultan-video")}
+              >
+                <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
+                <span className="hidden md:inline">Konsultan Video</span>
+                <span className="md:hidden">Konsultan</span>
+              </Button>
+
               {/* Riwayat Video Button */}
               <Button
                 variant="outline"
