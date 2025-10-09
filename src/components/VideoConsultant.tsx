@@ -20,13 +20,24 @@ import {
   Clock,
   CheckCircle,
 } from "lucide-react";
-import { chatAIApi, videoHistoryApi } from "@/lib/api";
+import {
+  chatAIApi,
+  videoHistoryApi,
+  videoStoreApi,
+  type SceneData,
+  type SubSceneDetail,
+} from "@/lib/api";
 
 interface Message {
   id: string;
   role: "user" | "assistant";
   content: string;
   timestamp: Date;
+}
+
+interface JsonData {
+  type: string;
+  data: SceneData[];
 }
 
 export function VideoConsultant() {
@@ -47,6 +58,9 @@ export function VideoConsultant() {
   const [isDone, setIsDone] = useState(false);
   const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [jsonData, setJsonData] = useState<JsonData | null>(null);
+  const [editedScenes, setEditedScenes] = useState<SceneData[]>([]);
+  const [hasEdited, setHasEdited] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -182,6 +196,13 @@ export function VideoConsultant() {
 
         setMessages((prev) => [...prev, aiResponse]);
         setIsDone(response.data.is_done);
+
+        // Check if json_data exists and type is prompt_video
+        if (response.data.json_data && response.data.json_data.type === "prompt_video") {
+          console.log("Setting jsonData:", response.data.json_data);
+          setJsonData(response.data.json_data);
+          setEditedScenes(response.data.json_data.data);
+        }
       } else {
         setError(response.message || "Gagal mengirim pesan");
       }
@@ -205,6 +226,9 @@ export function VideoConsultant() {
       setMessages([]);
       setIsDone(false);
       setError(null);
+      setJsonData(null);
+      setEditedScenes([]);
+      setHasEdited(false);
 
       const response = await chatAIApi.initChat(xApiKey);
 
@@ -232,8 +256,70 @@ export function VideoConsultant() {
     }
   };
 
+  const handleSceneEdit = (sceneIndex: number, field: string, value: string) => {
+    setEditedScenes((prev) => {
+      const updated = [...prev];
+      updated[sceneIndex] = {
+        ...updated[sceneIndex],
+        [field]: value,
+      };
+      return updated;
+    });
+    setHasEdited(true);
+  };
+
+  const handleSubSceneEdit = (
+    sceneIndex: number,
+    subSceneIndex: number,
+    field: string,
+    value: string
+  ) => {
+    setEditedScenes((prev) => {
+      const updated = [...prev];
+      const updatedSubScenes = [...updated[sceneIndex].sub_scene_detail];
+      updatedSubScenes[subSceneIndex] = {
+        ...updatedSubScenes[subSceneIndex],
+        [field]: value,
+      };
+      updated[sceneIndex] = {
+        ...updated[sceneIndex],
+        sub_scene_detail: updatedSubScenes,
+      };
+      return updated;
+    });
+    setHasEdited(true);
+  };
+
   const handleGoToPayment = () => {
-    window.location.href = "/pembayaran";
+    if (!editedScenes.length || !xApiKey || !email) {
+      setError("Data tidak lengkap untuk melakukan pembayaran");
+      return;
+    }
+
+    try {
+      // Save konsultan data to localStorage
+      const konsultanData = {
+        type: "konsultan",
+        list: editedScenes,
+        email: email,
+        xApiKey: xApiKey,
+        is_share: "y",
+        affiliate_by: "",
+      };
+
+      localStorage.setItem("konsultan-video-data", JSON.stringify(konsultanData));
+      console.log("Konsultan data saved to localStorage:", konsultanData);
+
+      // Redirect to payment page
+      window.location.href = "/pembayaran";
+    } catch (err) {
+      console.error("Error saving konsultan data:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat menyimpan data"
+      );
+    }
   };
 
   const formatTime = (date: Date) => {
@@ -535,61 +621,41 @@ export function VideoConsultant() {
                   )}
                 </div>
 
-                {/* Payment Button (shown when isDone is true) */}
-                {isDone && (
-                  <div className="border-t p-4 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center space-x-3">
-                        <div className="w-12 h-12 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center">
-                          <Sparkles className="w-6 h-6 text-white" />
-                        </div>
-                        <div>
-                          <p className="font-semibold text-foreground">
-                            Setup video selesai!
-                          </p>
-                          <p className="text-sm text-muted-foreground">
-                            Lanjutkan ke pembayaran untuk membuat video Anda
-                          </p>
-                        </div>
-                      </div>
-                      <Button
-                        onClick={handleGoToPayment}
-                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                      >
-                        <CreditCard className="w-4 h-4 mr-2" />
-                        Lanjut ke Pembayaran
-                      </Button>
-                    </div>
-                  </div>
-                )}
-
                 {/* Input Area */}
                 <div className="border-t p-4 bg-background">
-                  <div className="flex gap-2">
-                    <Input
-                      ref={inputRef}
-                      type="text"
-                      placeholder="Ketik pertanyaan Anda di sini..."
-                      value={inputMessage}
-                      onChange={(e) => setInputMessage(e.target.value)}
-                      onKeyPress={handleKeyPress}
-                      disabled={isLoading || isInitializing}
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      disabled={
-                        !inputMessage.trim() || isLoading || isInitializing
-                      }
-                      className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                    >
-                      {isLoading ? (
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                      ) : (
-                        <Send className="w-4 h-4" />
-                      )}
-                    </Button>
-                  </div>
+                  {jsonData ? (
+                    <div className="text-center py-2">
+                      <p className="text-sm text-muted-foreground">
+                        Chat telah selesai. Silakan edit detail video di bawah.
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="flex gap-2">
+                      <Input
+                        ref={inputRef}
+                        type="text"
+                        placeholder="Ketik pertanyaan Anda di sini..."
+                        value={inputMessage}
+                        onChange={(e) => setInputMessage(e.target.value)}
+                        onKeyPress={handleKeyPress}
+                        disabled={isLoading || isInitializing}
+                        className="flex-1"
+                      />
+                      <Button
+                        onClick={handleSendMessage}
+                        disabled={
+                          !inputMessage.trim() || isLoading || isInitializing
+                        }
+                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                      >
+                        {isLoading ? (
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                        ) : (
+                          <Send className="w-4 h-4" />
+                        )}
+                      </Button>
+                    </div>
+                  )}
 
                   {/* Quick Suggestions */}
                   {/* {!isDone && (
@@ -622,6 +688,277 @@ export function VideoConsultant() {
                 </div>
               </CardContent>
             </Card>
+
+            {/* Video Scenes Editor */}
+            {jsonData && editedScenes.length > 0 && (
+              <div className="mt-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-2xl font-bold text-foreground">
+                    Detail Video Prompt
+                  </h2>
+                  <Badge variant="outline" className="text-sm">
+                    {editedScenes.length} Scene{editedScenes.length > 1 ? "s" : ""}
+                  </Badge>
+                </div>
+
+                {editedScenes.map((scene, sceneIndex) => (
+                  <Card
+                    key={scene.scene}
+                    className="border-2 border-purple-200 dark:border-purple-800 shadow-md"
+                  >
+                    <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+                      <CardTitle className="flex items-center justify-between">
+                        <span className="text-lg">Scene {scene.scene}</span>
+                        <Badge className="bg-purple-600">
+                          {scene.durasi_scene}
+                        </Badge>
+                      </CardTitle>
+                    </CardHeader>
+                    <CardContent className="p-6 space-y-4">
+                      {/* Judul */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Judul
+                        </label>
+                        <Input
+                          value={scene.judul}
+                          onChange={(e) =>
+                            handleSceneEdit(sceneIndex, "judul", e.target.value)
+                          }
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Bagian */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Bagian
+                        </label>
+                        <Input
+                          value={scene.bagian}
+                          onChange={(e) =>
+                            handleSceneEdit(sceneIndex, "bagian", e.target.value)
+                          }
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Durasi Scene */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Durasi Scene
+                        </label>
+                        <Input
+                          value={scene.durasi_scene}
+                          onChange={(e) =>
+                            handleSceneEdit(
+                              sceneIndex,
+                              "durasi_scene",
+                              e.target.value
+                            )
+                          }
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Deskripsi Visual */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Deskripsi Visual
+                        </label>
+                        <textarea
+                          value={scene.deskripsi_visual}
+                          onChange={(e) =>
+                            handleSceneEdit(
+                              sceneIndex,
+                              "deskripsi_visual",
+                              e.target.value
+                            )
+                          }
+                          className="w-full min-h-[100px] px-3 py-2 border border-input bg-background rounded-md text-sm"
+                          rows={4}
+                        />
+                      </div>
+
+                      {/* Sub Scene Interval */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Sub Scene Interval
+                        </label>
+                        <Input
+                          value={scene.sub_scene_interval}
+                          onChange={(e) =>
+                            handleSceneEdit(
+                              sceneIndex,
+                              "sub_scene_interval",
+                              e.target.value
+                            )
+                          }
+                          className="w-full"
+                        />
+                      </div>
+
+                      {/* Sub Scenes */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-3">
+                          Detail Sub Scene
+                        </label>
+                        <div className="space-y-3">
+                          {scene.sub_scene_detail.map((subScene, subSceneIndex) => (
+                            <Card
+                              key={subSceneIndex}
+                              className="bg-muted/50 border border-border"
+                            >
+                              <CardContent className="p-4 space-y-3">
+                                <div className="flex items-center justify-between mb-2">
+                                  <Badge variant="secondary">
+                                    {subScene.waktu}
+                                  </Badge>
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    Waktu
+                                  </label>
+                                  <Input
+                                    value={subScene.waktu}
+                                    onChange={(e) =>
+                                      handleSubSceneEdit(
+                                        sceneIndex,
+                                        subSceneIndex,
+                                        "waktu",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full"
+                                    size={1}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    Aksi dan Kamera
+                                  </label>
+                                  <textarea
+                                    value={subScene.aksi_dan_kamera}
+                                    onChange={(e) =>
+                                      handleSubSceneEdit(
+                                        sceneIndex,
+                                        subSceneIndex,
+                                        "aksi_dan_kamera",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
+                                    rows={2}
+                                  />
+                                </div>
+
+                                <div>
+                                  <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                    Atmosfer
+                                  </label>
+                                  <textarea
+                                    value={subScene.atmosfer}
+                                    onChange={(e) =>
+                                      handleSubSceneEdit(
+                                        sceneIndex,
+                                        subSceneIndex,
+                                        "atmosfer",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
+                                    rows={2}
+                                  />
+                                </div>
+                              </CardContent>
+                            </Card>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Audio dan Suara */}
+                      <div>
+                        <label className="block text-sm font-semibold text-foreground mb-2">
+                          Audio dan Suara
+                        </label>
+                        <textarea
+                          value={scene.audio_dan_suara}
+                          onChange={(e) =>
+                            handleSceneEdit(
+                              sceneIndex,
+                              "audio_dan_suara",
+                              e.target.value
+                            )
+                          }
+                          className="w-full min-h-[80px] px-3 py-2 border border-input bg-background rounded-md text-sm"
+                          rows={3}
+                        />
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
+
+                {/* Confirmation Box */}
+                {!hasEdited ? (
+                  <Card className="border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-start space-x-3">
+                          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium text-foreground mb-1">
+                              Review Setup Video Anda
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Periksa detail video di atas. Anda dapat mengedit jika
+                              diperlukan, atau konfirmasi untuk melanjutkan.
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => setHasEdited(true)}
+                          className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 whitespace-nowrap ml-4"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Konfirmasi Setup
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : (
+                  <Card className="border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
+                    <CardContent className="p-6">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center space-x-4">
+                          <div className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center flex-shrink-0">
+                            <Sparkles className="w-7 h-7 text-white" />
+                          </div>
+                          <div>
+                            <p className="text-lg font-bold text-foreground mb-1">
+                              Setup Video Selesai!
+                            </p>
+                            <p className="text-sm text-muted-foreground">
+                              Data video Anda ({editedScenes.length} scene) siap untuk diproses.
+                              Lanjutkan ke pembayaran untuk membuat video Anda.
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          onClick={handleGoToPayment}
+                          size="lg"
+                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 whitespace-nowrap ml-4 px-8"
+                        >
+                          <CreditCard className="w-5 h-5 mr-2" />
+                          Lanjut ke Pembayaran
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
+            )}
 
             {/* Info Cards */}
             {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">

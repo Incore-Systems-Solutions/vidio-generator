@@ -1,0 +1,48 @@
+{
+    "status": true,
+    "message": "Berhasil mendapatkan response",
+    "data": {
+        "type": "prompt_video",
+        "is_done": true,
+        "message": {
+            "role": "assistant",
+            "content": "Baiklah, sekarang saya akan menggunakan data yang telah kita kumpulkan untuk membuat naskah video sinematik yang sinematis dan berbobot. Berikut adalah JSON prompt video yang menggambarkan adegan epik dari pertempuran semutmu:\n\n\n\nHarapannya, detil ini memberikan pengalaman sinematik yang kaya, menggambarkan pertarungan epik di hutan untuk video AI yang kamu inginkan. Jika ada bagian yang perlu diubah atau ditambahkan, jangan ragu untuk memberitahu saya!"
+        },
+        "json_data": {
+            "type": "prompt_video",
+            "data": [
+                {
+                    "scene": 1,
+                    "judul": "Scene 1 - Pertempuran Hutan",
+                    "bagian": "Pembuka \u2014 Perkenalan & Arah Cerita",
+                    "durasi_scene": "8 detik",
+                    "deskripsi_visual": "Di tengah hutan yang agak lebat pada siang hari, gerombolan semut merah dengan karakter utama yang memiliki kekuatan super memimpin mereka melawan semut hitam. Pohon-pohon tinggi dengan bayangan tajam menciptakan latar belakang epik. Tekstur daun dan tanah hutan begitu detil dalam kontras menyala dari cahaya siang.",
+                    "sub_scene_interval": "2 detik",
+                    "sub_scene_detail": [
+                        {
+                            "waktu": "0\u20132 detik",
+                            "aksi_dan_kamera": "Kamera close-up pada semut merah utama, menunjukkan ekspresi penuh tekadnya ketika ia mengangkat senjata mini. Kamera bergerak dinamis mengikuti gerakan cepat lurus di depan semut ini, mempersiapkan diri di garis depan. Bayangan bergerak seiring cahaya matahari siang.",
+                            "atmosfer": "Cahaya matahari tajam menonjolkan semut dan alat tempurannya secara dramatis, suasana tegang di bawah pepohonan lebat."
+                        },
+                        {
+                            "waktu": "2\u20134 detik",
+                            "aksi_dan_kamera": "Kamera bergeser ke wide shot, memperlihatkan seluruh medan pertempuran. Gerombolan semut merah berlarian maju, sementara semut hitam menghadang mereka. Gerakan slow motion menampilkan senjata mini bergerak dengan presisi. Antara tubuh semut, batang dan dedaunan terlihat bergetar dengan cahaya yang memantul.",
+                            "atmosfer": "Atmosfer terasa sangat intens, pencahayaan tetap stabil dengan kontras tinggi antara bayangan dan sinar matahari langsung."
+                        },
+                        {
+                            "waktu": "4\u20136 detik",
+                            "aksi_dan_kamera": "Focus kembali pada semut merah utama yang lakukan lompatan akrobatik dengan stunning slow-motion menuju semut hitam yang bersiap menyerang. Teknik kamera mengikuti gerakannya dengan subtle tracking. Pohon menjulang seakan jadi saksi bisu dari pertarungan ini.",
+                            "atmosfer": "Cahaya dan warna tetap terjaga kehangatannya menggambarkan energi siang hari."
+                        },
+                        {
+                            "waktu": "6\u20138 detik",
+                            "aksi_dan_kamera": "Zona peralihan, tampak bahwa batang pohon dan beberapa semut hitam mulai mundur. Scene diakhiri dengan close-up kemenangan semut merah yang berdiri sukses, siap melanjutkan pertarungan ke babak berikutnya. Kamera perlahan men-zoom out untuk menampilkan lebih banyak detail hutan dan formasi semut. Arah gerakan semut menyatu menuju fokus awal scene.",
+                            "atmosfer": "Cahaya melurus lembut menutup scene dengan nada pencahayaan dramatis yang tetap epik."
+                        }
+                    ],
+                    "audio_dan_suara": "Suara hutan yang hidup dengan kicau burung samar dan gemerisik daun, diselipi semangat teriakan semut-semut saat bertarung. Bunyi pertempuran tercipta oleh senjata mini yang berdenting, terintegrasi alami dengan suasana hutan."
+                }
+            ]
+        }
+    }
+}

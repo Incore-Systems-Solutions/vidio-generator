@@ -10,7 +10,7 @@ interface OTPModalProps {
   isOpen: boolean;
   onClose: () => void;
   email: string;
-  onSuccess: (quota: number) => void;
+  onSuccess: (quota: number, xApiKey?: string) => void;
 }
 
 export function OTPModal({ isOpen, onClose, email, onSuccess }: OTPModalProps) {
@@ -72,7 +72,7 @@ export function OTPModal({ isOpen, onClose, email, onSuccess }: OTPModalProps) {
       if (response.status && response.data) {
         setSuccess("OTP berhasil divalidasi!");
         setTimeout(() => {
-          onSuccess(response.data!.quota);
+          onSuccess(response.data!.quota, response.data!["x-api-key"]);
           onClose();
         }, 1500);
       } else {

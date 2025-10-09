@@ -1,0 +1,74 @@
+{
+    "list": [
+      {
+        "scene": 1,
+        "judul": "Scene 1 - Permulaan Harmoni",
+        "bagian": "Pembuka — Perkenalan & Arah Cerita",
+        "durasi_scene": "8 detik",
+        "deskripsi_visual": "Harimau betina Sumatera bergerak anggun di atas tanah hutan yang lembut, dikelilingi pepohonan tinggi dan lebat dengan cahaya matahari pagi yang hangat menembus lembut melalui dedaunan.",
+        "sub_scene_interval": "4 detik",
+        "sub_scene_detail": [
+          {
+            "waktu": "0–4 detik",
+            "aksi_dan_kamera": "Kamera memperlihatkan harimau saat melangkah anggun melalui jalan setapak yang jelas, dengan wide shot menyorot keindahan alami hutan.",
+            "atmosfer": "Cahaya dan bayangan berpadu dalam nuansa hangat."
+          },
+          {
+            "waktu": "4–8 detik",
+            "aksi_dan_kamera": "Kamera mendekati close-up, menunjukkan ekspresi damai harimau.",
+            "atmosfer": "Suasana hutan asri memberi kesan ketenangan."
+          }
+        ],
+        "audio_dan_suara": "Suara kicauan burung, gemericik air sungai yang jernih."
+      },
+      {
+        "scene": 2,
+        "judul": "Scene 2 - Krisis Hutan",
+        "bagian": "Konflik — Melihat Kerusakan",
+        "durasi_scene": "8 detik",
+        "deskripsi_visual": "Harimau kini berada di area hutan rusak dengan tanah kering dan pohon tumbang. Cahaya redup dan suasana melankolis.",
+        "sub_scene_interval": "4 detik",
+        "sub_scene_detail": [
+          {
+            "waktu": "0–4 detik",
+            "aksi_dan_kamera": "Kamera slow tracking dari belakang harimau saat ia berjalan di antara batang pohon mati.",
+            "atmosfer": "Melankolis, dengan angin berdesir lembut."
+          },
+          {
+            "waktu": "4–8 detik",
+            "aksi_dan_kamera": "Close-up wajah harimau memperlihatkan ekspresi sedih.",
+            "atmosfer": "Tone warna dingin dan sunyi."
+          }
+        ],
+        "audio_dan_suara": "Suara angin kering dan gema alam kosong."
+      },
+      {
+        "scene": 3,
+        "judul": "Scene 3 - Harapan Akan Alam",
+        "bagian": "Klimaks — Kebangkitan dan Pemulihan",
+        "durasi_scene": "8 detik",
+        "deskripsi_visual": "Harimau memasuki kembali hutan hijau lebat. Cahaya sore yang hangat menandai kebangkitan alam.",
+        "sub_scene_interval": "4 detik",
+        "sub_scene_detail": [
+          {
+            "waktu": "0–4 detik",
+            "aksi_dan_kamera": "Close-up wajah harimau dengan mata tenang, di bawah cahaya keemasan sore hari.",
+            "atmosfer": "Hangat dan damai, sinar mentari menerobos dedaunan."
+          },
+          {
+            "waktu": "4–8 detik",
+            "aksi_dan_kamera": "Wide shot menunjukkan hamparan hutan hijau dengan harimau di tengahnya.",
+            "atmosfer": "Optimis, harmonis, dan penuh kehidupan."
+          }
+        ],
+        "audio_dan_suara": "Kicauan burung dan aliran air tenang menciptakan suasana damai."
+      }
+    ],
+    "metode_pengiriman": "pembayaran", // kuota atau pembayaran
+      "metode": "other_qris", //jika kuota set null. other_qris atau gopay
+      "jumlah": 22500, //jika kuota set null
+      "email": "febryancpratama@gmail.com",
+      "no_wa": null,
+      "is_share": "y",
+      "affiliate_by": "febryan-c-pratamaa" // jika tidak pakai link affiliate kirim string kosong aja
+  }

@@ -37,20 +37,37 @@ export function PaymentPage() {
   const [isOTPVerified, setIsOTPVerified] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isKonsultanMode, setIsKonsultanMode] = useState(false);
+  const [konsultanData, setKonsultanData] = useState<any>(null);
 
   // Load existing data from localStorage on component mount
   useEffect(() => {
-    // Debug localStorage
-    videoSetupStorage.debug();
-
-    const existingData = videoSetupStorage.load();
-    console.log("Loading existing data from localStorage:", existingData);
-    if (existingData) {
-      if (existingData.email) {
-        setEmail(existingData.email);
+    // Check if there's konsultan data
+    const konsultanDataStr = localStorage.getItem("konsultan-video-data");
+    if (konsultanDataStr) {
+      try {
+        const parsedData = JSON.parse(konsultanDataStr);
+        console.log("Loading konsultan data:", parsedData);
+        setIsKonsultanMode(true);
+        setKonsultanData(parsedData);
+        if (parsedData.email) {
+          setEmail(parsedData.email);
+        }
+      } catch (err) {
+        console.error("Error parsing konsultan data:", err);
       }
-      if (existingData.no_wa) {
-        setPhoneNumber(existingData.no_wa);
+    } else {
+      // Load regular video setup data
+      videoSetupStorage.debug();
+      const existingData = videoSetupStorage.load();
+      console.log("Loading existing data from localStorage:", existingData);
+      if (existingData) {
+        if (existingData.email) {
+          setEmail(existingData.email);
+        }
+        if (existingData.no_wa) {
+          setPhoneNumber(existingData.no_wa);
+        }
       }
     }
     // Note: We'll call handlePersonalInfoChange in a separate useEffect
@@ -71,7 +88,7 @@ export function PaymentPage() {
     setIsPersonalInfoComplete(isComplete);
   };
 
-  const handleOTPSuccess = async (quota: number) => {
+  const handleOTPSuccess = async (quota: number, newApiKey?: string) => {
     setUserQuota(quota);
     setIsOTPVerified(true);
     setIsOTPModalOpen(false);
@@ -79,16 +96,19 @@ export function PaymentPage() {
     // Fixed price for payment methods
     const fixedPrice = 10000;
 
-    // Update localStorage with payment info
-    videoSetupStorage.updatePaymentInfo({
-      email: email,
-      no_wa: phoneNumber,
-      metode_pengiriman: "kuota",
-      metode: null,
-      jumlah: fixedPrice,
-    });
+    // Update localStorage with payment info (for regular mode only)
+    // For konsultan mode, x-api-key will be obtained from store-multiple response
+    if (!isKonsultanMode) {
+      videoSetupStorage.updatePaymentInfo({
+        email: email,
+        no_wa: phoneNumber,
+        metode_pengiriman: "kuota",
+        metode: null,
+        jumlah: fixedPrice,
+      });
+    }
 
-    // Note: Removed automatic video generation - user must click "Generate Video" button
+    // Note: x-api-key will be saved after successful store/store-multiple API call
   };
 
   const handleVerificationClick = () => {
@@ -145,49 +165,89 @@ export function PaymentPage() {
       setIsProcessing(true);
       setError(null);
 
-      // Get all data from localStorage
-      const videoData = videoSetupStorage.load();
-      if (!videoData) {
-        throw new Error(
-          "Data video tidak ditemukan. Silakan kembali ke halaman setup."
-        );
-      }
+      // Check if this is konsultan mode
+      if (isKonsultanMode && konsultanData) {
+        // Use store-multiple API for konsultan with coins
+        const payload = {
+          list: konsultanData.list,
+          metode_pengiriman: "kuota" as const,
+          metode: null,
+          jumlah: 10000, // Fixed price
+          email: email,
+          no_wa: phoneNumber || null,
+          is_share: konsultanData.is_share || "y",
+          affiliate_by: konsultanData.affiliate_by || "",
+        };
 
-      // Prepare data for API call
-      const storeData = {
-        prompt: videoData.prompt,
-        karakter_image: videoData.karakter_image,
-        background_image: videoData.background_image,
-        aspek_rasio: videoData.aspek_rasio,
-        seeds: null,
-        model_ai: "veo3_fast",
-        metode_pengiriman: "kuota",
-        metode: null,
-        jumlah: videoData.jumlah,
-        email: videoData.email || email,
-        no_wa: videoData.no_wa || phoneNumber,
-        affiliate_by: "", // Empty string as per requirement
-      };
+        console.log("Sending konsultan payload with coins to store-multiple:", payload);
 
-      // Call the store API
-      const result = await videoStoreApi.storeVideoData(storeData);
-
-      if (result.status) {
-        // Success - save x-api-key and redirect to generate video
-        console.log(
-          "Video data stored successfully with coins:",
-          result.message
+        const result = await videoStoreApi.storeMultipleVideoData(
+          payload,
+          konsultanData.xApiKey
         );
 
-        // Save x-api-key to localStorage for video generation
-        if (result.data && result.data["x-api-key"]) {
-          localStorage.setItem("x-api-key", result.data["x-api-key"]);
+        if (result.status) {
+          console.log("Konsultan video data stored successfully with coins:", result.message);
+
+          // Save x-api-key from response to localStorage
+          if (result.data && result.data["x-api-key"]) {
+            localStorage.setItem("x-api-key", result.data["x-api-key"]);
+            console.log("Saved x-api-key from store-multiple:", result.data["x-api-key"]);
+          }
+
+          // Clear konsultan data from localStorage
+          localStorage.removeItem("konsultan-video-data");
+
+          // Redirect directly to generate video page since payment is completed
+          window.location.href = "/generate";
+        } else {
+          throw new Error(result.message || "Gagal menyimpan data video");
+        }
+      } else {
+        // Regular mode - use normal store API
+        const videoData = videoSetupStorage.load();
+        if (!videoData) {
+          throw new Error(
+            "Data video tidak ditemukan. Silakan kembali ke halaman setup."
+          );
         }
 
-        // Redirect directly to generate video page since payment is completed
-        window.location.href = "/generate";
-      } else {
-        throw new Error(result.message || "Gagal menyimpan data video");
+        // Prepare data for API call
+        const storeData = {
+          prompt: videoData.prompt,
+          karakter_image: videoData.karakter_image,
+          background_image: videoData.background_image,
+          aspek_rasio: videoData.aspek_rasio,
+          seeds: null,
+          model_ai: "veo3_fast",
+          metode_pengiriman: "kuota",
+          metode: null,
+          jumlah: videoData.jumlah,
+          email: videoData.email || email,
+          no_wa: videoData.no_wa || phoneNumber,
+          affiliate_by: "", // Empty string as per requirement
+        };
+
+        // Call the store API
+        const result = await videoStoreApi.storeVideoData(storeData);
+
+        if (result.status) {
+          // Success - save x-api-key and redirect to generate video
+          console.log(
+            "Video data stored successfully with coins:",
+            result.message
+          );
+
+          // Save x-api-key to localStorage for video generation
+          if (result.data && result.data["x-api-key"]) {
+            localStorage.setItem("x-api-key", result.data["x-api-key"]);
+          }
+
+          // Redirect directly to generate video page since payment is completed
+          window.location.href = "/generate";
+        } else {
+          throw new Error(result.message || "Gagal menyimpan data video");
+        }
       }
     } catch (err) {
       console.error("Error processing coins payment:", err);
@@ -206,51 +266,107 @@ export function PaymentPage() {
       setIsProcessing(true);
       setError(null);
 
-      // Get all data from localStorage
-      const videoData = videoSetupStorage.load();
-      if (!videoData) {
-        throw new Error(
-          "Data video tidak ditemukan. Silakan kembali ke halaman setup."
-        );
-      }
-
-      // Prepare data for API call
-      const storeData = {
-        prompt: videoData.prompt,
-        karakter_image: videoData.karakter_image,
-        background_image: videoData.background_image,
-        aspek_rasio: videoData.aspek_rasio,
-        seeds: null,
-        model_ai: "veo3_fast",
-        metode_pengiriman: videoData.metode_pengiriman || "pembayaran",
-        metode: videoData.metode,
-        jumlah: videoData.jumlah,
-        email: videoData.email || email,
-        no_wa: videoData.no_wa || phoneNumber,
-        affiliate_by: "", // Empty string as per requirement
-      };
-
-      // Call the store API
-      const result = await videoStoreApi.storeVideoData(storeData);
-
-      if (result.status) {
-        // Success - redirect to transaction detail page
-        console.log("Video data stored successfully:", result.message);
-
-        // Save x-api-key to localStorage for video generation
-        if (result.data && result.data["x-api-key"]) {
-          localStorage.setItem("x-api-key", result.data["x-api-key"]);
+      // Check if this is konsultan mode
+      if (isKonsultanMode && konsultanData) {
+        // Use store-multiple API for konsultan
+        let metode = null;
+        if (selectedPaymentMethod === "gopay") {
+          metode = "gopay";
+        } else if (selectedPaymentMethod === "qris") {
+          metode = "other_qris";
+        } else if (selectedPaymentMethod === "credit-card") {
+          metode = "kreem";
         }
 
-        // Extract invoice number from result.data.invoice
-        if (result.data && result.data.invoice) {
-          // Redirect to transaction detail page
-          window.location.href = `/transaksi/${result.data.invoice}`;
+        const payload = {
+          list: konsultanData.list,
+          metode_pengiriman: "pembayaran" as const,
+          metode: metode,
+          jumlah: 10000, // Fixed price
+          email: email,
+          no_wa: phoneNumber || null,
+          is_share: konsultanData.is_share || "y",
+          affiliate_by: konsultanData.affiliate_by || "",
+        };
+
+        console.log("Sending konsultan payload to store-multiple:", payload);
+
+        const result = await videoStoreApi.storeMultipleVideoData(
+          payload,
+          konsultanData.xApiKey
+        );
+
+        if (result.status) {
+          console.log("Konsultan video data stored successfully:", result.message);
+
+          // Save x-api-key from response to localStorage
+          if (result.data && result.data["x-api-key"]) {
+            localStorage.setItem("x-api-key", result.data["x-api-key"]);
+            console.log("Saved x-api-key from store-multiple:", result.data["x-api-key"]);
+          }
+
+          // Clear konsultan data from localStorage
+          localStorage.removeItem("konsultan-video-data");
+
+          // Redirect to transaction detail page or generate page
+          if (result.data && result.data.invoice) {
+            window.location.href = `/transaksi/${result.data.invoice}`;
+          } else if (result.data && result.data.is_payment === false) {
+            // No payment required, redirect to generate page
+            window.location.href = "/generate";
+          } else {
+            alert("Pembayaran berhasil! Video Anda sedang diproses.");
+          }
         } else {
-          alert("Pembayaran berhasil! Video Anda sedang diproses.");
+          throw new Error(result.message || "Gagal menyimpan data video");
         }
       } else {
-        throw new Error(result.message || "Gagal menyimpan data video");
+        // Regular mode - use normal store API
+        const videoData = videoSetupStorage.load();
+        if (!videoData) {
+          throw new Error(
+            "Data video tidak ditemukan. Silakan kembali ke halaman setup."
+          );
+        }
+
+        // Prepare data for API call
+        const storeData = {
+          prompt: videoData.prompt,
+          karakter_image: videoData.karakter_image,
+          background_image: videoData.background_image,
+          aspek_rasio: videoData.aspek_rasio,
+          seeds: null,
+          model_ai: "veo3_fast",
+          metode_pengiriman: videoData.metode_pengiriman || "pembayaran",
+          metode: videoData.metode,
+          jumlah: videoData.jumlah,
+          email: videoData.email || email,
+          no_wa: videoData.no_wa || phoneNumber,
+          affiliate_by: "", // Empty string as per requirement
+        };
+
+        // Call the store API
+        const result = await videoStoreApi.storeVideoData(storeData);
+
+        if (result.status) {
+          // Success - redirect to transaction detail page
+          console.log("Video data stored successfully:", result.message);
+
+          // Save x-api-key to localStorage for video generation
+          if (result.data && result.data["x-api-key"]) {
+            localStorage.setItem("x-api-key", result.data["x-api-key"]);
+          }
+
+          // Extract invoice number from result.data.invoice
+          if (result.data && result.data.invoice) {
+            // Redirect to transaction detail page
+            window.location.href = `/transaksi/${result.data.invoice}`;
+          } else {
+            alert("Pembayaran berhasil! Video Anda sedang diproses.");
+          }
+        } else {
+          throw new Error(result.message || "Gagal menyimpan data video");
+        }
       }
     } catch (err) {
       console.error("Error processing payment:", err);
@@ -318,6 +434,14 @@ export function PaymentPage() {
             Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan
             video AI Anda
           </p>
+          {isKonsultanMode && (
+            <div className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-950/30 dark:to-blue-950/30 border border-purple-300 dark:border-purple-700 rounded-lg">
+              <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-2" />
+              <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
+                Video dari Konsultan AI ({konsultanData?.list?.length || 0} Scene)
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Main Content Grid */}

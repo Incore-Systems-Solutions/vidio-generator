@@ -175,6 +175,35 @@ export interface VideoStoreData {
   is_share?: "y" | "n";
 }
 
+// Video Store Multiple Data Interface
+export interface SubSceneDetail {
+  waktu: string;
+  aksi_dan_kamera: string;
+  atmosfer: string;
+}
+
+export interface SceneData {
+  scene: number;
+  judul: string;
+  bagian: string;
+  durasi_scene: string;
+  deskripsi_visual: string;
+  sub_scene_interval: string;
+  sub_scene_detail: SubSceneDetail[];
+  audio_dan_suara: string;
+}
+
+export interface VideoStoreMultipleData {
+  list: SceneData[];
+  metode_pengiriman: "pembayaran" | "kuota";
+  metode?: string | null;
+  jumlah?: number | null;
+  email: string;
+  no_wa?: string | null;
+  is_share: "y" | "n";
+  affiliate_by: string;
+}
+
 export const videoStoreApi = {
   async storeVideoData(data: VideoStoreData): Promise<{
     status: boolean;
@@ -206,6 +235,41 @@ export const videoStoreApi = {
       throw error;
     }
   },
+
+  async storeMultipleVideoData(
+    data: VideoStoreMultipleData,
+    xApiKey: string
+  ): Promise<{
+    status: boolean;
+    message: string;
+    data: {
+      is_payment: boolean;
+      invoice: string;
+      "x-api-key": string;
+    };
+  }> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/video-ai/store-multiple`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": xApiKey,
+        },
+        body: JSON.stringify(data),
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Store multiple failed");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error storing multiple video data:", error);
+      throw error;
+    }
+  },
 };
 
 // OTP API
@@ -223,6 +287,7 @@ export interface ValidateOTPResponse {
   message: string;
   data?: {
     quota: number;
+    "x-api-key"?: string;
   };
 }
 
@@ -576,10 +641,15 @@ export interface ChatAIReplyResponse {
   status: boolean;
   message: string;
   data: {
+    type?: string;
     is_done: boolean;
     message: {
       role: "assistant";
       content: string;
+    };
+    json_data?: {
+      type: string;
+      data: any[];
     };
   };
 }
