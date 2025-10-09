@@ -199,9 +199,18 @@ export function VideoConsultant() {
 
         // Check if json_data exists and type is prompt_video
         if (response.data.json_data && response.data.json_data.type === "prompt_video") {
-          console.log("Setting jsonData:", response.data.json_data);
+          console.log("Received json_data:", response.data.json_data);
+          console.log("is_done:", response.data.is_done);
+          
           setJsonData(response.data.json_data);
-          setEditedScenes(response.data.json_data.data);
+          
+          // Always accumulate scenes from all batches
+          setEditedScenes((prev) => {
+            const newScenes = response.data.json_data?.data || [];
+            const accumulated = [...prev, ...newScenes];
+            console.log(`Accumulating scenes: ${prev.length} + ${newScenes.length} = ${accumulated.length}`);
+            return accumulated;
+          });
         }
       } else {
         setError(response.message || "Gagal mengirim pesan");
@@ -291,6 +300,14 @@ export function VideoConsultant() {
   };
 
   const handleGoToPayment = () => {
+    console.log("handleGoToPayment called - isDone:", isDone, "editedScenes:", editedScenes.length);
+    
+    // Check if batch is completed (isDone must be true)
+    if (!isDone) {
+      setError("Silakan selesaikan semua batch terlebih dahulu sebelum melanjutkan ke pembayaran");
+      return;
+    }
+
     if (!editedScenes.length || !xApiKey || !email) {
       setError("Data tidak lengkap untuk melakukan pembayaran");
       return;
@@ -308,7 +325,10 @@ export function VideoConsultant() {
       };
 
       localStorage.setItem("konsultan-video-data", JSON.stringify(konsultanData));
-      console.log("Konsultan data saved to localStorage:", konsultanData);
+      console.log("Konsultan data saved to localStorage:", {
+        ...konsultanData,
+        sceneCount: editedScenes.length
+      });
 
       // Redirect to payment page
       window.location.href = "/pembayaran";
@@ -623,11 +643,45 @@ export function VideoConsultant() {
 
                 {/* Input Area */}
                 <div className="border-t p-4 bg-background">
-                  {jsonData ? (
+                  {jsonData && isDone ? (
                     <div className="text-center py-2">
                       <p className="text-sm text-muted-foreground">
                         Chat telah selesai. Silakan edit detail video di bawah.
                       </p>
+                    </div>
+                  ) : jsonData && !isDone ? (
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-center space-x-2 py-2 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+                        <Clock className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
+                        <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
+                          Masih ada batch berikutnya. Lanjutkan chat untuk mendapatkan scene tambahan.
+                        </p>
+                      </div>
+                      <div className="flex gap-2">
+                        <Input
+                          ref={inputRef}
+                          type="text"
+                          placeholder="Lanjutkan chat untuk batch berikutnya..."
+                          value={inputMessage}
+                          onChange={(e) => setInputMessage(e.target.value)}
+                          onKeyPress={handleKeyPress}
+                          disabled={isLoading || isInitializing}
+                          className="flex-1"
+                        />
+                        <Button
+                          onClick={handleSendMessage}
+                          disabled={
+                            !inputMessage.trim() || isLoading || isInitializing
+                          }
+                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
+                        >
+                          {isLoading ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Send className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
                     </div>
                   ) : (
                     <div className="flex gap-2">
@@ -693,9 +747,17 @@ export function VideoConsultant() {
             {jsonData && editedScenes.length > 0 && (
               <div className="mt-6 space-y-4">
                 <div className="flex items-center justify-between">
-                  <h2 className="text-2xl font-bold text-foreground">
-                    Detail Video Prompt
-                  </h2>
+                  <div className="flex items-center space-x-3">
+                    <h2 className="text-2xl font-bold text-foreground">
+                      Detail Video Prompt
+                    </h2>
+                    {!isDone && (
+                      <Badge className="bg-yellow-500 text-white">
+                        <Clock className="w-3 h-3 mr-1" />
+                        Batch Berlanjut
+                      </Badge>
+                    )}
+                  </div>
                   <Badge variant="outline" className="text-sm">
                     {editedScenes.length} Scene{editedScenes.length > 1 ? "s" : ""}
                   </Badge>
@@ -901,7 +963,33 @@ export function VideoConsultant() {
                 ))}
 
                 {/* Confirmation Box */}
-                {!hasEdited ? (
+                {!isDone ? (
+                  <Card className="border-2 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/20">
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-start space-x-3">
+                          <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
+                          <div>
+                            <p className="text-sm font-medium text-foreground mb-1">
+                              Batch Scene Belum Selesai
+                            </p>
+                            <p className="text-xs text-muted-foreground">
+                              Masih ada batch berikutnya. Lanjutkan chat dengan AI untuk mendapatkan semua scene video Anda. Saat ini {editedScenes.length} scene sudah tersedia.
+                            </p>
+                          </div>
+                        </div>
+                        <Button
+                          disabled
+                          size="lg"
+                          className="bg-gray-400 cursor-not-allowed whitespace-nowrap ml-4 px-8"
+                        >
+                          <CreditCard className="w-5 h-5 mr-2" />
+                          Lanjut ke Pembayaran
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ) : !hasEdited ? (
                   <Card className="border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20">
                     <CardContent className="p-4">
                       <div className="flex items-center justify-between">

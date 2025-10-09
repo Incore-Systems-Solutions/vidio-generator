@@ -131,37 +131,37 @@ export function PaymentPage() {
 
     // Update localStorage based on payment method (only for regular mode)
     if (!isKonsultanMode) {
-      if (methodId === "coins") {
-        // For coins, only update if OTP is verified
-        if (isOTPVerified) {
-          videoSetupStorage.updatePaymentInfo({
-            email: email,
-            no_wa: phoneNumber,
-            metode_pengiriman: "kuota",
-            metode: null,
-            jumlah: totalPrice,
-          });
-
-          // Note: Removed automatic video generation - user must click "Generate Video" button
-        }
-      } else {
-        // For other payment methods, update immediately
-        let metode = null;
-        if (methodId === "gopay") {
-          metode = "gopay";
-        } else if (methodId === "qris") {
-          metode = "other_qris";
-        } else if (methodId === "credit-card") {
-          metode = "kreem";
-        }
-
+    if (methodId === "coins") {
+      // For coins, only update if OTP is verified
+      if (isOTPVerified) {
         videoSetupStorage.updatePaymentInfo({
           email: email,
           no_wa: phoneNumber,
-          metode_pengiriman: "pembayaran",
-          metode: metode,
-          jumlah: totalPrice,
+          metode_pengiriman: "kuota",
+          metode: null,
+            jumlah: totalPrice,
         });
+
+        // Note: Removed automatic video generation - user must click "Generate Video" button
+      }
+    } else {
+      // For other payment methods, update immediately
+      let metode = null;
+      if (methodId === "gopay") {
+        metode = "gopay";
+      } else if (methodId === "qris") {
+        metode = "other_qris";
+      } else if (methodId === "credit-card") {
+        metode = "kreem";
+      }
+
+      videoSetupStorage.updatePaymentInfo({
+        email: email,
+        no_wa: phoneNumber,
+        metode_pengiriman: "pembayaran",
+        metode: metode,
+          jumlah: totalPrice,
+      });
       }
     }
   };
@@ -571,10 +571,10 @@ export function PaymentPage() {
                         </>
                       ) : (
                         <>
-                          • Minimal Transaksi: <strong>10.000</strong>
-                          <br />• Biaya produksi video: <strong>7.500</strong>
-                          <br />• Sisa <strong>2.500</strong> dikonversi menjadi
-                          koin untuk video berikutnya
+                      • Minimal Transaksi: <strong>10.000</strong>
+                      <br />• Biaya produksi video: <strong>7.500</strong>
+                      <br />• Sisa <strong>2.500</strong> dikonversi menjadi
+                      koin untuk video berikutnya
                         </>
                       )}
                     </p>
