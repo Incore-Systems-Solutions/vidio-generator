@@ -18,6 +18,8 @@ import {
   User,
   Mail,
   Phone,
+  Sparkles,
+  List,
 } from "lucide-react";
 import { transactionApi, type TransactionData } from "@/lib/api";
 import { videoSetupStorage } from "@/lib/videoSetupStorage";
@@ -36,6 +38,8 @@ export function TransactionDetail({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [isKonsultanMode, setIsKonsultanMode] = useState(false);
+  const [konsultanData, setKonsultanData] = useState<any>(null);
 
   const fetchTransaction = async () => {
     try {
@@ -43,6 +47,12 @@ export function TransactionDetail({
       const response = await transactionApi.getTransaction(invoiceNumber);
       if (response.status) {
         setTransaction(response.data);
+        
+        // Save x-api-key if available in response
+        if (response.data && (response.data as any)["x-api-key"]) {
+          localStorage.setItem("x-api-key", (response.data as any)["x-api-key"]);
+          console.log("Saved x-api-key from transaction:", (response.data as any)["x-api-key"]);
+        }
       } else {
         throw new Error(response.message || "Failed to fetch transaction");
       }
@@ -63,9 +73,24 @@ export function TransactionDetail({
 
   useEffect(() => {
     fetchTransaction();
-    // Load video data from localStorage
-    const storedVideoData = videoSetupStorage.load();
-    setVideoData(storedVideoData);
+    
+    // Check if there's konsultan data
+    const konsultanDataStr = localStorage.getItem("konsultan-video-data");
+    if (konsultanDataStr) {
+      try {
+        const parsedData = JSON.parse(konsultanDataStr);
+        console.log("Loading konsultan data in transaction detail:", parsedData);
+        setIsKonsultanMode(true);
+        setKonsultanData(parsedData);
+        // For konsultan mode, we'll display the list of scenes
+      } catch (err) {
+        console.error("Error parsing konsultan data:", err);
+      }
+    } else {
+      // Load regular video setup data
+      const storedVideoData = videoSetupStorage.load();
+      setVideoData(storedVideoData);
+    }
   }, [invoiceNumber]);
 
   const getStatusIcon = (status: string) => {
@@ -207,9 +232,17 @@ export function TransactionDetail({
             <h1 className="text-3xl font-bold text-foreground">
               Detail Transaksi
             </h1>
-            <p className="text-muted-foreground">
-              Invoice: {transaction.invoice_number}
-            </p>
+            <div className="flex items-center space-x-2">
+              <p className="text-muted-foreground">
+                Invoice: {transaction.invoice_number}
+              </p>
+              {isKonsultanMode && (
+                <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                  <Sparkles className="w-3 h-3 mr-1" />
+                  Video Konsultan
+                </Badge>
+              )}
+            </div>
           </div>
         </div>
         <Button
@@ -384,8 +417,70 @@ export function TransactionDetail({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {videoData ? (
+              {isKonsultanMode && konsultanData ? (
                 <>
+                  {/* Konsultan Mode - Show list of scenes */}
+                  <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center space-x-2">
+                      <List className="w-4 h-4 text-purple-600" />
+                      <p className="text-sm font-medium text-foreground">
+                        Total Scene: {konsultanData.list?.length || 0}
+                      </p>
+                    </div>
+                    <Badge className="bg-gradient-to-r from-purple-600 to-blue-600 text-white">
+                      Multiple Videos
+                    </Badge>
+                  </div>
+                  
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                    {konsultanData.list?.map((scene: any, index: number) => (
+                      <div 
+                        key={index} 
+                        className="bg-gray-50 dark:bg-gray-800 p-4 rounded-lg border border-gray-200 dark:border-gray-700"
+                      >
+                        <div className="flex items-start space-x-3">
+                          <div className="w-8 h-8 bg-purple-100 dark:bg-purple-900/30 rounded-full flex items-center justify-center flex-shrink-0">
+                            <span className="text-sm font-semibold text-purple-600 dark:text-purple-400">
+                              {index + 1}
+                            </span>
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <p className="text-sm text-foreground line-clamp-3">
+                              {scene.prompt || "Tidak ada prompt"}
+                            </p>
+                            {scene.aspek_rasio && (
+                              <Badge variant="outline" className="mt-2 text-xs">
+                                {scene.aspek_rasio}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                  
+                  <div className="pt-3 border-t">
+                    <div className="grid grid-cols-2 gap-3">
+                      {konsultanData.email && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Email</p>
+                          <p className="text-sm font-medium truncate">{konsultanData.email}</p>
+                        </div>
+                      )}
+                      {konsultanData.is_share && (
+                        <div>
+                          <p className="text-xs text-muted-foreground">Share Status</p>
+                          <Badge variant="outline" className="text-xs">
+                            {konsultanData.is_share === 'y' ? 'Shared' : 'Private'}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </>
+              ) : videoData ? (
+                <>
+                  {/* Regular Mode - Show single video details */}
                   <div>
                     <p className="text-sm text-muted-foreground">Judul Video</p>
                     <p className="font-semibold text-foreground">
@@ -443,7 +538,34 @@ export function TransactionDetail({
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-3">
-              {videoData ? (
+              {isKonsultanMode && konsultanData ? (
+                <>
+                  {konsultanData.email && (
+                    <div className="flex items-center space-x-3">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        {konsultanData.email}
+                      </span>
+                    </div>
+                  )}
+                  {konsultanData.no_wa && (
+                    <div className="flex items-center space-x-3">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        {konsultanData.no_wa}
+                      </span>
+                    </div>
+                  )}
+                  {konsultanData.affiliate_by && (
+                    <div className="pt-3 border-t">
+                      <p className="text-xs text-muted-foreground mb-1">Affiliate By</p>
+                      <Badge variant="outline" className="text-xs">
+                        {konsultanData.affiliate_by}
+                      </Badge>
+                    </div>
+                  )}
+                </>
+              ) : videoData ? (
                 <>
                   <div className="flex items-center space-x-3">
                     <Mail className="w-4 h-4 text-muted-foreground" />

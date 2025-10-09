@@ -93,8 +93,11 @@ export function PaymentPage() {
     setIsOTPVerified(true);
     setIsOTPModalOpen(false);
 
-    // Fixed price for payment methods
-    const fixedPrice = 10000;
+    // Calculate price based on mode
+    const pricePerVideo = 10000;
+    const totalPrice = isKonsultanMode && konsultanData?.list
+      ? pricePerVideo * konsultanData.list.length
+      : pricePerVideo;
 
     // Update localStorage with payment info (for regular mode only)
     // For konsultan mode, x-api-key will be obtained from store-multiple response
@@ -104,7 +107,7 @@ export function PaymentPage() {
         no_wa: phoneNumber,
         metode_pengiriman: "kuota",
         metode: null,
-        jumlah: fixedPrice,
+        jumlah: totalPrice,
       });
     }
 
@@ -120,41 +123,46 @@ export function PaymentPage() {
   const handlePaymentMethodSelect = async (methodId: string) => {
     setSelectedPaymentMethod(methodId);
 
-    // Fixed price for all payment methods
-    const fixedPrice = 10000;
+    // Calculate price based on mode
+    const pricePerVideo = 10000;
+    const totalPrice = isKonsultanMode && konsultanData?.list
+      ? pricePerVideo * konsultanData.list.length
+      : pricePerVideo;
 
-    // Update localStorage based on payment method
-    if (methodId === "coins") {
-      // For coins, only update if OTP is verified
-      if (isOTPVerified) {
+    // Update localStorage based on payment method (only for regular mode)
+    if (!isKonsultanMode) {
+      if (methodId === "coins") {
+        // For coins, only update if OTP is verified
+        if (isOTPVerified) {
+          videoSetupStorage.updatePaymentInfo({
+            email: email,
+            no_wa: phoneNumber,
+            metode_pengiriman: "kuota",
+            metode: null,
+            jumlah: totalPrice,
+          });
+
+          // Note: Removed automatic video generation - user must click "Generate Video" button
+        }
+      } else {
+        // For other payment methods, update immediately
+        let metode = null;
+        if (methodId === "gopay") {
+          metode = "gopay";
+        } else if (methodId === "qris") {
+          metode = "other_qris";
+        } else if (methodId === "credit-card") {
+          metode = "kreem";
+        }
+
         videoSetupStorage.updatePaymentInfo({
           email: email,
           no_wa: phoneNumber,
-          metode_pengiriman: "kuota",
-          metode: null,
-          jumlah: fixedPrice,
+          metode_pengiriman: "pembayaran",
+          metode: metode,
+          jumlah: totalPrice,
         });
-
-        // Note: Removed automatic video generation - user must click "Generate Video" button
       }
-    } else {
-      // For other payment methods, update immediately
-      let metode = null;
-      if (methodId === "gopay") {
-        metode = "gopay";
-      } else if (methodId === "qris") {
-        metode = "other_qris";
-      } else if (methodId === "credit-card") {
-        metode = "kreem";
-      }
-
-      videoSetupStorage.updatePaymentInfo({
-        email: email,
-        no_wa: phoneNumber,
-        metode_pengiriman: "pembayaran",
-        metode: metode,
-        jumlah: fixedPrice,
-      });
     }
   };
 
@@ -165,6 +173,12 @@ export function PaymentPage() {
       setIsProcessing(true);
       setError(null);
 
+      // Calculate price based on mode
+      const pricePerVideo = 10000;
+      const totalPrice = isKonsultanMode && konsultanData?.list
+        ? pricePerVideo * konsultanData.list.length
+        : pricePerVideo;
+
       // Check if this is konsultan mode
       if (isKonsultanMode && konsultanData) {
         // Use store-multiple API for konsultan with coins
@@ -172,7 +186,7 @@ export function PaymentPage() {
           list: konsultanData.list,
           metode_pengiriman: "kuota" as const,
           metode: null,
-          jumlah: 10000, // Fixed price
+          jumlah: totalPrice, // Dynamic price based on list count
           email: email,
           no_wa: phoneNumber || null,
           is_share: konsultanData.is_share || "y",
@@ -266,6 +280,12 @@ export function PaymentPage() {
       setIsProcessing(true);
       setError(null);
 
+      // Calculate price based on mode
+      const pricePerVideo = 10000;
+      const totalPrice = isKonsultanMode && konsultanData?.list
+        ? pricePerVideo * konsultanData.list.length
+        : pricePerVideo;
+
       // Check if this is konsultan mode
       if (isKonsultanMode && konsultanData) {
         // Use store-multiple API for konsultan
@@ -282,7 +302,7 @@ export function PaymentPage() {
           list: konsultanData.list,
           metode_pengiriman: "pembayaran" as const,
           metode: metode,
-          jumlah: 10000, // Fixed price
+          jumlah: totalPrice, // Dynamic price based on list count
           email: email,
           no_wa: phoneNumber || null,
           is_share: konsultanData.is_share || "y",
@@ -306,7 +326,7 @@ export function PaymentPage() {
           }
 
           // Clear konsultan data from localStorage
-          localStorage.removeItem("konsultan-video-data");
+          // localStorage.removeItem("konsultan-video-data");
 
           // Redirect to transaction detail page or generate page
           if (result.data && result.data.invoice) {
@@ -380,7 +400,21 @@ export function PaymentPage() {
     }
   };
 
-  // Removed pricingPackages - using fixed pricing of Rp 10.000
+  // Calculate dynamic pricing
+  const pricePerVideo = 10000;
+  const videoCount = isKonsultanMode && konsultanData?.list 
+    ? konsultanData.list.length 
+    : 1;
+  const totalPrice = pricePerVideo * videoCount;
+  const productionCost = 7500 * videoCount;
+  const bonusCoins = 2500 * videoCount;
+
+  // Format currency helper
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat("id-ID").format(amount);
+  };
+
+  // Removed pricingPackages - using dynamic pricing
 
   const paymentMethods = [
     {
@@ -391,7 +425,7 @@ export function PaymentPage() {
         : "Verifikasi OTP terlebih dahulu",
       icon: <Coins className="w-6 h-6" />,
       balance: userQuota ? `${userQuota.toLocaleString()} Koin` : "0 Koin",
-      disabled: !isOTPVerified || (userQuota !== null && userQuota < 7500),
+      disabled: !isOTPVerified || (userQuota !== null && userQuota < productionCost),
     },
     {
       id: "gopay",
@@ -457,14 +491,22 @@ export function PaymentPage() {
                 </div>
                 <div>
                   <h2 className="text-3xl font-bold">Video AI</h2>
-                  <p className="text-white/80 text-lg">Harga tetap per video</p>
+                  <p className="text-white/80 text-lg">
+                    {isKonsultanMode 
+                      ? `${videoCount} Video x Rp ${formatCurrency(productionCost / videoCount)}`
+                      : "Harga tetap per video"
+                    }
+                  </p>
                 </div>
               </div>
               <div className="text-5xl font-extrabold mb-2 w-full text-center">
-                Rp 7.500
+                Rp {formatCurrency(productionCost)}
               </div>
               <p className="text-white/80 text-lg w-full text-center">
-                1 Video HD berkualitas tinggi
+                {isKonsultanMode 
+                  ? `${videoCount} Video HD berkualitas tinggi`
+                  : "1 Video HD berkualitas tinggi"
+                }
               </p>
             </div>
 
@@ -519,10 +561,22 @@ export function PaymentPage() {
                       Rincian Penggunaan:
                     </p>
                     <p className="text-blue-700 dark:text-blue-300">
-                      • Minimal Transaksi: <strong>10.000</strong>
-                      <br />• Biaya produksi video: <strong>7.500</strong>
-                      <br />• Sisa <strong>2.500</strong> dikonversi menjadi
-                      koin untuk video berikutnya
+                      {isKonsultanMode ? (
+                        <>
+                          • Jumlah Video: <strong>{videoCount}</strong>
+                          <br />• Minimal Transaksi: <strong>{formatCurrency(totalPrice)}</strong>
+                          <br />• Biaya produksi video: <strong>{formatCurrency(productionCost)}</strong>
+                          <br />• Sisa <strong>{formatCurrency(bonusCoins)}</strong> dikonversi menjadi
+                          koin untuk video berikutnya
+                        </>
+                      ) : (
+                        <>
+                          • Minimal Transaksi: <strong>10.000</strong>
+                          <br />• Biaya produksi video: <strong>7.500</strong>
+                          <br />• Sisa <strong>2.500</strong> dikonversi menjadi
+                          koin untuk video berikutnya
+                        </>
+                      )}
                     </p>
                   </div>
                 </div>
@@ -895,7 +949,7 @@ export function PaymentPage() {
               !selectedPaymentMethod ||
               !isPersonalInfoComplete ||
               (selectedPaymentMethod === "coins" &&
-                (!isOTPVerified || (userQuota !== null && userQuota < 7500))) ||
+                (!isOTPVerified || (userQuota !== null && userQuota < productionCost))) ||
               (selectedPaymentMethod !== "coins" && !isOTPVerified) ||
               isProcessing
             }
