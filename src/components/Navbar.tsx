@@ -76,27 +76,27 @@ export function Navbar({
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             {/* Logo/Brand */}
             <div className="flex items-center">
-              <div className="flex items-center space-x-2">
+              {/* <div className="flex items-center space-x-2">
                 <img
                   src="/logo.svg"
                   alt="Instant VideoApp"
                   className="h-8 sm:h-10 md:h-12 w-auto"
                 />
-              </div>
+              </div> */}
             </div>
 
             {/* Right Side Actions */}
             <div className="flex items-center space-x-2 sm:space-x-4">
-              {/* Konsultan Video Button */}
+              {/* Video-making Consultant Button */}
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-3"
+                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse"
                 onClick={() => (window.location.href = "/konsultan-video")}
               >
                 <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="hidden md:inline">Konsultan Video</span>
-                <span className="md:hidden">Konsultan</span>
+                <span className="hidden md:inline">Video-making Consultant</span>
+                <span className="md:hidden">Consultant</span>
               </Button>
 
               {/* Riwayat Video Button */}

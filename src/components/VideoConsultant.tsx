@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -62,7 +63,7 @@ export function VideoConsultant() {
   const [editedScenes, setEditedScenes] = useState<SceneData[]>([]);
   const [hasEdited, setHasEdited] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputRef = useRef<HTMLTextAreaElement>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -349,7 +350,7 @@ export function VideoConsultant() {
     });
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === "Enter" && !e.shiftKey) {
       e.preventDefault();
       handleSendMessage();
@@ -658,15 +659,15 @@ export function VideoConsultant() {
                         </p>
                       </div>
                       <div className="flex gap-2">
-                        <Input
+                        <Textarea
                           ref={inputRef}
-                          type="text"
                           placeholder="Lanjutkan chat untuk batch berikutnya..."
                           value={inputMessage}
                           onChange={(e) => setInputMessage(e.target.value)}
                           onKeyPress={handleKeyPress}
                           disabled={isLoading || isInitializing}
-                          className="flex-1"
+                          className="flex-1 min-h-[40px] max-h-[120px] resize-none"
+                          rows={1}
                         />
                         <Button
                           onClick={handleSendMessage}
@@ -685,15 +686,15 @@ export function VideoConsultant() {
                     </div>
                   ) : (
                     <div className="flex gap-2">
-                      <Input
+                      <Textarea
                         ref={inputRef}
-                        type="text"
                         placeholder="Ketik pertanyaan Anda di sini..."
                         value={inputMessage}
                         onChange={(e) => setInputMessage(e.target.value)}
                         onKeyPress={handleKeyPress}
                         disabled={isLoading || isInitializing}
-                        className="flex-1"
+                        className="flex-1 min-h-[40px] max-h-[120px] resize-none"
+                        rows={1}
                       />
                       <Button
                         onClick={handleSendMessage}
