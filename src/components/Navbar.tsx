@@ -76,13 +76,13 @@ export function Navbar({
           <div className="flex items-center justify-between mb-3 sm:mb-4">
             {/* Logo/Brand */}
             <div className="flex items-center">
-              {/* <div className="flex items-center space-x-2">
+              <div className="flex items-center space-x-2">
                 <img
                   src="/logo.svg"
                   alt="Instant VideoApp"
                   className="h-8 sm:h-10 md:h-12 w-auto"
                 />
-              </div> */}
+              </div>
             </div>
 
             {/* Right Side Actions */}
