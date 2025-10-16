@@ -91,7 +91,7 @@ export function Navbar({
               <Button
                 variant="outline"
                 size="sm"
-                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-300 animate-pulse"
+                className="flex items-center space-x-1 sm:space-x-2 text-xs sm:text-sm px-2 sm:px-3"
                 onClick={() => (window.location.href = "/konsultan-video")}
               >
                 <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
