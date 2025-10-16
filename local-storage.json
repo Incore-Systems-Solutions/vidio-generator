@@ -1,14 +1,47 @@
 {
-  "prompt": "A hyper-realistic cinematic war scene, soldiers in modern military gear running through a battlefield with smoke, fire, and destroyed buildings, tanks moving in the background, dramatic lighting, handheld camera effect, epic atmosphere, 4K, ultra detailed, movie trailer style.",
-  "karakter_image": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-  "background_image": "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-  "aspek_rasio": "16:9",
-  "judul_video": "cek",
-  "bahasa": "id",
-  "gaya_suara": "natural",
-  "voice_over": "male",
-  "tone": "professional",
-  "background_music": "upbeat",
-  "resolusi_video": "1080p",
-  "is_share": "y"
+  "type": "collecting_data",
+  "data": {
+    "script_naskah": {
+      "subjek": "Sebuah kota modern dengan gedung pencakar langit di siang hari, suasana berubah saat seekor kucing raksasa muncul.",
+      "karakter": [
+        {
+          "nama_karakter": "Kucing raksasa",
+          "detail_karakter": "Berukuran sangat besar dengan bulu halus dan berkilau keemasan, mata tajam seperti singa.",
+          "aksi": "Muncul dari balik awan, berjalan pelan, melompat menimpa gedung kaca.",
+          "deskripsi_tambahan": "Menimbulkan getaran di tanah, menutupi kota dengan bayangannya."
+        }
+      ],
+      "interaksi": "Kucing melompat dan menimpa satu gedung kaca, menimbulkan efek ledakan kaca dan debu beterbangan tanpa korban."
+    },
+    "lokasi_waktu": {
+      "tempat": "Kota modern dengan gedung pencakar langit",
+      "waktu": "Siang hari"
+    },
+    "gaya_visual": {
+      "style": "Sinematik, realistik",
+      "nuansa": "Dramatis keemasan dan abu-abu",
+      "kualitas": {
+        "resolusi": "HDR",
+        "frame_rate": "Hollywood quality",
+        "rendering_style": "Realistik",
+        "lighting": "HDR",
+        "color_grading": "Dramatis keemasan dan abu-abu",
+        "tekstur": "Halus, realistik"
+      },
+      "kamera": {
+        "angle": "Dari bawah gedung tinggi",
+        "gerakan": "Slow motion saat gedung runtuh",
+        "aspect_ratio": "16:9",
+        "depth_of_field": "Tajam"
+      },
+      "atmosfer": "Suasana berubah dari tenang menjadi dramatis",
+      "tempo": "Slow motion",
+      "efek_tambahan": "Efek ledakan kaca dan debu",
+      "audio": {
+        "efek_suara": "Suara getaran saat kucing berjalan, ledakan lembut dari kaca"
+      }
+    },
+    "count_scene_video": 1,
+    "durasi_final": 8
+  }
 }

@@ -39,9 +39,32 @@ export function PaymentPage() {
   const [error, setError] = useState<string | null>(null);
   const [isKonsultanMode, setIsKonsultanMode] = useState(false);
   const [konsultanData, setKonsultanData] = useState<any>(null);
+  const [hasExistingApiKey, setHasExistingApiKey] = useState(false);
+  const [existingApiKey, setExistingApiKey] = useState<string | null>(null);
 
   // Load existing data from localStorage on component mount
   useEffect(() => {
+    // Check for existing x-api-key
+    const savedApiKey = localStorage.getItem("x-api-key");
+    const savedEmail =
+      localStorage.getItem("konsultan-email") ||
+      localStorage.getItem("riwayat-email");
+
+    if (savedApiKey) {
+      console.log("Found existing x-api-key in localStorage");
+      setHasExistingApiKey(true);
+      setExistingApiKey(savedApiKey);
+      setIsOTPVerified(true);
+      setIsPersonalInfoComplete(true);
+
+      if (savedEmail) {
+        setEmail(savedEmail);
+      }
+
+      // Fetch user quota with existing API key
+      fetchUserQuota(savedApiKey);
+    }
+
     // Check if there's konsultan data
     const konsultanDataStr = localStorage.getItem("konsultan-video-data");
     if (konsultanDataStr) {
@@ -73,6 +96,29 @@ export function PaymentPage() {
     // Note: We'll call handlePersonalInfoChange in a separate useEffect
   }, []);
 
+  // Fetch user quota using x-api-key
+  const fetchUserQuota = async (apiKey: string) => {
+    try {
+      const response = await fetch(
+        "https://api.instantvideoapp.com/api/video-ai/check-koin",
+        {
+          headers: {
+            "x-api-key": apiKey,
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (result.status && result.data) {
+        setUserQuota(result.data.quota);
+        console.log("User quota fetched:", result.data.quota);
+      }
+    } catch (err) {
+      console.error("Error fetching user quota:", err);
+    }
+  };
+
   // Update personal info validation when email or phone changes
   useEffect(() => {
     handlePersonalInfoChange();
@@ -95,9 +141,10 @@ export function PaymentPage() {
 
     // Calculate price based on mode
     const pricePerVideo = 10000;
-    const totalPrice = isKonsultanMode && konsultanData?.list
-      ? pricePerVideo * konsultanData.list.length
-      : pricePerVideo;
+    const totalPrice =
+      isKonsultanMode && konsultanData?.list
+        ? pricePerVideo * konsultanData.list.length
+        : pricePerVideo;
 
     // Update localStorage with payment info (for regular mode only)
     // For konsultan mode, x-api-key will be obtained from store-multiple response
@@ -125,43 +172,44 @@ export function PaymentPage() {
 
     // Calculate price based on mode
     const pricePerVideo = 10000;
-    const totalPrice = isKonsultanMode && konsultanData?.list
-      ? pricePerVideo * konsultanData.list.length
-      : pricePerVideo;
+    const totalPrice =
+      isKonsultanMode && konsultanData?.list
+        ? pricePerVideo * konsultanData.list.length
+        : pricePerVideo;
 
     // Update localStorage based on payment method (only for regular mode)
     if (!isKonsultanMode) {
-    if (methodId === "coins") {
-      // For coins, only update if OTP is verified
-      if (isOTPVerified) {
+      if (methodId === "coins") {
+        // For coins, only update if OTP is verified
+        if (isOTPVerified) {
+          videoSetupStorage.updatePaymentInfo({
+            email: email,
+            no_wa: phoneNumber,
+            metode_pengiriman: "kuota",
+            metode: null,
+            jumlah: totalPrice,
+          });
+
+          // Note: Removed automatic video generation - user must click "Generate Video" button
+        }
+      } else {
+        // For other payment methods, update immediately
+        let metode = null;
+        if (methodId === "gopay") {
+          metode = "gopay";
+        } else if (methodId === "qris") {
+          metode = "other_qris";
+        } else if (methodId === "credit-card") {
+          metode = "kreem";
+        }
+
         videoSetupStorage.updatePaymentInfo({
           email: email,
           no_wa: phoneNumber,
-          metode_pengiriman: "kuota",
-          metode: null,
-            jumlah: totalPrice,
-        });
-
-        // Note: Removed automatic video generation - user must click "Generate Video" button
-      }
-    } else {
-      // For other payment methods, update immediately
-      let metode = null;
-      if (methodId === "gopay") {
-        metode = "gopay";
-      } else if (methodId === "qris") {
-        metode = "other_qris";
-      } else if (methodId === "credit-card") {
-        metode = "kreem";
-      }
-
-      videoSetupStorage.updatePaymentInfo({
-        email: email,
-        no_wa: phoneNumber,
-        metode_pengiriman: "pembayaran",
-        metode: metode,
+          metode_pengiriman: "pembayaran",
+          metode: metode,
           jumlah: totalPrice,
-      });
+        });
       }
     }
   };
@@ -175,14 +223,16 @@ export function PaymentPage() {
 
       // Calculate price based on mode
       const pricePerVideo = 10000;
-      const totalPrice = isKonsultanMode && konsultanData?.list
-        ? pricePerVideo * konsultanData.list.length
-        : pricePerVideo;
+      const totalPrice =
+        isKonsultanMode && konsultanData?.list
+          ? pricePerVideo * konsultanData.list.length
+          : pricePerVideo;
 
       // Check if this is konsultan mode
       if (isKonsultanMode && konsultanData) {
         // Use store-multiple API for konsultan with coins
         const payload = {
+          uuid_chat: konsultanData.uuid_chat || null,
           list: konsultanData.list,
           metode_pengiriman: "kuota" as const,
           metode: null,
@@ -193,7 +243,10 @@ export function PaymentPage() {
           affiliate_by: konsultanData.affiliate_by || "",
         };
 
-        console.log("Sending konsultan payload with coins to store-multiple:", payload);
+        console.log(
+          "Sending konsultan payload with coins to store-multiple:",
+          payload
+        );
 
         const result = await videoStoreApi.storeMultipleVideoData(
           payload,
@@ -201,12 +254,18 @@ export function PaymentPage() {
         );
 
         if (result.status) {
-          console.log("Konsultan video data stored successfully with coins:", result.message);
+          console.log(
+            "Konsultan video data stored successfully with coins:",
+            result.message
+          );
 
           // Save x-api-key from response to localStorage
           if (result.data && result.data["x-api-key"]) {
             localStorage.setItem("x-api-key", result.data["x-api-key"]);
-            console.log("Saved x-api-key from store-multiple:", result.data["x-api-key"]);
+            console.log(
+              "Saved x-api-key from store-multiple:",
+              result.data["x-api-key"]
+            );
           }
 
           // Clear konsultan data from localStorage
@@ -282,9 +341,10 @@ export function PaymentPage() {
 
       // Calculate price based on mode
       const pricePerVideo = 10000;
-      const totalPrice = isKonsultanMode && konsultanData?.list
-        ? pricePerVideo * konsultanData.list.length
-        : pricePerVideo;
+      const totalPrice =
+        isKonsultanMode && konsultanData?.list
+          ? pricePerVideo * konsultanData.list.length
+          : pricePerVideo;
 
       // Check if this is konsultan mode
       if (isKonsultanMode && konsultanData) {
@@ -299,6 +359,7 @@ export function PaymentPage() {
         }
 
         const payload = {
+          uuid_chat: konsultanData.uuid_chat || null,
           list: konsultanData.list,
           metode_pengiriman: "pembayaran" as const,
           metode: metode,
@@ -317,12 +378,18 @@ export function PaymentPage() {
         );
 
         if (result.status) {
-          console.log("Konsultan video data stored successfully:", result.message);
+          console.log(
+            "Konsultan video data stored successfully:",
+            result.message
+          );
 
           // Save x-api-key from response to localStorage
           if (result.data && result.data["x-api-key"]) {
             localStorage.setItem("x-api-key", result.data["x-api-key"]);
-            console.log("Saved x-api-key from store-multiple:", result.data["x-api-key"]);
+            console.log(
+              "Saved x-api-key from store-multiple:",
+              result.data["x-api-key"]
+            );
           }
 
           // Clear konsultan data from localStorage
@@ -402,9 +469,8 @@ export function PaymentPage() {
 
   // Calculate dynamic pricing
   const pricePerVideo = 10000;
-  const videoCount = isKonsultanMode && konsultanData?.list 
-    ? konsultanData.list.length 
-    : 1;
+  const videoCount =
+    isKonsultanMode && konsultanData?.list ? konsultanData.list.length : 1;
   const totalPrice = pricePerVideo * videoCount;
   const productionCost = 7500 * videoCount;
   const bonusCoins = 2500 * videoCount;
@@ -425,7 +491,8 @@ export function PaymentPage() {
         : "Verifikasi OTP terlebih dahulu",
       icon: <Coins className="w-6 h-6" />,
       balance: userQuota ? `${userQuota.toLocaleString()} Koin` : "0 Koin",
-      disabled: !isOTPVerified || (userQuota !== null && userQuota < productionCost),
+      disabled:
+        !isOTPVerified || (userQuota !== null && userQuota < productionCost),
     },
     {
       id: "gopay",
@@ -457,278 +524,368 @@ export function PaymentPage() {
   ];
 
   return (
-    <div className="w-full min-h-screen  dark:from-gray-900 dark:to-gray-800">
-      <div className="max-w-7xl mx-auto px-4 py-8">
-        {/* Header Section */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-foreground mb-4">
-            Pembayaran Video AI
-          </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan
-            video AI Anda
-          </p>
-          {isKonsultanMode && (
-            <div className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 dark:from-purple-950/30 dark:to-blue-950/30 border border-purple-300 dark:border-purple-700 rounded-lg">
-              <Sparkles className="w-5 h-5 text-purple-600 dark:text-purple-400 mr-2" />
-              <span className="text-sm font-medium text-purple-800 dark:text-purple-200">
-                Video dari Konsultan AI ({konsultanData?.list?.length || 0} Scene)
-              </span>
+    <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
+      {/* Futuristic Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        ></div>
+        <div
+          className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "4s" }}
+        ></div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
+        {/* Futuristic Header Section */}
+        <div className="mb-8">
+          <Button
+            variant="ghost"
+            size="sm"
+            className="mb-6 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 border border-purple-500/20"
+            onClick={() => (window.location.href = "/")}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Kembali
+          </Button>
+
+          <div className="text-center mb-12 relative">
+            {/* Gradient Glow Background */}
+            <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
+
+            <div className="relative z-10">
+              {/* Badge with Icon */}
+              <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-6">
+                <CreditCard className="w-4 h-4 text-purple-400" />
+                <span className="text-sm font-medium text-purple-300">
+                  Halaman Pembayaran
+                </span>
+              </div>
+
+              {/* Main Title with Gradient */}
+              <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
+                <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                  Pembayaran Video AI
+                </span>
+              </h1>
+
+              {/* Description */}
+              <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed mb-4">
+                {hasExistingApiKey
+                  ? "Pilih metode pembayaran untuk melanjutkan proses pembuatan video AI Anda"
+                  : "Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan video AI Anda"}
+              </p>
+
+              {isKonsultanMode && (
+                <div className="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl backdrop-blur-sm">
+                  <Sparkles className="w-5 h-5 text-purple-400 mr-3" />
+                  <span className="text-base font-semibold text-purple-200">
+                    Video dari Konsultan AI ({konsultanData?.list?.length || 0}{" "}
+                    Scene)
+                  </span>
+                </div>
+              )}
+
+              {/* {hasExistingApiKey && (
+                <div className="mt-4 inline-flex items-center px-4 py-2 bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl backdrop-blur-sm">
+                  <CheckCircle className="w-4 h-4 text-green-400 mr-2" />
+                  <span className="text-sm font-medium text-green-300">
+                    Akun Terverifikasi
+                  </span>
+                </div>
+              )} */}
             </div>
-          )}
+          </div>
         </div>
 
         {/* Main Content Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
           {/* Left Column - Pricing Information */}
+          <div className="relative">
+            {/* Outer Glow */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
-          <Card className="bg-card shadow-xl border-0">
-            {/* Full-width header */}
-            <div className="bg-gradient-to-br from-purple-600 to-blue-600 text-white px-8 py-8 flex flex-col items-center w-full">
-              <div className="flex items-center mb-4 w-full justify-center">
-                <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center mr-6">
-                  <Video className="w-8 h-8 text-white" />
+            <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+              {/* Full-width gradient header */}
+              <div className="bg-gradient-to-br from-purple-600 via-blue-600 to-purple-500 text-white px-8 py-10 flex flex-col items-center w-full relative overflow-hidden">
+                {/* Animated background effect */}
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 animate-shimmer"></div>
+                <div className="relative z-10 flex items-center mb-4 w-full justify-center">
+                  <div className="w-16 h-16 bg-white/30 rounded-full flex items-center justify-center mr-6 backdrop-blur-sm border border-white/20">
+                    <Video className="w-8 h-8 text-white" />
+                  </div>
+                  <div>
+                    <h2 className="text-3xl font-bold">Video AI</h2>
+                    <p className="text-white/90 text-lg">
+                      {isKonsultanMode
+                        ? `${videoCount} Video x Rp ${formatCurrency(
+                            productionCost / videoCount
+                          )}`
+                        : "Harga tetap per video"}
+                    </p>
+                  </div>
                 </div>
-                <div>
-                  <h2 className="text-3xl font-bold">Video AI</h2>
-                  <p className="text-white/80 text-lg">
-                    {isKonsultanMode 
-                      ? `${videoCount} Video x Rp ${formatCurrency(productionCost / videoCount)}`
-                      : "Harga tetap per video"
-                    }
-                  </p>
+                <div className="relative z-10 text-5xl font-extrabold mb-2 w-full text-center">
+                  Rp {formatCurrency(productionCost)}
+                </div>
+                <p className="relative z-10 text-white/90 text-lg w-full text-center">
+                  {isKonsultanMode
+                    ? `${videoCount} Video HD berkualitas tinggi`
+                    : "1 Video HD berkualitas tinggi"}
+                </p>
+              </div>
+
+              {/* Card Content */}
+              <div className="p-6 sm:p-8">
+                <div className="space-y-4 mb-6">
+                  <div className="flex items-start p-3 rounded-xl bg-slate-800/50 border border-white/5 hover:border-green-500/30 transition-colors">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center mr-3 mt-0.5 border border-green-500/30">
+                      <Check className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">
+                        Video HD Berkualitas Tinggi
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Resolusi 720p atau 1080p sesuai pilihan
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start p-3 rounded-xl bg-slate-800/50 border border-white/5 hover:border-green-500/30 transition-colors">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center mr-3 mt-0.5 border border-green-500/30">
+                      <Check className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">
+                        Karakter & Background Custom
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Pilihan karakter AI dan background sesuai keinginan
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start p-3 rounded-xl bg-slate-800/50 border border-white/5 hover:border-green-500/30 transition-colors">
+                    <div className="w-8 h-8 bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-full flex items-center justify-center mr-3 mt-0.5 border border-green-500/30">
+                      <Check className="w-4 h-4 text-green-400" />
+                    </div>
+                    <div>
+                      <p className="font-semibold text-white">
+                        Download Langsung
+                      </p>
+                      <p className="text-sm text-gray-400 mt-1">
+                        Unduh video setelah proses selesai
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 p-5 rounded-2xl border border-blue-500/30 backdrop-blur-sm">
+                  <div className="flex items-start">
+                    <Coins className="w-5 h-5 text-blue-400 mr-3 mt-0.5 flex-shrink-0" />
+                    <div className="text-sm">
+                      <p className="font-semibold text-blue-200 mb-2">
+                        Rincian Penggunaan:
+                      </p>
+                      <p className="text-blue-300">
+                        {isKonsultanMode ? (
+                          <>
+                            • Jumlah Video: <strong>{videoCount}</strong>
+                            <br />• Minimal Transaksi:{" "}
+                            <strong>{formatCurrency(totalPrice)}</strong>
+                            <br />• Biaya produksi video:{" "}
+                            <strong>{formatCurrency(productionCost)}</strong>
+                            <br />• Sisa{" "}
+                            <strong>{formatCurrency(bonusCoins)}</strong>{" "}
+                            dikonversi menjadi koin untuk video berikutnya
+                          </>
+                        ) : (
+                          <>
+                            • Minimal Transaksi: <strong>10.000</strong>
+                            <br />• Biaya produksi video: <strong>7.500</strong>
+                            <br />• Sisa <strong>2.500</strong> dikonversi
+                            menjadi koin untuk video berikutnya
+                          </>
+                        )}
+                      </p>
+                    </div>
+                  </div>
                 </div>
               </div>
-              <div className="text-5xl font-extrabold mb-2 w-full text-center">
-                Rp {formatCurrency(productionCost)}
-              </div>
-              <p className="text-white/80 text-lg w-full text-center">
-                {isKonsultanMode 
-                  ? `${videoCount} Video HD berkualitas tinggi`
-                  : "1 Video HD berkualitas tinggi"
-                }
-              </p>
             </div>
-
-            <CardContent className="p-6">
-              <div className="space-y-4 mb-6">
-                <div className="flex items-start">
-                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                    <Check className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">
-                      Video HD Berkualitas Tinggi
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Resolusi 720p atau 1080p sesuai pilihan
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                    <Check className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">
-                      Karakter & Background Custom
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Pilihan karakter AI dan background sesuai keinginan
-                    </p>
-                  </div>
-                </div>
-                <div className="flex items-start">
-                  <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center mr-3 mt-0.5">
-                    <Check className="w-4 h-4 text-green-600" />
-                  </div>
-                  <div>
-                    <p className="font-medium text-foreground">
-                      Download Langsung
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      Unduh video setelah proses selesai
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-blue-50 dark:bg-blue-950/30 p-4 rounded-lg border border-blue-200 dark:border-blue-800">
-                <div className="flex items-start">
-                  <Coins className="w-5 h-5 text-blue-600 dark:text-blue-400 mr-3 mt-0.5 flex-shrink-0" />
-                  <div className="text-sm">
-                    <p className="font-semibold text-blue-800 dark:text-blue-200 mb-1">
-                      Rincian Penggunaan:
-                    </p>
-                    <p className="text-blue-700 dark:text-blue-300">
-                      {isKonsultanMode ? (
-                        <>
-                          • Jumlah Video: <strong>{videoCount}</strong>
-                          <br />• Minimal Transaksi: <strong>{formatCurrency(totalPrice)}</strong>
-                          <br />• Biaya produksi video: <strong>{formatCurrency(productionCost)}</strong>
-                          <br />• Sisa <strong>{formatCurrency(bonusCoins)}</strong> dikonversi menjadi
-                          koin untuk video berikutnya
-                        </>
-                      ) : (
-                        <>
-                      • Minimal Transaksi: <strong>10.000</strong>
-                      <br />• Biaya produksi video: <strong>7.500</strong>
-                      <br />• Sisa <strong>2.500</strong> dikonversi menjadi
-                      koin untuk video berikutnya
-                        </>
-                      )}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          </div>
 
           {/* Right Column - Payment Information */}
+          <div className="relative">
+            {/* Outer Glow */}
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
-          <Card className="bg-card shadow-xl border-0">
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center text-xl">
-                <CreditCard className="w-6 h-6 text-purple-600 mr-3" />
-                Informasi Pembayaran
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {/* Personal Information */}
-              <div>
-                <h3 className="font-semibold text-foreground mb-4 flex items-center">
-                  <User className="w-5 h-5 text-purple-600 mr-2" />
-                  Data Personal
+            <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+              <div className="p-6 sm:p-8 space-y-6 border-b border-white/10">
+                <h3 className="flex items-center text-xl font-bold text-white">
+                  <div className="w-10 h-10 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30">
+                    <CreditCard className="w-5 h-5 text-purple-400" />
+                  </div>
+                  <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                    Informasi Pembayaran
+                  </span>
                 </h3>
-                <div className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Email <span className="text-red-500">*</span>
-                    </label>
-                    <Input
-                      type="email"
-                      placeholder="Masukkan email anda..."
-                      value={email}
-                      onChange={(e) => {
-                        setEmail(e.target.value);
-                        handlePersonalInfoChange();
-                      }}
-                      className="w-full"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Nomor Telepon <span className="text-red-500">*</span>
-                    </label>
-                    <div className="flex gap-2">
-                      <Input
-                        type="tel"
-                        placeholder="Masukkan nomor anda..."
-                        value={phoneNumber}
-                        onChange={(e) => {
-                          setPhoneNumber(e.target.value);
-                          handlePersonalInfoChange();
-                        }}
-                        className="flex-1"
-                      />
-                      <Button
-                        variant="default"
-                        disabled={email.trim() === ""}
-                        onClick={handleVerificationClick}
-                        className="bg-purple-600 hover:bg-purple-700"
-                      >
-                        Verifikasi
-                      </Button>
-                    </div>
-                  </div>
-                </div>
               </div>
 
-              {/* Payment Methods */}
-              <div>
-                <h3 className="font-semibold text-foreground mb-4 flex items-center">
-                  <Wallet className="w-5 h-5 text-purple-600 mr-2" />
-                  Metode Pembayaran
-                </h3>
-                <div className="grid grid-cols-2 gap-3">
-                  {paymentMethods.map((method) => (
-                    <div
-                      key={method.id}
-                      className={`p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                        method.disabled
-                          ? "border-gray-200 bg-gray-50 cursor-not-allowed opacity-60"
-                          : selectedPaymentMethod === method.id
-                          ? "border-purple-500 bg-purple-50 dark:bg-purple-950/20 shadow-md"
-                          : "border-gray-200 hover:border-purple-300 hover:shadow-sm"
-                      }`}
-                      onClick={() =>
-                        !method.disabled && handlePaymentMethodSelect(method.id)
-                      }
-                    >
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center">
-                          <div
-                            className={`w-10 h-10 rounded-lg flex items-center justify-center mr-3 ${
-                              method.disabled
-                                ? "bg-gray-200"
-                                : selectedPaymentMethod === method.id
-                                ? "bg-purple-100"
-                                : "bg-gray-100"
-                            }`}
-                          >
-                            <div
-                              className={
-                                method.disabled
-                                  ? "text-gray-400"
-                                  : selectedPaymentMethod === method.id
-                                  ? "text-purple-600"
-                                  : "text-gray-600"
-                              }
+              <div className="p-6 sm:p-8 space-y-6">
+                {/* Personal Information - Only show if no existing API key */}
+                {!hasExistingApiKey && (
+                  <div>
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-white mb-4 flex items-center">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-2 border border-purple-500/30">
+                          <User className="w-4 h-4 text-purple-400" />
+                        </div>
+                        Data Personal
+                      </h4>
+                      <div className="space-y-4">
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Email <span className="text-red-400">*</span>
+                          </label>
+                          <Input
+                            type="email"
+                            placeholder="Masukkan email anda..."
+                            value={email}
+                            onChange={(e) => {
+                              setEmail(e.target.value);
+                              handlePersonalInfoChange();
+                            }}
+                            className="w-full bg-slate-800/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20"
+                          />
+                        </div>
+                        <div>
+                          <label className="block text-sm font-medium text-gray-300 mb-2">
+                            Nomor Telepon{" "}
+                            <span className="text-red-400">*</span>
+                          </label>
+                          <div className="flex gap-2">
+                            <Input
+                              type="tel"
+                              placeholder="Masukkan nomor anda..."
+                              value={phoneNumber}
+                              onChange={(e) => {
+                                setPhoneNumber(e.target.value);
+                                handlePersonalInfoChange();
+                              }}
+                              className="flex-1 bg-slate-800/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20"
+                            />
+                            <Button
+                              variant="default"
+                              disabled={email.trim() === ""}
+                              onClick={handleVerificationClick}
+                              className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0"
                             >
-                              {method.icon}
-                            </div>
-                          </div>
-                          <div>
-                            <h4
-                              className={`font-medium ${
-                                method.disabled
-                                  ? "text-gray-400"
-                                  : "text-foreground"
-                              }`}
-                            >
-                              {method.name}
-                            </h4>
-                            <p
-                              className={`text-sm ${
-                                method.disabled
-                                  ? "text-gray-400"
-                                  : "text-muted-foreground"
-                              }`}
-                            >
-                              {method.description}
-                            </p>
-                            {method.balance && (
-                              <Badge
-                                variant="secondary"
-                                className="mt-1 text-xs"
-                              >
-                                {method.balance}
-                              </Badge>
-                            )}
+                              Verifikasi
+                            </Button>
                           </div>
                         </div>
-                        {selectedPaymentMethod === method.id && (
-                          <div className="w-6 h-6 bg-purple-600 rounded-full flex items-center justify-center">
-                            <Check className="w-4 h-4 text-white" />
-                          </div>
-                        )}
                       </div>
                     </div>
-                  ))}
+                  </div>
+                )}
+
+                {/* Payment Methods */}
+                <div>
+                  <h4 className="font-semibold text-white mb-4 flex items-center">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-2 border border-purple-500/30">
+                      <Wallet className="w-4 h-4 text-purple-400" />
+                    </div>
+                    Metode Pembayaran
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3">
+                    {paymentMethods.map((method) => (
+                      <div
+                        key={method.id}
+                        className={`relative group p-4 rounded-2xl cursor-pointer transition-all ${
+                          method.disabled
+                            ? "bg-slate-900/30 border border-white/5 cursor-not-allowed opacity-50"
+                            : selectedPaymentMethod === method.id
+                            ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/50 shadow-lg shadow-purple-500/20"
+                            : "bg-slate-800/50 border border-white/10 hover:border-purple-500/30 hover:bg-slate-800/70"
+                        }`}
+                        onClick={() =>
+                          !method.disabled &&
+                          handlePaymentMethodSelect(method.id)
+                        }
+                      >
+                        {/* Glow effect for selected */}
+                        {selectedPaymentMethod === method.id &&
+                          !method.disabled && (
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-lg -z-10"></div>
+                          )}
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center">
+                            <div
+                              className={`w-10 h-10 rounded-xl flex items-center justify-center mr-3 border ${
+                                method.disabled
+                                  ? "bg-slate-900/30 border-white/5"
+                                  : selectedPaymentMethod === method.id
+                                  ? "bg-gradient-to-br from-purple-500/30 to-blue-500/30 border-purple-500/50"
+                                  : "bg-slate-800/50 border-white/10"
+                              }`}
+                            >
+                              <div
+                                className={
+                                  method.disabled
+                                    ? "text-gray-600"
+                                    : selectedPaymentMethod === method.id
+                                    ? "text-purple-300"
+                                    : "text-gray-400"
+                                }
+                              >
+                                {method.icon}
+                              </div>
+                            </div>
+                            <div>
+                              <h4
+                                className={`font-semibold ${
+                                  method.disabled
+                                    ? "text-gray-600"
+                                    : "text-white"
+                                }`}
+                              >
+                                {method.name}
+                              </h4>
+                              <p
+                                className={`text-xs ${
+                                  method.disabled
+                                    ? "text-gray-700"
+                                    : "text-gray-400"
+                                }`}
+                              >
+                                {method.description}
+                              </p>
+                              {method.balance && !method.disabled && (
+                                <Badge
+                                  variant="secondary"
+                                  className="mt-1 text-xs bg-blue-500/20 text-blue-300 border-blue-500/30"
+                                >
+                                  {method.balance}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                          {selectedPaymentMethod === method.id &&
+                            !method.disabled && (
+                              <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30">
+                                <Check className="w-3 h-3 text-white" />
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
+          </div>
         </div>
 
         {/* Order Summary Section - Full Width at Bottom */}
@@ -927,69 +1084,96 @@ export function PaymentPage() {
           )}
         </div> */}
 
-        {/* Action Buttons */}
-        <div className="flex justify-center space-x-4">
-          <Button
-            variant="outline"
-            size="lg"
-            className="flex items-center space-x-2 px-8"
-            onClick={() => (window.location.href = "/")}
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Kembali</span>
-          </Button>
-          <Button
-            size="lg"
-            className={`px-8 ${
-              selectedPaymentMethod === "coins"
-                ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-            }`}
-            disabled={
-              !selectedPaymentMethod ||
-              !isPersonalInfoComplete ||
-              (selectedPaymentMethod === "coins" &&
-                (!isOTPVerified || (userQuota !== null && userQuota < productionCost))) ||
-              (selectedPaymentMethod !== "coins" && !isOTPVerified) ||
-              isProcessing
-            }
-            onClick={() => {
-              console.log("Payment button clicked with state:", {
-                selectedPaymentMethod,
-                isPersonalInfoComplete,
-                isOTPVerified,
-                userQuota,
-                email,
-                phoneNumber,
-                videoData: videoSetupStorage.load(),
-              });
+        {/* Error Message */}
+        {error && (
+          <div className="mb-8 max-w-2xl mx-auto animate-in fade-in slide-in-from-top duration-300">
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-red-500 to-orange-500 rounded-2xl opacity-20 blur-lg"></div>
+              <div className="relative bg-gradient-to-br from-red-500/10 to-orange-500/10 border border-red-500/30 rounded-2xl p-4 backdrop-blur-sm flex items-center">
+                <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+                <span className="text-red-300 font-medium">{error}</span>
+              </div>
+            </div>
+          </div>
+        )}
 
-              if (selectedPaymentMethod === "coins") {
-                // For coins, directly generate video
-                handleCoinsPayment();
-              } else {
-                // For other payment methods, go to payment page
-                handleContinuePayment();
+        {/* Action Buttons */}
+        <div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+          <div className="relative">
+            <Button
+              variant="ghost"
+              size="lg"
+              className="px-8 bg-slate-800/50 hover:bg-slate-800/70 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white"
+              onClick={() => (window.location.href = "/")}
+            >
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              <span>Kembali</span>
+            </Button>
+          </div>
+
+          <div className="relative group">
+            {/* Outer glow for button */}
+            <div
+              className={`absolute -inset-0.5 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300 ${
+                selectedPaymentMethod === "coins"
+                  ? "bg-gradient-to-r from-green-500 to-emerald-500"
+                  : "bg-gradient-to-r from-purple-500 to-blue-500"
+              }`}
+            ></div>
+
+            <Button
+              size="lg"
+              className={`relative px-10 py-6 text-base font-semibold shadow-lg ${
+                selectedPaymentMethod === "coins"
+                  ? "bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-green-500/30"
+                  : "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-purple-500/30"
+              }`}
+              disabled={
+                !selectedPaymentMethod ||
+                (selectedPaymentMethod === "coins" &&
+                  (!isOTPVerified ||
+                    (userQuota !== null && userQuota < productionCost))) ||
+                (selectedPaymentMethod !== "coins" && !isOTPVerified) ||
+                isProcessing
               }
-            }}
-          >
-            {isProcessing ? (
-              <span className="flex items-center space-x-2">
-                <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                <span>Memproses...</span>
-              </span>
-            ) : selectedPaymentMethod === "coins" ? (
-              <span className="flex items-center space-x-2">
-                <Play className="w-4 h-4" />
-                <span>Generate Video</span>
-              </span>
-            ) : (
-              <span className="flex items-center space-x-2">
-                <CreditCard className="w-4 h-4" />
-                <span>Bayar Sekarang</span>
-              </span>
-            )}
-          </Button>
+              onClick={() => {
+                console.log("Payment button clicked with state:", {
+                  selectedPaymentMethod,
+                  isPersonalInfoComplete,
+                  isOTPVerified,
+                  userQuota,
+                  email,
+                  phoneNumber,
+                  videoData: videoSetupStorage.load(),
+                });
+
+                if (selectedPaymentMethod === "coins") {
+                  // For coins, directly generate video
+                  handleCoinsPayment();
+                } else {
+                  // For other payment methods, go to payment page
+                  handleContinuePayment();
+                }
+              }}
+            >
+              {isProcessing ? (
+                <span className="flex items-center space-x-2">
+                  <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                  <span>Memproses...</span>
+                </span>
+              ) : selectedPaymentMethod === "coins" ? (
+                <span className="flex items-center space-x-2">
+                  <Play className="w-4 h-4" />
+                  <span>Generate Video</span>
+                </span>
+              ) : (
+                <span className="flex items-center space-x-2">
+                  <CreditCard className="w-4 h-4" />
+                  <span>Bayar Sekarang</span>
+                </span>
+              )}
+            </Button>
+          </div>
         </div>
 
         {/* OTP Modal */}
@@ -1000,6 +1184,24 @@ export function PaymentPage() {
           onSuccess={handleOTPSuccess}
         />
       </div>
+
+      {/* CSS for animations */}
+      <style>{`
+        @keyframes gradient {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+          animation: gradient 6s ease infinite;
+        }
+        @keyframes shimmer {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(100%); }
+        }
+        .animate-shimmer {
+          animation: shimmer 3s ease-in-out infinite;
+        }
+      `}</style>
     </div>
   );
 }

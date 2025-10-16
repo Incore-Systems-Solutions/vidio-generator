@@ -15,23 +15,10 @@ import "../styles/global.css"
 	</head>
 
 	<body class="min-h-screen bg-background antialiased">
-		<!-- Navigation with Integrated Stepper -->
-		<NavbarWithModal client:load currentStep={2} totalSteps={4} />
-
 		<!-- Main Content -->
 		<main class="flex-1">
-			<div class="container mx-auto px-8 py-12">
-				<PaymentPage client:load />
-			</div>
+      <PaymentPage client:load />
 		</main>
 
-		<!-- Footer -->
-		<footer class="border-t py-12 mt-24">
-			<div class="container mx-auto px-4">
-				<div class="text-center text-muted-foreground">
-					<p>&copy; 2024 Video Generator. All rights reserved.</p>
-				</div>
-			</div>
-		</footer>
 	</body>
 </html>

@@ -130,12 +130,69 @@ export function VideoConsultant() {
   useEffect(() => {
     const savedApiKey = localStorage.getItem("x-api-key");
     const savedEmail = localStorage.getItem("konsultan-email");
+    const savedChatUuid = localStorage.getItem("konsultan-chat-uuid");
+    const savedMessages = localStorage.getItem("konsultan-chat-messages");
+    const savedCollectingData = localStorage.getItem("collection_data");
+    const savedBatchScene = localStorage.getItem("batch_scene");
 
     if (savedApiKey) {
       setXApiKey(savedApiKey);
       if (savedEmail) {
         setEmail(savedEmail);
       }
+
+      // Restore chat UUID to prevent re-initialization
+      if (savedChatUuid) {
+        setChatUuid(savedChatUuid);
+      }
+
+      // Restore messages
+      if (savedMessages) {
+        try {
+          const parsedMessages = JSON.parse(savedMessages);
+          setMessages(
+            parsedMessages.map((msg: any) => ({
+              ...msg,
+              timestamp: new Date(msg.timestamp),
+            }))
+          );
+        } catch (err) {
+          console.error("Error parsing saved messages:", err);
+        }
+      }
+
+      // Restore collecting data
+      if (savedCollectingData) {
+        try {
+          const parsedData = JSON.parse(savedCollectingData);
+          setCollectingData(parsedData);
+        } catch (err) {
+          console.error("Error parsing collecting data:", err);
+        }
+      }
+
+      // Restore batch scenes
+      if (savedBatchScene) {
+        try {
+          const parsedScenes = JSON.parse(savedBatchScene);
+          setEditedScenes(parsedScenes);
+
+          // If we have batch scenes, set isDone to true (all batches completed)
+          if (parsedScenes.length > 0) {
+            setIsDone(true);
+            // Create a dummy jsonData for UI purposes
+            setJsonData({
+              type: "prompt_video",
+              batch: 3, // Assume last batch
+              total_batch: 3,
+              data: parsedScenes,
+            });
+          }
+        } catch (err) {
+          console.error("Error parsing batch scenes:", err);
+        }
+      }
+
       setStep("chat");
     }
   }, []);
@@ -148,12 +205,12 @@ export function VideoConsultant() {
     }
   }, [countdown]);
 
-  // Initialize chat when x-api-key is available
+  // Initialize chat when x-api-key is available (only if no existing chat UUID)
   useEffect(() => {
-    if (xApiKey && step === "chat") {
+    if (xApiKey && step === "chat" && !chatUuid) {
       initializeChat();
     }
-  }, [xApiKey, step]);
+  }, [xApiKey, step, chatUuid]);
 
   const handleRequestOTP = async () => {
     if (!email.trim()) {
@@ -210,6 +267,10 @@ export function VideoConsultant() {
 
       if (response.status) {
         setChatUuid(response.data.uuid);
+
+        // Save chat UUID to localStorage
+        localStorage.setItem("konsultan-chat-uuid", response.data.uuid);
+
         const initialMessage: Message = {
           id: "initial",
           role: "assistant",
@@ -217,6 +278,12 @@ export function VideoConsultant() {
           timestamp: new Date(),
         };
         setMessages([initialMessage]);
+
+        // Save initial message to localStorage
+        localStorage.setItem(
+          "konsultan-chat-messages",
+          JSON.stringify([initialMessage])
+        );
       } else {
         setError(response.message || "Gagal menginisialisasi chat");
       }
@@ -263,7 +330,18 @@ export function VideoConsultant() {
           timestamp: new Date(),
         };
 
-        setMessages((prev) => [...prev, aiResponse]);
+        setMessages((prev) => {
+          const updatedMessages = [...prev, aiResponse];
+
+          // Save messages to localStorage
+          localStorage.setItem(
+            "konsultan-chat-messages",
+            JSON.stringify(updatedMessages)
+          );
+
+          return updatedMessages;
+        });
+
         setIsDone(response.data.is_done);
 
         // Check if json_data exists and type is collecting_data
@@ -339,10 +417,20 @@ export function VideoConsultant() {
       setEditedScenes([]);
       setHasEdited(false);
 
+      // Clear localStorage
+      localStorage.removeItem("konsultan-chat-uuid");
+      localStorage.removeItem("konsultan-chat-messages");
+      localStorage.removeItem("collection_data");
+      localStorage.removeItem("batch_scene");
+
       const response = await chatAIApi.initChat(xApiKey);
 
       if (response.status) {
         setChatUuid(response.data.uuid);
+
+        // Save new chat UUID
+        localStorage.setItem("konsultan-chat-uuid", response.data.uuid);
+
         const initialMessage: Message = {
           id: "initial-" + Date.now(),
           role: "assistant",
@@ -350,6 +438,12 @@ export function VideoConsultant() {
           timestamp: new Date(),
         };
         setMessages([initialMessage]);
+
+        // Save initial message
+        localStorage.setItem(
+          "konsultan-chat-messages",
+          JSON.stringify([initialMessage])
+        );
       } else {
         setError(response.message || "Gagal menginisialisasi chat");
       }
@@ -369,6 +463,11 @@ export function VideoConsultant() {
     // Clear localStorage
     localStorage.removeItem("x-api-key");
     localStorage.removeItem("konsultan-email");
+    localStorage.removeItem("konsultan-chat-uuid");
+    localStorage.removeItem("konsultan-chat-messages");
+    localStorage.removeItem("collection_data");
+    localStorage.removeItem("batch_scene");
+    localStorage.removeItem("konsultan-video-data");
 
     // Reset all states
     setXApiKey(null);
@@ -407,7 +506,18 @@ export function VideoConsultant() {
           timestamp: new Date(),
         };
 
-        setMessages((prev) => [...prev, aiResponse]);
+        setMessages((prev) => {
+          const updatedMessages = [...prev, aiResponse];
+
+          // Save messages to localStorage
+          localStorage.setItem(
+            "konsultan-chat-messages",
+            JSON.stringify(updatedMessages)
+          );
+
+          return updatedMessages;
+        });
+
         setIsDone(response.data.is_done);
 
         // Check if json_data exists and type is prompt_video
@@ -471,41 +581,25 @@ export function VideoConsultant() {
       return;
     }
 
-    if (!editedScenes.length || !xApiKey || !email) {
-      setError("Data tidak lengkap untuk melakukan pembayaran");
-      return;
-    }
+    // Prepare data for payment page
+    const konsultanData = {
+      type: "konsultan",
+      uuid_chat: chatUuid,
+      list: editedScenes,
+      email: email,
+      xApiKey: xApiKey,
+      is_share: "y",
+      affiliate_by: "",
+    };
 
-    try {
-      // Save konsultan data to localStorage
-      const konsultanData = {
-        type: "konsultan",
-        list: editedScenes,
-        email: email,
-        xApiKey: xApiKey,
-        is_share: "y",
-        affiliate_by: "",
-      };
+    console.log("Saving konsultan data to localStorage:", konsultanData);
 
-      localStorage.setItem(
-        "konsultan-video-data",
-        JSON.stringify(konsultanData)
-      );
-      console.log("Konsultan data saved to localStorage:", {
-        ...konsultanData,
-        sceneCount: editedScenes.length,
-      });
+    // Save to localStorage
+    localStorage.setItem("konsultan-video-data", JSON.stringify(konsultanData));
 
-      // Redirect to payment page
-      window.location.href = "/pembayaran";
-    } catch (err) {
-      console.error("Error saving konsultan data:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Terjadi kesalahan saat menyimpan data"
-      );
-    }
+    // Redirect to payment page
+    console.log("Redirecting to payment page");
+    window.location.href = "/pembayaran";
   };
 
   const formatTime = (date: Date) => {

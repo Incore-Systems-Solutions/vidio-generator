@@ -208,6 +208,7 @@ export interface SceneData {
 }
 
 export interface VideoStoreMultipleData {
+  uuid_chat?: string | null;
   list: SceneData[];
   metode_pengiriman: "pembayaran" | "kuota";
   metode?: string | null;
@@ -252,7 +253,7 @@ export const videoStoreApi = {
 
   async storeMultipleVideoData(
     data: VideoStoreMultipleData,
-    xApiKey: string
+    xApiKey?: string
   ): Promise<{
     status: boolean;
     message: string;
@@ -263,12 +264,18 @@ export const videoStoreApi = {
     };
   }> {
     try {
+      const headers: Record<string, string> = {
+        "Content-Type": "application/json",
+      };
+
+      // Add x-api-key to headers if provided
+      if (xApiKey) {
+        headers["x-api-key"] = xApiKey;
+      }
+
       const response = await fetch(`${BASE_URL}/api/video-ai/store-multiple`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": xApiKey,
-        },
+        headers: headers,
         body: JSON.stringify(data),
       });
 
