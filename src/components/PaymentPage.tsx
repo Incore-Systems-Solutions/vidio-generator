@@ -268,11 +268,17 @@ export function PaymentPage() {
             );
           }
 
+          // Get UUID from konsultan data for dynamic redirect
+          const generateUuid = konsultanData.uuid_chat || "default";
+
+          // Save generate UUID to localStorage for tracking
+          localStorage.setItem("generate-uuid", generateUuid);
+
           // Clear konsultan data from localStorage
           localStorage.removeItem("konsultan-video-data");
 
-          // Redirect directly to generate video page since payment is completed
-          window.location.href = "/generate";
+          // Redirect to dynamic generate page with UUID
+          window.location.href = `/generate/${generateUuid}`;
         } else {
           throw new Error(result.message || "Gagal menyimpan data video");
         }

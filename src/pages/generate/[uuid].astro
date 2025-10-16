@@ -1,0 +1,59 @@
+---
+import { GenerateVideoPage } from "@/components/GenerateVideoPage";
+import "@/styles/global.css";
+
+const { uuid } = Astro.params;
+---
+
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Generate Video - InstanVideo AI</title>
+    <meta
+      name="description"
+      content="Proses pembuatan video AI sedang berlangsung. Pantau progress real-time."
+    />
+  </head>
+
+  <body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
+    <!-- Animated Background Effects -->
+    <div class="fixed inset-0 overflow-hidden pointer-events-none">
+      <!-- Gradient Orbs -->
+      <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+      <div
+        class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+        style="animation-delay: 2s;"
+      ></div>
+      <div
+        class="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse"
+        style="animation-delay: 4s;"
+      ></div>
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 relative z-10">
+      <GenerateVideoPage uuid={uuid || ""} client:load />
+    </main>
+
+    <!-- Futuristic Footer -->
+    <footer class="relative z-10 border-t border-white/10 py-12 mt-24 bg-slate-950/50 backdrop-blur-sm">
+      <div class="container mx-auto px-4">
+        <div class="text-center">
+          <p class="text-gray-400 text-sm mb-2">
+            &copy; 2024{" "}
+            <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-semibold"
+              >InstanVideo</span
+            >. All rights reserved.
+          </p>
+          <p class="text-gray-500 text-xs">
+            Powered by AI Video Generation Technology
+          </p>
+        </div>
+      </div>
+    </footer>
+  </body>
+</html>
+

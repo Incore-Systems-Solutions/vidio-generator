@@ -1057,65 +1057,65 @@ export function TransactionDetail({
 
                 {/* Customer Information */}
                 {/* <Card>
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <User className="w-5 h-5" />
-                      <span>Informasi Pelanggan</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    {isKonsultanMode && konsultanData ? (
-                      <>
-                        {konsultanData.email && (
-                          <div className="flex items-center space-x-3">
-                            <Mail className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">
-                              {konsultanData.email}
-                            </span>
-                          </div>
-                        )}
-                        {konsultanData.no_wa && (
-                          <div className="flex items-center space-x-3">
-                            <Phone className="w-4 h-4 text-muted-foreground" />
-                            <span className="text-sm">
-                              {konsultanData.no_wa}
-                            </span>
-                          </div>
-                        )}
-                        {konsultanData.affiliate_by && (
-                          <div className="pt-3 border-t">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2">
+                <User className="w-5 h-5" />
+                <span>Informasi Pelanggan</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
+              {isKonsultanMode && konsultanData ? (
+                <>
+                  {konsultanData.email && (
+                    <div className="flex items-center space-x-3">
+                      <Mail className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        {konsultanData.email}
+                      </span>
+                    </div>
+                  )}
+                  {konsultanData.no_wa && (
+                    <div className="flex items-center space-x-3">
+                      <Phone className="w-4 h-4 text-muted-foreground" />
+                      <span className="text-sm">
+                        {konsultanData.no_wa}
+                      </span>
+                    </div>
+                  )}
+                  {konsultanData.affiliate_by && (
+                    <div className="pt-3 border-t">
                             <p className="text-xs text-muted-foreground mb-1">
                               Affiliate By
                             </p>
-                            <Badge variant="outline" className="text-xs">
-                              {konsultanData.affiliate_by}
-                            </Badge>
-                          </div>
-                        )}
-                      </>
-                    ) : videoData ? (
-                      <>
-                        <div className="flex items-center space-x-3">
-                          <Mail className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            {videoData.email || "Tidak ada email"}
-                          </span>
-                        </div>
-                        <div className="flex items-center space-x-3">
-                          <Phone className="w-4 h-4 text-muted-foreground" />
-                          <span className="text-sm">
-                            {videoData.no_wa || "Tidak ada nomor telepon"}
-                          </span>
-                        </div>
-                      </>
-                    ) : (
-                      <div className="text-center py-4">
-                        <p className="text-muted-foreground">
-                          Data pelanggan tidak tersedia
-                        </p>
-                      </div>
-                    )}
-                  </CardContent>
+                      <Badge variant="outline" className="text-xs">
+                        {konsultanData.affiliate_by}
+                      </Badge>
+                    </div>
+                  )}
+                </>
+              ) : videoData ? (
+                <>
+                  <div className="flex items-center space-x-3">
+                    <Mail className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {videoData.email || "Tidak ada email"}
+                    </span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <Phone className="w-4 h-4 text-muted-foreground" />
+                    <span className="text-sm">
+                      {videoData.no_wa || "Tidak ada nomor telepon"}
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="text-center py-4">
+                  <p className="text-muted-foreground">
+                    Data pelanggan tidak tersedia
+                  </p>
+                </div>
+              )}
+            </CardContent>
                 </Card> */}
               </div>
             </div>
