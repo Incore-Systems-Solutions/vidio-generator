@@ -388,6 +388,14 @@ export function VideoConsultant() {
 
             return accumulated;
           });
+
+          // Auto-continue if is_done is false (more batches coming)
+          if (!response.data.is_done) {
+            console.log("Auto-continuing to next batch...");
+            setTimeout(() => {
+              handleContinueBatchVideo();
+            }, 1000); // Small delay to show the response
+          }
         }
       } else {
         setError(response.message || "Gagal mengirim pesan");
@@ -549,6 +557,14 @@ export function VideoConsultant() {
 
             return accumulated;
           });
+
+          // Auto-continue if is_done is false (more batches coming)
+          if (!response.data.is_done) {
+            console.log("Auto-continuing to next batch...");
+            setTimeout(() => {
+              handleContinueBatchVideo();
+            }, 1000); // Small delay to show the response
+          }
         }
       } else {
         setError(response.message || "Gagal melanjutkan batch");
@@ -1107,35 +1123,13 @@ export function VideoConsultant() {
                         </div>
                       </div>
                     ) : jsonData && !isDone ? (
-                      // When batch in progress, show button for next batch
+                      // When batch in progress, show processing status (auto-continue)
                       <div className="space-y-3">
-                        <div className="flex items-center justify-center space-x-2 py-3 bg-yellow-500/10 rounded-xl border border-yellow-500/30">
-                          <Clock className="w-4 h-4 text-yellow-400" />
-                          <p className="text-sm font-medium text-yellow-300">
-                            Batch {jsonData.batch || 1} selesai. Masih ada batch
-                            berikutnya ({editedScenes.length} scene sudah
-                            dibuat).
+                        <div className="flex items-center justify-center space-x-2 py-3 bg-blue-500/10 rounded-xl border border-blue-500/30">
+                          <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
+                          <p className="text-sm font-medium text-blue-300">
+                            Mohon menunggu, AI sedang memproses scene video...
                           </p>
-                        </div>
-                        <div className="relative">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
-                          <button
-                            onClick={handleContinueBatchVideo}
-                            disabled={isLoading || isInitializing}
-                            className="relative w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 shadow-lg shadow-yellow-500/30"
-                          >
-                            {isLoading ? (
-                              <>
-                                <Loader2 className="w-5 h-5 animate-spin" />
-                                <span>Memproses Batch Berikutnya...</span>
-                              </>
-                            ) : (
-                              <>
-                                <RefreshCw className="w-5 h-5" />
-                                <span>Lanjutkan Batch Berikutnya</span>
-                              </>
-                            )}
-                          </button>
                         </div>
                       </div>
                     ) : (
