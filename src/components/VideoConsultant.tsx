@@ -199,17 +199,22 @@ export function VideoConsultant() {
         setIsDone(response.data.is_done);
 
         // Check if json_data exists and type is prompt_video
-        if (response.data.json_data && response.data.json_data.type === "prompt_video") {
+        if (
+          response.data.json_data &&
+          response.data.json_data.type === "prompt_video"
+        ) {
           console.log("Received json_data:", response.data.json_data);
           console.log("is_done:", response.data.is_done);
-          
+
           setJsonData(response.data.json_data);
-          
+
           // Always accumulate scenes from all batches
           setEditedScenes((prev) => {
             const newScenes = response.data.json_data?.data || [];
             const accumulated = [...prev, ...newScenes];
-            console.log(`Accumulating scenes: ${prev.length} + ${newScenes.length} = ${accumulated.length}`);
+            console.log(
+              `Accumulating scenes: ${prev.length} + ${newScenes.length} = ${accumulated.length}`
+            );
             return accumulated;
           });
         }
@@ -266,7 +271,11 @@ export function VideoConsultant() {
     }
   };
 
-  const handleSceneEdit = (sceneIndex: number, field: string, value: string) => {
+  const handleSceneEdit = (
+    sceneIndex: number,
+    field: string,
+    value: string
+  ) => {
     setEditedScenes((prev) => {
       const updated = [...prev];
       updated[sceneIndex] = {
@@ -301,11 +310,18 @@ export function VideoConsultant() {
   };
 
   const handleGoToPayment = () => {
-    console.log("handleGoToPayment called - isDone:", isDone, "editedScenes:", editedScenes.length);
-    
+    console.log(
+      "handleGoToPayment called - isDone:",
+      isDone,
+      "editedScenes:",
+      editedScenes.length
+    );
+
     // Check if batch is completed (isDone must be true)
     if (!isDone) {
-      setError("Silakan selesaikan semua batch terlebih dahulu sebelum melanjutkan ke pembayaran");
+      setError(
+        "Silakan selesaikan semua batch terlebih dahulu sebelum melanjutkan ke pembayaran"
+      );
       return;
     }
 
@@ -325,10 +341,13 @@ export function VideoConsultant() {
         affiliate_by: "",
       };
 
-      localStorage.setItem("konsultan-video-data", JSON.stringify(konsultanData));
+      localStorage.setItem(
+        "konsultan-video-data",
+        JSON.stringify(konsultanData)
+      );
       console.log("Konsultan data saved to localStorage:", {
         ...konsultanData,
-        sceneCount: editedScenes.length
+        sceneCount: editedScenes.length,
       });
 
       // Redirect to payment page
@@ -358,177 +377,300 @@ export function VideoConsultant() {
   };
 
   return (
-    <div className="w-full min-h-screen bg-background">
-      <div className="max-w-6xl mx-auto px-4 py-8">
-        {/* Header */}
-        <div className="mb-6">
+    <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
+      {/* Futuristic Background Effects */}
+      <div className="fixed inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+        <div
+          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "2s" }}
+        ></div>
+        <div
+          className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse"
+          style={{ animationDelay: "4s" }}
+        ></div>
+      </div>
+
+      <div className="max-w-6xl mx-auto px-4 py-8 relative z-10">
+        {/* Futuristic Header */}
+        <div className="mb-8">
           <Button
-            variant="outline"
+            variant="ghost"
             size="sm"
-            className="mb-4"
+            className="mb-6 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 border border-purple-500/20"
             onClick={() => (window.location.href = "/")}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Kembali
           </Button>
 
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-3xl sm:text-4xl font-bold text-foreground mb-2 flex items-center">
-                <MessageCircle className="w-8 h-8 sm:w-10 sm:h-10 text-purple-600 mr-3" />
-                Konsultan Video AI
+          {step !== "chat" && (
+            <div className="text-center mb-8">
+              {/* Logo with Glow */}
+              <div className="relative inline-block mb-6">
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                <div className="relative w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-purple-400/50">
+                  <MessageCircle className="w-10 h-10 text-white" />
+                </div>
+              </div>
+
+              {/* Title */}
+              <h1 className="text-4xl md:text-5xl font-bold mb-4">
+                <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
+                  AI Video Consultant
+                </span>
               </h1>
-              <p className="text-muted-foreground text-sm sm:text-base">
-                {step === "email" && "Masukkan email untuk memulai konsultasi"}
-                {step === "otp" && "Verifikasi OTP yang dikirim ke email"}
-                {step === "chat" &&
-                  "Tanyakan apa saja tentang pembuatan video kepada asisten AI kami"}
+
+              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+                {step === "email" &&
+                  "Masuk untuk berbicara dengan AI Video Consultant Anda"}
+                {step === "otp" &&
+                  "Masukkan kode verifikasi untuk mengakses ruang konsultasi AI"}
               </p>
             </div>
-            {step === "chat" && (
+          )}
+
+          {step === "chat" && (
+            <div className="flex items-center justify-between bg-gradient-to-r from-slate-900/50 to-slate-950/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
+              <div className="flex items-center space-x-4">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-md opacity-40 animate-pulse"></div>
+                  <div className="relative w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-purple-400/50">
+                    <Bot className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                    AI Video Consultant
+                  </h1>
+                  <div className="flex items-center space-x-2">
+                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                    <p className="text-sm text-gray-400">Online & Ready</p>
+                  </div>
+                </div>
+              </div>
               <Button
-                variant="outline"
+                variant="ghost"
                 size="sm"
                 onClick={handleClearChat}
-                className="flex items-center space-x-2"
+                className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/20"
                 disabled={isInitializing}
               >
-                <Trash2 className="w-4 h-4" />
-                <span className="hidden sm:inline">Hapus Chat</span>
+                <Trash2 className="w-4 h-4 mr-2" />
+                <span className="hidden sm:inline">Clear Chat</span>
               </Button>
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
-        {/* Step 1: Email Input */}
+        {/* Step 1: AI Access Gate - Login Screen */}
         {step === "email" && (
           <div className="max-w-md mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <UserIcon className="w-5 h-5" />
-                  <span>Masukkan Email</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Email
-                  </label>
-                  <Input
-                    type="email"
-                    placeholder="Masukkan email Anda..."
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    onKeyPress={(e) => e.key === "Enter" && handleRequestOTP()}
-                  />
+            {/* Glassmorphism Card */}
+            <div className="relative">
+              {/* Outer Glow */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+
+              <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                {/* Header with Icon */}
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl mb-4 border border-purple-500/30">
+                    <Mail className="w-7 h-7 text-purple-300" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    AI Access Portal
+                  </h2>
+                  <p className="text-gray-400 text-sm">
+                    Masukkan email untuk mengakses sistem AI
+                  </p>
                 </div>
 
-                {error && (
-                  <div className="flex items-center p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mr-2" />
-                    <span className="text-sm text-red-800 dark:text-red-200">
-                      {error}
-                    </span>
-                  </div>
-                )}
+                <div className="space-y-5">
+                  {/* Email Input with Futuristic Style */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Email Address
+                    </label>
+                    <div className="relative group">
+                      {/* Input Glow on Focus */}
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
 
-                <Button
-                  onClick={handleRequestOTP}
-                  disabled={authLoading || !email.trim()}
-                  className="w-full"
-                >
-                  {authLoading ? (
-                    <>
-                      <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                      Mengirim OTP...
-                    </>
-                  ) : (
-                    "Kirim OTP"
+                      <div className="relative flex items-center">
+                        <Mail className="absolute left-3 w-5 h-5 text-gray-400" />
+                        <input
+                          type="email"
+                          placeholder="your.email@example.com"
+                          value={email}
+                          onChange={(e) => setEmail(e.target.value)}
+                          onKeyPress={(e) =>
+                            e.key === "Enter" && handleRequestOTP()
+                          }
+                          className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                        />
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Error Message */}
+                  {error && (
+                    <div className="flex items-start p-3 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm animate-in fade-in slide-in-from-top duration-300">
+                      <AlertCircle className="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-red-300">{error}</span>
+                    </div>
                   )}
-                </Button>
-              </CardContent>
-            </Card>
+
+                  {/* Submit Button with Glow */}
+                  <div className="relative pt-2">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+
+                    <button
+                      onClick={handleRequestOTP}
+                      disabled={authLoading || !email.trim()}
+                      className="relative w-full py-3.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/30"
+                    >
+                      {authLoading ? (
+                        <>
+                          <RefreshCw className="w-5 h-5 animate-spin" />
+                          <span>Mengirim OTP...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5" />
+                          <span>Akses Portal AI</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
+                </div>
+
+                {/* Footer Note */}
+                <p className="text-center text-xs text-gray-500 mt-6">
+                  Kode verifikasi akan dikirim ke email Anda
+                </p>
+              </div>
+            </div>
           </div>
         )}
 
-        {/* Step 2: OTP Verification */}
+        {/* Step 2: Secure AI Verification - OTP Screen */}
         {step === "otp" && (
           <div className="max-w-md mx-auto">
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center space-x-2">
-                  <Settings className="w-5 h-5" />
-                  <span>Verifikasi OTP</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground mb-2">
+            {/* Glassmorphism Card */}
+            <div className="relative">
+              {/* Outer Glow */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+
+              <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
+                {/* Header with Lock Icon */}
+                <div className="text-center mb-6">
+                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl mb-4 border border-purple-500/30">
+                    <Settings className="w-7 h-7 text-purple-300 animate-spin-slow" />
+                  </div>
+                  <h2 className="text-2xl font-bold text-white mb-2">
+                    Security Verification
+                  </h2>
+                  <p className="text-gray-400 text-sm mb-1">
                     Kode OTP telah dikirim ke:
                   </p>
-                  <p className="font-medium text-foreground">{email}</p>
+                  <p className="font-semibold text-purple-300">{email}</p>
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-foreground mb-2">
-                    Kode OTP
-                  </label>
-                  <Input
-                    type="text"
-                    placeholder="Masukkan 6 digit OTP..."
-                    value={otp}
-                    onChange={(e) =>
-                      setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                    }
-                    onKeyPress={(e) => e.key === "Enter" && handleVerifyOTP()}
-                    maxLength={6}
-                  />
-                </div>
+                <div className="space-y-5">
+                  {/* OTP Input with Futuristic Style */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
+                      Masukkan 6 Digit Kode Verifikasi
+                    </label>
+                    <div className="relative group">
+                      {/* Input Glow on Focus */}
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
 
-                {countdown > 0 && (
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground">
-                      Kirim ulang OTP dalam {countdown} detik
-                    </p>
+                      <input
+                        type="text"
+                        placeholder="• • • • • •"
+                        value={otp}
+                        onChange={(e) =>
+                          setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                        }
+                        onKeyPress={(e) =>
+                          e.key === "Enter" && handleVerifyOTP()
+                        }
+                        maxLength={6}
+                        className="relative w-full px-4 py-4 bg-slate-900/50 border border-purple-500/30 rounded-xl text-white text-center text-2xl font-mono tracking-widest placeholder-gray-600 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
+                      />
+                    </div>
                   </div>
-                )}
 
-                {error && (
-                  <div className="flex items-center p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                    <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mr-2" />
-                    <span className="text-sm text-red-800 dark:text-red-200">
-                      {error}
-                    </span>
+                  {/* Countdown Timer */}
+                  {countdown > 0 && (
+                    <div className="flex items-center justify-center space-x-2 text-sm">
+                      <Clock className="w-4 h-4 text-blue-400" />
+                      <span className="text-gray-400">
+                        Kirim ulang dalam{" "}
+                        <span className="text-blue-400 font-semibold">
+                          {countdown}s
+                        </span>
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Error Message */}
+                  {error && (
+                    <div className="flex items-start p-3 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm animate-in fade-in slide-in-from-top duration-300">
+                      <AlertCircle className="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                      <span className="text-sm text-red-300">{error}</span>
+                    </div>
+                  )}
+
+                  {/* Verify Button with Glow */}
+                  <div className="relative pt-2">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
+
+                    <button
+                      onClick={handleVerifyOTP}
+                      disabled={authLoading || !otp.trim() || otp.length !== 6}
+                      className="relative w-full py-3.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/30"
+                    >
+                      {authLoading ? (
+                        <>
+                          <RefreshCw className="w-5 h-5 animate-spin" />
+                          <span>Memverifikasi...</span>
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-5 h-5" />
+                          <span>Verifikasi & Masuk</span>
+                        </>
+                      )}
+                    </button>
                   </div>
-                )}
 
-                <div className="space-y-2">
-                  <Button
-                    onClick={handleVerifyOTP}
-                    disabled={authLoading || !otp.trim() || otp.length !== 6}
-                    className="w-full"
-                  >
-                    {authLoading ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Memverifikasi...
-                      </>
-                    ) : (
-                      "Verifikasi OTP"
-                    )}
-                  </Button>
-
-                  <Button
-                    variant="outline"
+                  {/* Back Button */}
+                  <button
                     onClick={() => setStep("email")}
-                    className="w-full"
+                    className="w-full py-3 bg-slate-900/50 hover:bg-slate-800/50 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
                   >
-                    Kembali ke Email
-                  </Button>
+                    <ArrowLeft className="w-4 h-4" />
+                    <span>Kembali ke Email</span>
+                  </button>
                 </div>
-              </CardContent>
-            </Card>
+
+                {/* Footer Note */}
+                <div className="mt-6 text-center">
+                  <p className="text-xs text-gray-500">
+                    Tidak menerima kode?{" "}
+                    {countdown === 0 && (
+                      <button
+                        onClick={handleRequestOTP}
+                        className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                      >
+                        Kirim ulang
+                      </button>
+                    )}
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         )}
 
@@ -537,183 +679,225 @@ export function VideoConsultant() {
           <>
             {/* Error Message */}
             {error && (
-              <div className="mb-4 p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center">
-                <AlertCircle className="w-5 h-5 text-red-600 dark:text-red-400 mr-3 flex-shrink-0" />
-                <span className="text-red-800 dark:text-red-200 text-sm">
-                  {error}
-                </span>
+              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl backdrop-blur-sm flex items-center animate-in fade-in slide-in-from-top duration-300">
+                <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+                <span className="text-red-300 text-sm">{error}</span>
               </div>
             )}
 
-            {/* Chat Container */}
-            <Card className="shadow-xl border-0 bg-card">
-              <CardContent className="p-0">
-                {/* Messages Area */}
-                <div className="h-[600px] overflow-y-auto p-4 sm:p-6 space-y-4">
-                  {isInitializing && messages.length === 0 ? (
-                    <div className="flex justify-center items-center h-full">
-                      <div className="flex flex-col items-center space-y-3">
-                        <Loader2 className="w-8 h-8 animate-spin text-purple-600" />
-                        <span className="text-muted-foreground">
-                          Menginisialisasi chat...
-                        </span>
+            {/* Futuristic Chat Container */}
+            <div className="relative">
+              {/* Outer Glow */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-10 blur-xl"></div>
+
+              <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
+                <div className="p-0">
+                  {/* Futuristic Messages Area */}
+                  <div className="h-[600px] overflow-y-auto p-4 sm:p-6 space-y-6 bg-gradient-to-b from-slate-900/0 to-slate-900/30">
+                    {isInitializing && messages.length === 0 ? (
+                      <div className="flex justify-center items-center h-full">
+                        <div className="flex flex-col items-center space-y-4">
+                          <div className="relative">
+                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-lg opacity-30 animate-pulse"></div>
+                            <Loader2 className="relative w-12 h-12 animate-spin text-purple-400" />
+                          </div>
+                          <span className="text-gray-400 font-medium">
+                            Menginisialisasi AI Consultant...
+                          </span>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <>
-                      {messages.map((message) => (
-                        <div
-                          key={message.id}
-                          className={`flex ${
-                            message.role === "user"
-                              ? "justify-end"
-                              : "justify-start"
-                          } animate-in fade-in slide-in-from-bottom-2 duration-300`}
-                        >
+                    ) : (
+                      <>
+                        {messages.map((message) => (
                           <div
-                            className={`flex gap-3 max-w-[85%] ${
+                            key={message.id}
+                            className={`flex ${
                               message.role === "user"
-                                ? "flex-row-reverse"
-                                : "flex-row"
-                            }`}
+                                ? "justify-end"
+                                : "justify-start"
+                            } animate-in fade-in slide-in-from-bottom-2 duration-300`}
                           >
-                            {/* Avatar */}
                             <div
-                              className={`flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ${
+                              className={`flex gap-3 sm:gap-4 max-w-[85%] ${
                                 message.role === "user"
-                                  ? "bg-gradient-to-r from-purple-600 to-blue-600"
-                                  : "bg-gradient-to-r from-green-500 to-emerald-500"
+                                  ? "flex-row-reverse"
+                                  : "flex-row"
                               }`}
                             >
-                              {message.role === "user" ? (
-                                <UserIcon className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                              ) : (
-                                <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                              )}
-                            </div>
-
-                            {/* Message Bubble */}
-                            <div className="flex flex-col">
-                              <div
-                                className={`rounded-2xl px-4 py-3 ${
-                                  message.role === "user"
-                                    ? "bg-gradient-to-r from-purple-600 to-blue-600 text-white"
-                                    : "bg-muted border border-border"
-                                }`}
-                              >
-                                <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">
-                                  {message.content}
-                                </p>
+                              {/* Futuristic Avatar */}
+                              <div className="flex-shrink-0 relative">
+                                {message.role === "assistant" && (
+                                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full blur-md opacity-40 animate-pulse"></div>
+                                )}
+                                <div
+                                  className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 ${
+                                    message.role === "user"
+                                      ? "bg-gradient-to-br from-purple-500 to-blue-500 border-purple-400/50"
+                                      : "bg-gradient-to-br from-emerald-500 to-cyan-500 border-emerald-400/50 shadow-lg shadow-emerald-500/30"
+                                  }`}
+                                >
+                                  {message.role === "user" ? (
+                                    <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                                  ) : (
+                                    <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                                  )}
+                                </div>
                               </div>
-                              <span
-                                className={`text-xs text-muted-foreground mt-1 px-2 ${
-                                  message.role === "user"
-                                    ? "text-right"
-                                    : "text-left"
-                                }`}
-                              >
-                                {formatTime(message.timestamp)}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-                      ))}
 
-                      {isLoading && (
-                        <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                          <div className="flex gap-3 max-w-[85%]">
-                            <div className="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-gradient-to-r from-green-500 to-emerald-500">
-                              <Bot className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
-                            </div>
-                            <div className="rounded-2xl px-4 py-3 bg-muted border border-border">
-                              <div className="flex items-center space-x-2">
-                                <Loader2 className="w-4 h-4 animate-spin text-purple-600" />
-                                <span className="text-sm text-muted-foreground">
-                                  Sedang mengetik...
+                              {/* Message Bubble */}
+                              <div className="flex flex-col">
+                                <div
+                                  className={`rounded-2xl px-5 py-3.5 shadow-lg ${
+                                    message.role === "user"
+                                      ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-purple-500/20"
+                                      : "bg-slate-800/80 border border-white/10 text-gray-200 backdrop-blur-sm"
+                                  }`}
+                                >
+                                  <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">
+                                    {message.content}
+                                  </p>
+                                </div>
+                                <span
+                                  className={`text-xs text-gray-500 mt-2 px-2 ${
+                                    message.role === "user"
+                                      ? "text-right"
+                                      : "text-left"
+                                  }`}
+                                >
+                                  {formatTime(message.timestamp)}
                                 </span>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      )}
+                        ))}
 
-                      <div ref={messagesEndRef} />
-                    </>
-                  )}
-                </div>
+                        {/* AI Typing Indicator */}
+                        {isLoading && (
+                          <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
+                            <div className="flex gap-3 sm:gap-4 max-w-[85%]">
+                              <div className="flex-shrink-0 relative">
+                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full blur-md opacity-40 animate-pulse"></div>
+                                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-cyan-500 border-2 border-emerald-400/50 shadow-lg shadow-emerald-500/30">
+                                  <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                                </div>
+                              </div>
+                              <div className="rounded-2xl px-5 py-3.5 bg-slate-800/80 border border-white/10 backdrop-blur-sm shadow-lg">
+                                <div className="flex items-center space-x-3">
+                                  <div className="flex space-x-1">
+                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
+                                    <div
+                                      className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
+                                      style={{ animationDelay: "0.1s" }}
+                                    ></div>
+                                    <div
+                                      className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
+                                      style={{ animationDelay: "0.2s" }}
+                                    ></div>
+                                  </div>
+                                  <span className="text-sm text-gray-400 font-medium">
+                                    AI sedang berpikir...
+                                  </span>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
 
-                {/* Input Area */}
-                <div className="border-t p-4 bg-background">
-                  {jsonData && isDone ? (
-                    <div className="text-center py-2">
-                      <p className="text-sm text-muted-foreground">
-                        Chat telah selesai. Silakan edit detail video di bawah.
-                      </p>
-                    </div>
-                  ) : jsonData && !isDone ? (
-                    <div className="space-y-3">
-                      <div className="flex items-center justify-center space-x-2 py-2 bg-yellow-50 dark:bg-yellow-950/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
-                        <Clock className="w-4 h-4 text-yellow-600 dark:text-yellow-400" />
-                        <p className="text-sm font-medium text-yellow-800 dark:text-yellow-200">
-                          Masih ada batch berikutnya. Lanjutkan chat untuk mendapatkan scene tambahan.
+                        <div ref={messagesEndRef} />
+                      </>
+                    )}
+                  </div>
+
+                  {/* Futuristic Input Area */}
+                  <div className="border-t border-white/10 p-4 bg-gradient-to-b from-slate-900/50 to-slate-950/80 backdrop-blur-sm">
+                    {jsonData && isDone ? (
+                      <div className="text-center py-3 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl">
+                        <p className="text-sm text-gray-300 font-medium flex items-center justify-center space-x-2">
+                          <CheckCircle className="w-4 h-4 text-green-400" />
+                          <span>Chat selesai. Edit detail video di bawah.</span>
                         </p>
                       </div>
-                      <div className="flex gap-2">
-                        <Textarea
-                          ref={inputRef}
-                          placeholder="Lanjutkan chat untuk batch berikutnya..."
-                          value={inputMessage}
-                          onChange={(e) => setInputMessage(e.target.value)}
-                          onKeyPress={handleKeyPress}
-                          disabled={isLoading || isInitializing}
-                          className="flex-1 min-h-[40px] max-h-[120px] resize-none"
-                          rows={1}
-                        />
-                        <Button
-                          onClick={handleSendMessage}
-                          disabled={
-                            !inputMessage.trim() || isLoading || isInitializing
-                          }
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                        >
-                          {isLoading ? (
-                            <Loader2 className="w-4 h-4 animate-spin" />
-                          ) : (
-                            <Send className="w-4 h-4" />
-                          )}
-                        </Button>
+                    ) : jsonData && !isDone ? (
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-center space-x-2 py-3 bg-yellow-500/10 rounded-xl border border-yellow-500/30">
+                          <Clock className="w-4 h-4 text-yellow-400" />
+                          <p className="text-sm font-medium text-yellow-300">
+                            Masih ada batch berikutnya. Lanjutkan chat untuk
+                            scene tambahan.
+                          </p>
+                        </div>
+                        <div className="flex gap-3">
+                          <div className="flex-1 relative group">
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-20 blur transition-opacity duration-300"></div>
+                            <textarea
+                              ref={inputRef}
+                              placeholder="Lanjutkan chat untuk batch berikutnya..."
+                              value={inputMessage}
+                              onChange={(e) => setInputMessage(e.target.value)}
+                              onKeyPress={handleKeyPress}
+                              disabled={isLoading || isInitializing}
+                              className="relative w-full px-4 py-3 bg-slate-800/80 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 min-h-[48px] max-h-[120px] resize-none"
+                              rows={1}
+                            />
+                          </div>
+                          <div className="relative">
+                            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-40"></div>
+                            <button
+                              onClick={handleSendMessage}
+                              disabled={
+                                !inputMessage.trim() ||
+                                isLoading ||
+                                isInitializing
+                              }
+                              className="relative h-full px-5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-purple-500/20"
+                            >
+                              {isLoading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                              ) : (
+                                <Send className="w-5 h-5" />
+                              )}
+                            </button>
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                  ) : (
-                    <div className="flex gap-2">
-                      <Textarea
-                        ref={inputRef}
-                        placeholder="Ketik pertanyaan Anda di sini..."
-                        value={inputMessage}
-                        onChange={(e) => setInputMessage(e.target.value)}
-                        onKeyPress={handleKeyPress}
-                        disabled={isLoading || isInitializing}
-                        className="flex-1 min-h-[40px] max-h-[120px] resize-none"
-                        rows={1}
-                      />
-                      <Button
-                        onClick={handleSendMessage}
-                        disabled={
-                          !inputMessage.trim() || isLoading || isInitializing
-                        }
-                        className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-                      >
-                        {isLoading ? (
-                          <Loader2 className="w-4 h-4 animate-spin" />
-                        ) : (
-                          <Send className="w-4 h-4" />
-                        )}
-                      </Button>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="flex gap-3">
+                        <div className="flex-1 relative group">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-20 blur transition-opacity duration-300"></div>
+                          <textarea
+                            ref={inputRef}
+                            placeholder="Ketik pertanyaan Anda di sini..."
+                            value={inputMessage}
+                            onChange={(e) => setInputMessage(e.target.value)}
+                            onKeyPress={handleKeyPress}
+                            disabled={isLoading || isInitializing}
+                            className="relative w-full px-4 py-3 bg-slate-800/80 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 min-h-[48px] max-h-[120px] resize-none"
+                            rows={1}
+                          />
+                        </div>
+                        <div className="relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-40"></div>
+                          <button
+                            onClick={handleSendMessage}
+                            disabled={
+                              !inputMessage.trim() ||
+                              isLoading ||
+                              isInitializing
+                            }
+                            className="relative h-full px-5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-purple-500/20"
+                          >
+                            {isLoading ? (
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                              <Send className="w-5 h-5" />
+                            )}
+                          </button>
+                        </div>
+                      </div>
+                    )}
 
-                  {/* Quick Suggestions */}
-                  {/* {!isDone && (
+                    {/* Quick Suggestions */}
+                    {/* {!isDone && (
                     <div className="mt-3 flex flex-wrap gap-2">
                       <span className="text-xs text-muted-foreground hidden sm:inline">
                         Coba tanya:
@@ -740,9 +924,10 @@ export function VideoConsultant() {
                       ))}
                     </div>
                   )} */}
+                  </div>
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            </div>
 
             {/* Video Scenes Editor */}
             {jsonData && editedScenes.length > 0 && (
@@ -760,7 +945,8 @@ export function VideoConsultant() {
                     )}
                   </div>
                   <Badge variant="outline" className="text-sm">
-                    {editedScenes.length} Scene{editedScenes.length > 1 ? "s" : ""}
+                    {editedScenes.length} Scene
+                    {editedScenes.length > 1 ? "s" : ""}
                   </Badge>
                 </div>
 
@@ -800,7 +986,11 @@ export function VideoConsultant() {
                         <Input
                           value={scene.bagian}
                           onChange={(e) =>
-                            handleSceneEdit(sceneIndex, "bagian", e.target.value)
+                            handleSceneEdit(
+                              sceneIndex,
+                              "bagian",
+                              e.target.value
+                            )
                           }
                           className="w-full"
                         />
@@ -867,77 +1057,79 @@ export function VideoConsultant() {
                           Detail Sub Scene
                         </label>
                         <div className="space-y-3">
-                          {scene.sub_scene_detail.map((subScene, subSceneIndex) => (
-                            <Card
-                              key={subSceneIndex}
-                              className="bg-muted/50 border border-border"
-                            >
-                              <CardContent className="p-4 space-y-3">
-                                <div className="flex items-center justify-between mb-2">
-                                  <Badge variant="secondary">
-                                    {subScene.waktu}
-                                  </Badge>
-                                </div>
+                          {scene.sub_scene_detail.map(
+                            (subScene, subSceneIndex) => (
+                              <Card
+                                key={subSceneIndex}
+                                className="bg-muted/50 border border-border"
+                              >
+                                <CardContent className="p-4 space-y-3">
+                                  <div className="flex items-center justify-between mb-2">
+                                    <Badge variant="secondary">
+                                      {subScene.waktu}
+                                    </Badge>
+                                  </div>
 
-                                <div>
-                                  <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                    Waktu
-                                  </label>
-                                  <Input
-                                    value={subScene.waktu}
-                                    onChange={(e) =>
-                                      handleSubSceneEdit(
-                                        sceneIndex,
-                                        subSceneIndex,
-                                        "waktu",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="w-full"
-                                    size={1}
-                                  />
-                                </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                      Waktu
+                                    </label>
+                                    <Input
+                                      value={subScene.waktu}
+                                      onChange={(e) =>
+                                        handleSubSceneEdit(
+                                          sceneIndex,
+                                          subSceneIndex,
+                                          "waktu",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full"
+                                      size={1}
+                                    />
+                                  </div>
 
-                                <div>
-                                  <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                    Aksi dan Kamera
-                                  </label>
-                                  <textarea
-                                    value={subScene.aksi_dan_kamera}
-                                    onChange={(e) =>
-                                      handleSubSceneEdit(
-                                        sceneIndex,
-                                        subSceneIndex,
-                                        "aksi_dan_kamera",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
-                                    rows={2}
-                                  />
-                                </div>
+                                  <div>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                      Aksi dan Kamera
+                                    </label>
+                                    <textarea
+                                      value={subScene.aksi_dan_kamera}
+                                      onChange={(e) =>
+                                        handleSubSceneEdit(
+                                          sceneIndex,
+                                          subSceneIndex,
+                                          "aksi_dan_kamera",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
+                                      rows={2}
+                                    />
+                                  </div>
 
-                                <div>
-                                  <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                    Atmosfer
-                                  </label>
-                                  <textarea
-                                    value={subScene.atmosfer}
-                                    onChange={(e) =>
-                                      handleSubSceneEdit(
-                                        sceneIndex,
-                                        subSceneIndex,
-                                        "atmosfer",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
-                                    rows={2}
-                                  />
-                                </div>
-                              </CardContent>
-                            </Card>
-                          ))}
+                                  <div>
+                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
+                                      Atmosfer
+                                    </label>
+                                    <textarea
+                                      value={subScene.atmosfer}
+                                      onChange={(e) =>
+                                        handleSubSceneEdit(
+                                          sceneIndex,
+                                          subSceneIndex,
+                                          "atmosfer",
+                                          e.target.value
+                                        )
+                                      }
+                                      className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
+                                      rows={2}
+                                    />
+                                  </div>
+                                </CardContent>
+                              </Card>
+                            )
+                          )}
                         </div>
                       </div>
 
@@ -975,7 +1167,9 @@ export function VideoConsultant() {
                               Batch Scene Belum Selesai
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Masih ada batch berikutnya. Lanjutkan chat dengan AI untuk mendapatkan semua scene video Anda. Saat ini {editedScenes.length} scene sudah tersedia.
+                              Masih ada batch berikutnya. Lanjutkan chat dengan
+                              AI untuk mendapatkan semua scene video Anda. Saat
+                              ini {editedScenes.length} scene sudah tersedia.
                             </p>
                           </div>
                         </div>
@@ -1001,8 +1195,9 @@ export function VideoConsultant() {
                               Review Setup Video Anda
                             </p>
                             <p className="text-xs text-muted-foreground">
-                              Periksa detail video di atas. Anda dapat mengedit jika
-                              diperlukan, atau konfirmasi untuk melanjutkan.
+                              Periksa detail video di atas. Anda dapat mengedit
+                              jika diperlukan, atau konfirmasi untuk
+                              melanjutkan.
                             </p>
                           </div>
                         </div>
@@ -1029,8 +1224,9 @@ export function VideoConsultant() {
                               Setup Video Selesai!
                             </p>
                             <p className="text-sm text-muted-foreground">
-                              Data video Anda ({editedScenes.length} scene) siap untuk diproses.
-                              Lanjutkan ke pembayaran untuk membuat video Anda.
+                              Data video Anda ({editedScenes.length} scene) siap
+                              untuk diproses. Lanjutkan ke pembayaran untuk
+                              membuat video Anda.
                             </p>
                           </div>
                         </div>
@@ -1108,6 +1304,24 @@ export function VideoConsultant() {
           </>
         )}
       </div>
+
+      {/* CSS for animations */}
+      <style>{`
+        @keyframes gradient {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+          animation: gradient 6s ease infinite;
+        }
+        @keyframes spin-slow {
+          from { transform: rotate(0deg); }
+          to { transform: rotate(360deg); }
+        }
+        .animate-spin-slow {
+          animation: spin-slow 3s linear infinite;
+        }
+      `}</style>
     </div>
   );
 }

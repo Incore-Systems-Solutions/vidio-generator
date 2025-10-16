@@ -14,25 +14,40 @@ import "../styles/global.css"
 		<meta name="description" content="Create professional videos with our easy-to-use video generator. Follow simple steps to generate, customize, and download your videos." />
 	</head>
 
-	<body class="min-h-screen bg-background antialiased">
+	<body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
+		<!-- Animated Background Effects -->
+		<div class="fixed inset-0 overflow-hidden pointer-events-none">
+			<!-- Gradient Orbs -->
+			<div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+			<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
+			<div class="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 4s;"></div>
+		</div>
+
 		<!-- Navigation with Integrated Stepper -->
-		<NavbarWithModal client:load currentStep={1} totalSteps={4} />
+		<div class="relative z-10">
+			<NavbarWithModal client:load currentStep={1} totalSteps={4} />
+		</div>
 
 		<!-- Main Content -->
-		<main class="flex-1">
+		<main class="flex-1 relative z-10">
 			<!-- Video Gallery Section -->
-			<section class="bg-muted/30 py-16">
-				<div class="container mx-auto px-8">
+			<section class="py-16">
+				<div class="container mx-auto px-4 sm:px-6 lg:px-8">
 					<VideoGallery client:load />
 				</div>
 			</section>
 		</main>
 
-		<!-- Footer -->
-		<footer class="border-t py-12 mt-24">
+		<!-- Futuristic Footer -->
+		<footer class="relative z-10 border-t border-white/10 py-12 mt-24 bg-slate-950/50 backdrop-blur-sm">
 			<div class="container mx-auto px-4">
-				<div class="text-center text-muted-foreground">
-					<p>&copy; 2024 Video Generator. All rights reserved.</p>
+				<div class="text-center">
+					<p class="text-gray-400 text-sm mb-2">
+						&copy; 2024 <span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-semibold">InstanVideo</span>. All rights reserved.
+					</p>
+					<p class="text-gray-500 text-xs">
+						Powered by AI Video Generation Technology
+					</p>
 				</div>
 			</div>
 		</footer>
