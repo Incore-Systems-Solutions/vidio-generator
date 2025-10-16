@@ -182,11 +182,25 @@ export interface SubSceneDetail {
   atmosfer: string;
 }
 
+export interface Karakter {
+  nama_karakter: string;
+  detail_karakter: string;
+  aksi: string;
+  deskripsi_tambahan: string;
+}
+
+export interface Latar {
+  tempat: string;
+  waktu: string;
+}
+
 export interface SceneData {
   scene: number;
   judul: string;
   bagian: string;
   durasi_scene: string;
+  karakter?: Karakter[]; // Optional untuk backward compatibility
+  latar?: Latar; // Optional untuk backward compatibility
   deskripsi_visual: string;
   sub_scene_interval: string;
   sub_scene_detail: SubSceneDetail[];

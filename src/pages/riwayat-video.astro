@@ -1,0 +1,25 @@
+---
+import { VideoHistory } from "@/components/VideoHistory";
+import "../styles/global.css";
+---
+
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>Riwayat Video - InstanVideo</title>
+    <meta
+      name="description"
+      content="Lihat semua riwayat video yang telah Anda buat dengan InstanVideo AI"
+    />
+  </head>
+
+  <body
+    class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased"
+  >
+    <VideoHistory client:load />
+  </body>
+</html>
+

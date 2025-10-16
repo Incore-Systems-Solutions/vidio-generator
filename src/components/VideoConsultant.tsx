@@ -2,7 +2,6 @@ import React, { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   Send,
@@ -20,6 +19,10 @@ import {
   RefreshCw,
   Clock,
   CheckCircle,
+  LogOut,
+  Film,
+  Calendar,
+  Video,
 } from "lucide-react";
 import {
   chatAIApi,
@@ -38,7 +41,55 @@ interface Message {
 
 interface JsonData {
   type: string;
+  batch?: number;
+  total_batch?: number;
   data: SceneData[];
+}
+
+interface CollectingDataResponse {
+  type: "collecting_data";
+  data: {
+    script_naskah?: {
+      subjek: string;
+      karakter: Array<{
+        nama_karakter: string;
+        detail_karakter: string;
+        aksi: string;
+        deskripsi_tambahan: string;
+      }>;
+      interaksi: string;
+    };
+    lokasi_waktu?: {
+      tempat: string;
+      waktu: string;
+    };
+    gaya_visual?: {
+      style: string;
+      nuansa: string;
+      kualitas: {
+        resolusi: string;
+        frame_rate: string;
+        rendering_style: string;
+        lighting: string;
+        color_grading: string;
+        tekstur: string;
+      };
+      kamera: {
+        angle: string;
+        gerakan: string;
+        aspect_ratio: string;
+        depth_of_field: string;
+      };
+      atmosfer: string;
+      tempo: string;
+      efek_tambahan: string;
+      audio: {
+        efek_suara: string;
+      };
+    };
+    count_scene_video?: number;
+    durasi_final?: number;
+  };
 }
 
 export function VideoConsultant() {
@@ -60,6 +111,8 @@ export function VideoConsultant() {
   const [isInitializing, setIsInitializing] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [jsonData, setJsonData] = useState<JsonData | null>(null);
+  const [collectingData, setCollectingData] =
+    useState<CollectingDataResponse | null>(null);
   const [editedScenes, setEditedScenes] = useState<SceneData[]>([]);
   const [hasEdited, setHasEdited] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -72,6 +125,20 @@ export function VideoConsultant() {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+
+  // Check localStorage for existing session on mount
+  useEffect(() => {
+    const savedApiKey = localStorage.getItem("x-api-key");
+    const savedEmail = localStorage.getItem("konsultan-email");
+
+    if (savedApiKey) {
+      setXApiKey(savedApiKey);
+      if (savedEmail) {
+        setEmail(savedEmail);
+      }
+      setStep("chat");
+    }
+  }, []);
 
   // Countdown timer for OTP
   useEffect(() => {
@@ -124,6 +191,7 @@ export function VideoConsultant() {
 
       // Save to localStorage for future use
       localStorage.setItem("x-api-key", result.data["x-api-key"]);
+      localStorage.setItem("konsultan-email", email);
 
       setStep("chat");
     } catch (err) {
@@ -198,6 +266,21 @@ export function VideoConsultant() {
         setMessages((prev) => [...prev, aiResponse]);
         setIsDone(response.data.is_done);
 
+        // Check if json_data exists and type is collecting_data
+        if (
+          response.data.json_data &&
+          response.data.json_data.type === "collecting_data"
+        ) {
+          console.log("Received collecting_data:", response.data.json_data);
+          setCollectingData(response.data.json_data as CollectingDataResponse);
+
+          // Save to localStorage
+          localStorage.setItem(
+            "collection_data",
+            JSON.stringify(response.data.json_data)
+          );
+        }
+
         // Check if json_data exists and type is prompt_video
         if (
           response.data.json_data &&
@@ -215,6 +298,16 @@ export function VideoConsultant() {
             console.log(
               `Accumulating scenes: ${prev.length} + ${newScenes.length} = ${accumulated.length}`
             );
+
+            // If is_done is true, save to localStorage
+            if (response.data.is_done) {
+              localStorage.setItem("batch_scene", JSON.stringify(accumulated));
+              console.log(
+                "All scenes saved to localStorage:",
+                accumulated.length
+              );
+            }
+
             return accumulated;
           });
         }
@@ -242,6 +335,7 @@ export function VideoConsultant() {
       setIsDone(false);
       setError(null);
       setJsonData(null);
+      setCollectingData(null);
       setEditedScenes([]);
       setHasEdited(false);
 
@@ -271,42 +365,94 @@ export function VideoConsultant() {
     }
   };
 
-  const handleSceneEdit = (
-    sceneIndex: number,
-    field: string,
-    value: string
-  ) => {
-    setEditedScenes((prev) => {
-      const updated = [...prev];
-      updated[sceneIndex] = {
-        ...updated[sceneIndex],
-        [field]: value,
-      };
-      return updated;
-    });
-    setHasEdited(true);
+  const handleLogout = () => {
+    // Clear localStorage
+    localStorage.removeItem("x-api-key");
+    localStorage.removeItem("konsultan-email");
+
+    // Reset all states
+    setXApiKey(null);
+    setEmail("");
+    setStep("email");
+    setMessages([]);
+    setIsDone(false);
+    setError(null);
+    setJsonData(null);
+    setCollectingData(null);
+    setEditedScenes([]);
+    setHasEdited(false);
+    setChatUuid(null);
   };
 
-  const handleSubSceneEdit = (
-    sceneIndex: number,
-    subSceneIndex: number,
-    field: string,
-    value: string
-  ) => {
-    setEditedScenes((prev) => {
-      const updated = [...prev];
-      const updatedSubScenes = [...updated[sceneIndex].sub_scene_detail];
-      updatedSubScenes[subSceneIndex] = {
-        ...updatedSubScenes[subSceneIndex],
-        [field]: value,
-      };
-      updated[sceneIndex] = {
-        ...updated[sceneIndex],
-        sub_scene_detail: updatedSubScenes,
-      };
-      return updated;
-    });
-    setHasEdited(true);
+  const handleContinueBatchVideo = async () => {
+    if (!chatUuid || !xApiKey) return;
+
+    // Auto send message to continue batch creation
+    const continueMessage = "lanjutkan";
+    setIsLoading(true);
+    setError(null);
+
+    try {
+      const response = await chatAIApi.sendReply(
+        chatUuid,
+        continueMessage,
+        xApiKey
+      );
+
+      if (response.status) {
+        const aiResponse: Message = {
+          id: Date.now().toString(),
+          role: "assistant",
+          content: response.data.message.content,
+          timestamp: new Date(),
+        };
+
+        setMessages((prev) => [...prev, aiResponse]);
+        setIsDone(response.data.is_done);
+
+        // Check if json_data exists and type is prompt_video
+        if (
+          response.data.json_data &&
+          response.data.json_data.type === "prompt_video"
+        ) {
+          console.log("Received json_data:", response.data.json_data);
+          console.log("is_done:", response.data.is_done);
+
+          setJsonData(response.data.json_data);
+
+          // Always accumulate scenes from all batches
+          setEditedScenes((prev) => {
+            const newScenes = response.data.json_data?.data || [];
+            const accumulated = [...prev, ...newScenes];
+            console.log(
+              `Accumulating scenes: ${prev.length} + ${newScenes.length} = ${accumulated.length}`
+            );
+
+            // If is_done is true, save to localStorage
+            if (response.data.is_done) {
+              localStorage.setItem("batch_scene", JSON.stringify(accumulated));
+              console.log(
+                "All scenes saved to localStorage:",
+                accumulated.length
+              );
+            }
+
+            return accumulated;
+          });
+        }
+      } else {
+        setError(response.message || "Gagal melanjutkan batch");
+      }
+    } catch (err) {
+      console.error("Error continuing batch:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat melanjutkan batch"
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleGoToPayment = () => {
@@ -449,16 +595,27 @@ export function VideoConsultant() {
                   </div>
                 </div>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleClearChat}
-                className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/20"
-                disabled={isInitializing}
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                <span className="hidden sm:inline">Clear Chat</span>
-              </Button>
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleClearChat}
+                  className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/20"
+                  disabled={isInitializing}
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Clear Chat</span>
+                </Button>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleLogout}
+                  className="text-orange-300 hover:text-orange-200 hover:bg-orange-500/10 border border-orange-500/20"
+                >
+                  <LogOut className="w-4 h-4 mr-2" />
+                  <span className="hidden sm:inline">Logout</span>
+                </Button>
+              </div>
             </div>
           )}
         </div>
@@ -803,6 +960,409 @@ export function VideoConsultant() {
                           </div>
                         )}
 
+                        {/* Collecting Data Display */}
+                        {collectingData && (
+                          <div className="mt-6 animate-in fade-in slide-in-from-bottom-2 duration-500">
+                            <div className="relative">
+                              {/* Outer Glow */}
+                              <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 rounded-2xl opacity-20 blur-lg"></div>
+
+                              <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border border-cyan-500/30 rounded-2xl p-6 shadow-2xl">
+                                {/* Header */}
+                                <div className="flex items-center space-x-3 mb-6 pb-4 border-b border-white/10">
+                                  <div className="relative">
+                                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
+                                    <div className="relative w-10 h-10 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                                      <Film className="w-5 h-5 text-white" />
+                                    </div>
+                                  </div>
+                                  <div>
+                                    <h3 className="text-lg font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                                      Data Konsultasi Video
+                                    </h3>
+                                    <p className="text-xs text-gray-400">
+                                      Informasi yang dikumpulkan dari diskusi
+                                    </p>
+                                  </div>
+                                </div>
+
+                                {/* Content Grid */}
+                                <div className="space-y-4">
+                                  {/* Script/Naskah */}
+                                  {collectingData.data.script_naskah && (
+                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
+                                      <h4 className="text-sm font-semibold text-purple-300 mb-3 flex items-center">
+                                        <Sparkles className="w-4 h-4 mr-2" />
+                                        Script & Naskah
+                                      </h4>
+                                      <div className="space-y-2 text-sm">
+                                        <div>
+                                          <span className="text-gray-400">
+                                            Subjek:{" "}
+                                          </span>
+                                          <span className="text-white">
+                                            {
+                                              collectingData.data.script_naskah
+                                                .subjek
+                                            }
+                                          </span>
+                                        </div>
+                                        {collectingData.data.script_naskah
+                                          .karakter &&
+                                          collectingData.data.script_naskah
+                                            .karakter.length > 0 && (
+                                            <div className="mt-3">
+                                              <span className="text-gray-400 block mb-2">
+                                                Karakter:
+                                              </span>
+                                              <div className="space-y-2 pl-2">
+                                                {collectingData.data.script_naskah.karakter.map(
+                                                  (kar, idx) => (
+                                                    <div
+                                                      key={idx}
+                                                      className="bg-slate-950/50 rounded-lg p-3 border border-purple-500/10"
+                                                    >
+                                                      <div className="font-medium text-purple-300 mb-1">
+                                                        {kar.nama_karakter}
+                                                      </div>
+                                                      <div className="text-xs text-gray-400 space-y-1">
+                                                        <div>
+                                                          {kar.detail_karakter}
+                                                        </div>
+                                                        <div>
+                                                          <span className="text-gray-500">
+                                                            Aksi:
+                                                          </span>{" "}
+                                                          {kar.aksi}
+                                                        </div>
+                                                        {kar.deskripsi_tambahan && (
+                                                          <div className="text-gray-500">
+                                                            {
+                                                              kar.deskripsi_tambahan
+                                                            }
+                                                          </div>
+                                                        )}
+                                                      </div>
+                                                    </div>
+                                                  )
+                                                )}
+                                              </div>
+                                            </div>
+                                          )}
+                                        {collectingData.data.script_naskah
+                                          .interaksi && (
+                                          <div className="mt-2">
+                                            <span className="text-gray-400">
+                                              Interaksi:{" "}
+                                            </span>
+                                            <span className="text-gray-300">
+                                              {
+                                                collectingData.data
+                                                  .script_naskah.interaksi
+                                              }
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Lokasi & Waktu */}
+                                  {collectingData.data.lokasi_waktu && (
+                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
+                                      <h4 className="text-sm font-semibold text-cyan-300 mb-3 flex items-center">
+                                        <Calendar className="w-4 h-4 mr-2" />
+                                        Lokasi & Waktu
+                                      </h4>
+                                      <div className="grid grid-cols-2 gap-3 text-sm">
+                                        <div>
+                                          <span className="text-gray-400 block mb-1">
+                                            Tempat
+                                          </span>
+                                          <span className="text-white">
+                                            {
+                                              collectingData.data.lokasi_waktu
+                                                .tempat
+                                            }
+                                          </span>
+                                        </div>
+                                        <div>
+                                          <span className="text-gray-400 block mb-1">
+                                            Waktu
+                                          </span>
+                                          <span className="text-white">
+                                            {
+                                              collectingData.data.lokasi_waktu
+                                                .waktu
+                                            }
+                                          </span>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Gaya Visual */}
+                                  {collectingData.data.gaya_visual && (
+                                    <div className="bg-slate-900/50 rounded-xl p-4 border border-white/5">
+                                      <h4 className="text-sm font-semibold text-blue-300 mb-3 flex items-center">
+                                        <Video className="w-4 h-4 mr-2" />
+                                        Gaya Visual
+                                      </h4>
+                                      <div className="space-y-3 text-sm">
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <span className="text-gray-400 block mb-1">
+                                              Style
+                                            </span>
+                                            <span className="text-white">
+                                              {
+                                                collectingData.data.gaya_visual
+                                                  .style
+                                              }
+                                            </span>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-400 block mb-1">
+                                              Nuansa
+                                            </span>
+                                            <span className="text-white">
+                                              {
+                                                collectingData.data.gaya_visual
+                                                  .nuansa
+                                              }
+                                            </span>
+                                          </div>
+                                        </div>
+
+                                        {/* Kualitas */}
+                                        <div className="bg-slate-950/50 rounded-lg p-3 border border-blue-500/10">
+                                          <div className="text-xs font-medium text-blue-300 mb-2">
+                                            Kualitas
+                                          </div>
+                                          <div className="grid grid-cols-2 gap-2 text-xs">
+                                            <div>
+                                              <span className="text-gray-500">
+                                                Resolusi:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kualitas
+                                                    .resolusi
+                                                }
+                                              </span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-500">
+                                                Frame Rate:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kualitas
+                                                    .frame_rate
+                                                }
+                                              </span>
+                                            </div>
+                                            <div className="col-span-2">
+                                              <span className="text-gray-500">
+                                                Rendering:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kualitas
+                                                    .rendering_style
+                                                }
+                                              </span>
+                                            </div>
+                                            <div className="col-span-2">
+                                              <span className="text-gray-500">
+                                                Lighting:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kualitas
+                                                    .lighting
+                                                }
+                                              </span>
+                                            </div>
+                                            <div className="col-span-2">
+                                              <span className="text-gray-500">
+                                                Color Grading:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kualitas
+                                                    .color_grading
+                                                }
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        {/* Kamera */}
+                                        <div className="bg-slate-950/50 rounded-lg p-3 border border-blue-500/10">
+                                          <div className="text-xs font-medium text-blue-300 mb-2">
+                                            Kamera
+                                          </div>
+                                          <div className="space-y-1 text-xs">
+                                            <div>
+                                              <span className="text-gray-500">
+                                                Angle:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kamera.angle
+                                                }
+                                              </span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-500">
+                                                Gerakan:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kamera.gerakan
+                                                }
+                                              </span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-500">
+                                                Aspect Ratio:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kamera
+                                                    .aspect_ratio
+                                                }
+                                              </span>
+                                            </div>
+                                            <div>
+                                              <span className="text-gray-500">
+                                                Depth of Field:{" "}
+                                              </span>
+                                              <span className="text-gray-300">
+                                                {
+                                                  collectingData.data
+                                                    .gaya_visual.kamera
+                                                    .depth_of_field
+                                                }
+                                              </span>
+                                            </div>
+                                          </div>
+                                        </div>
+
+                                        <div className="grid grid-cols-2 gap-3">
+                                          <div>
+                                            <span className="text-gray-400 block mb-1">
+                                              Atmosfer
+                                            </span>
+                                            <span className="text-gray-300">
+                                              {
+                                                collectingData.data.gaya_visual
+                                                  .atmosfer
+                                              }
+                                            </span>
+                                          </div>
+                                          <div>
+                                            <span className="text-gray-400 block mb-1">
+                                              Tempo
+                                            </span>
+                                            <span className="text-gray-300">
+                                              {
+                                                collectingData.data.gaya_visual
+                                                  .tempo
+                                              }
+                                            </span>
+                                          </div>
+                                        </div>
+
+                                        {collectingData.data.gaya_visual
+                                          .efek_tambahan && (
+                                          <div>
+                                            <span className="text-gray-400 block mb-1">
+                                              Efek Tambahan
+                                            </span>
+                                            <span className="text-gray-300">
+                                              {
+                                                collectingData.data.gaya_visual
+                                                  .efek_tambahan
+                                              }
+                                            </span>
+                                          </div>
+                                        )}
+
+                                        {collectingData.data.gaya_visual
+                                          .audio && (
+                                          <div>
+                                            <span className="text-gray-400 block mb-1">
+                                              Audio
+                                            </span>
+                                            <span className="text-gray-300">
+                                              {
+                                                collectingData.data.gaya_visual
+                                                  .audio.efek_suara
+                                              }
+                                            </span>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+
+                                  {/* Summary Info */}
+                                  {(collectingData.data.count_scene_video ||
+                                    collectingData.data.durasi_final) && (
+                                    <div className="bg-gradient-to-r from-purple-900/30 to-blue-900/30 rounded-xl p-4 border border-purple-500/30">
+                                      <div className="grid grid-cols-2 gap-4 text-center">
+                                        {collectingData.data
+                                          .count_scene_video && (
+                                          <div>
+                                            <div className="text-2xl font-bold text-purple-300">
+                                              {
+                                                collectingData.data
+                                                  .count_scene_video
+                                              }
+                                            </div>
+                                            <div className="text-xs text-gray-400 mt-1">
+                                              Scene Video
+                                            </div>
+                                          </div>
+                                        )}
+                                        {collectingData.data.durasi_final && (
+                                          <div>
+                                            <div className="text-2xl font-bold text-blue-300">
+                                              {collectingData.data.durasi_final}
+                                              s
+                                            </div>
+                                            <div className="text-xs text-gray-400 mt-1">
+                                              Durasi Final
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+
+                                {/* Footer Note */}
+                                <div className="mt-4 pt-4 border-t border-white/10">
+                                  <p className="text-xs text-center text-gray-500">
+                                    📊 Data ini akan digunakan untuk membuat
+                                    prompt video yang lebih detail
+                                  </p>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        )}
+
                         <div ref={messagesEndRef} />
                       </>
                     )}
@@ -810,54 +1370,79 @@ export function VideoConsultant() {
 
                   {/* Futuristic Input Area */}
                   <div className="border-t border-white/10 p-4 bg-gradient-to-b from-slate-900/50 to-slate-950/80 backdrop-blur-sm">
-                    {jsonData && isDone ? (
-                      <div className="text-center py-3 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-xl">
-                        <p className="text-sm text-gray-300 font-medium flex items-center justify-center space-x-2">
-                          <CheckCircle className="w-4 h-4 text-green-400" />
-                          <span>Chat selesai. Edit detail video di bawah.</span>
-                        </p>
+                    {collectingData && !jsonData ? (
+                      // When collecting_data received, show button to start batch video creation
+                      <div className="relative">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
+                        <button
+                          onClick={handleContinueBatchVideo}
+                          disabled={isLoading || isInitializing}
+                          className="relative w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 shadow-lg shadow-purple-500/30"
+                        >
+                          {isLoading ? (
+                            <>
+                              <Loader2 className="w-5 h-5 animate-spin" />
+                              <span>Memproses...</span>
+                            </>
+                          ) : (
+                            <>
+                              <Film className="w-5 h-5" />
+                              <span>Lanjut Pembuatan Batch Video</span>
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    ) : jsonData && isDone ? (
+                      // When all batches done, show payment button
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-center space-x-2 py-3 bg-green-500/10 rounded-xl border border-green-500/30">
+                          <CheckCircle className="w-5 h-5 text-green-400" />
+                          <p className="text-sm font-medium text-green-300">
+                            Semua batch scene selesai! Total{" "}
+                            {editedScenes.length} scene telah dibuat.
+                          </p>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
+                          <button
+                            onClick={handleGoToPayment}
+                            className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30"
+                          >
+                            <CreditCard className="w-5 h-5" />
+                            <span>Lanjutkan ke Pembayaran</span>
+                          </button>
+                        </div>
                       </div>
                     ) : jsonData && !isDone ? (
+                      // When batch in progress, show button for next batch
                       <div className="space-y-3">
                         <div className="flex items-center justify-center space-x-2 py-3 bg-yellow-500/10 rounded-xl border border-yellow-500/30">
                           <Clock className="w-4 h-4 text-yellow-400" />
                           <p className="text-sm font-medium text-yellow-300">
-                            Masih ada batch berikutnya. Lanjutkan chat untuk
-                            scene tambahan.
+                            Batch {jsonData.batch || 1} selesai. Masih ada batch
+                            berikutnya ({editedScenes.length} scene sudah
+                            dibuat).
                           </p>
                         </div>
-                        <div className="flex gap-3">
-                          <div className="flex-1 relative group">
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-20 blur transition-opacity duration-300"></div>
-                            <textarea
-                              ref={inputRef}
-                              placeholder="Lanjutkan chat untuk batch berikutnya..."
-                              value={inputMessage}
-                              onChange={(e) => setInputMessage(e.target.value)}
-                              onKeyPress={handleKeyPress}
-                              disabled={isLoading || isInitializing}
-                              className="relative w-full px-4 py-3 bg-slate-800/80 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 min-h-[48px] max-h-[120px] resize-none"
-                              rows={1}
-                            />
-                          </div>
-                          <div className="relative">
-                            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-40"></div>
-                            <button
-                              onClick={handleSendMessage}
-                              disabled={
-                                !inputMessage.trim() ||
-                                isLoading ||
-                                isInitializing
-                              }
-                              className="relative h-full px-5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-purple-500/20"
-                            >
-                              {isLoading ? (
+                        <div className="relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
+                          <button
+                            onClick={handleContinueBatchVideo}
+                            disabled={isLoading || isInitializing}
+                            className="relative w-full py-4 bg-gradient-to-r from-yellow-500 to-orange-500 hover:from-yellow-600 hover:to-orange-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 shadow-lg shadow-yellow-500/30"
+                          >
+                            {isLoading ? (
+                              <>
                                 <Loader2 className="w-5 h-5 animate-spin" />
-                              ) : (
-                                <Send className="w-5 h-5" />
-                              )}
-                            </button>
-                          </div>
+                                <span>Memproses Batch Berikutnya...</span>
+                              </>
+                            ) : (
+                              <>
+                                <RefreshCw className="w-5 h-5" />
+                                <span>Lanjutkan Batch Berikutnya</span>
+                              </>
+                            )}
+                          </button>
                         </div>
                       </div>
                     ) : (
@@ -895,353 +1480,119 @@ export function VideoConsultant() {
                         </div>
                       </div>
                     )}
-
-                    {/* Quick Suggestions */}
-                    {/* {!isDone && (
-                    <div className="mt-3 flex flex-wrap gap-2">
-                      <span className="text-xs text-muted-foreground hidden sm:inline">
-                        Coba tanya:
-                      </span>
-                      {[
-                        "Tips karakter",
-                        "Cara menulis prompt",
-                        "Info harga",
-                        "Kualitas video",
-                      ].map((suggestion) => (
-                        <Button
-                          key={suggestion}
-                          variant="outline"
-                          size="sm"
-                          className="text-xs h-7"
-                          onClick={() => {
-                            setInputMessage(suggestion);
-                            inputRef.current?.focus();
-                          }}
-                          disabled={isLoading || isInitializing}
-                        >
-                          {suggestion}
-                        </Button>
-                      ))}
-                    </div>
-                  )} */}
                   </div>
                 </div>
               </div>
             </div>
 
-            {/* Video Scenes Editor */}
-            {jsonData && editedScenes.length > 0 && (
-              <div className="mt-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-3">
-                    <h2 className="text-2xl font-bold text-foreground">
-                      Detail Video Prompt
-                    </h2>
-                    {!isDone && (
-                      <Badge className="bg-yellow-500 text-white">
-                        <Clock className="w-3 h-3 mr-1" />
-                        Batch Berlanjut
+            {/* Scenes Summary Display */}
+            {editedScenes.length > 0 && (
+              <div className="mt-6">
+                <div className="relative">
+                  {/* Outer Glow */}
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-10 blur-lg"></div>
+
+                  <div className="relative bg-gradient-to-br from-slate-800/90 to-slate-900/90 backdrop-blur-xl border border-purple-500/30 rounded-2xl p-6 shadow-2xl">
+                    {/* Header */}
+                    <div className="flex items-center justify-between mb-6 pb-4 border-b border-white/10">
+                      <div className="flex items-center space-x-3">
+                        <div className="relative">
+                          <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
+                          <div className="relative w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-lg flex items-center justify-center">
+                            <Film className="w-5 h-5 text-white" />
+                          </div>
+                        </div>
+                        <div>
+                          <h3 className="text-lg font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                            Scenes Video Prompt
+                          </h3>
+                          <p className="text-xs text-gray-400">
+                            {editedScenes.length} scene telah dibuat
+                            {jsonData?.batch && jsonData?.total_batch && (
+                              <span className="ml-2">
+                                • Batch {jsonData.batch}/{jsonData.total_batch}
+                              </span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                      <Badge className="bg-purple-500 text-white">
+                        {editedScenes.length} Scenes
                       </Badge>
-                    )}
-                  </div>
-                  <Badge variant="outline" className="text-sm">
-                    {editedScenes.length} Scene
-                    {editedScenes.length > 1 ? "s" : ""}
-                  </Badge>
-                </div>
+                    </div>
 
-                {editedScenes.map((scene, sceneIndex) => (
-                  <Card
-                    key={scene.scene}
-                    className="border-2 border-purple-200 dark:border-purple-800 shadow-md"
-                  >
-                    <CardHeader className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
-                      <CardTitle className="flex items-center justify-between">
-                        <span className="text-lg">Scene {scene.scene}</span>
-                        <Badge className="bg-purple-600">
-                          {scene.durasi_scene}
-                        </Badge>
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="p-6 space-y-4">
-                      {/* Judul */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-2">
-                          Judul
-                        </label>
-                        <Input
-                          value={scene.judul}
-                          onChange={(e) =>
-                            handleSceneEdit(sceneIndex, "judul", e.target.value)
-                          }
-                          className="w-full"
-                        />
-                      </div>
-
-                      {/* Bagian */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-2">
-                          Bagian
-                        </label>
-                        <Input
-                          value={scene.bagian}
-                          onChange={(e) =>
-                            handleSceneEdit(
-                              sceneIndex,
-                              "bagian",
-                              e.target.value
-                            )
-                          }
-                          className="w-full"
-                        />
-                      </div>
-
-                      {/* Durasi Scene */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-2">
-                          Durasi Scene
-                        </label>
-                        <Input
-                          value={scene.durasi_scene}
-                          onChange={(e) =>
-                            handleSceneEdit(
-                              sceneIndex,
-                              "durasi_scene",
-                              e.target.value
-                            )
-                          }
-                          className="w-full"
-                        />
-                      </div>
-
-                      {/* Deskripsi Visual */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-2">
-                          Deskripsi Visual
-                        </label>
-                        <textarea
-                          value={scene.deskripsi_visual}
-                          onChange={(e) =>
-                            handleSceneEdit(
-                              sceneIndex,
-                              "deskripsi_visual",
-                              e.target.value
-                            )
-                          }
-                          className="w-full min-h-[100px] px-3 py-2 border border-input bg-background rounded-md text-sm"
-                          rows={4}
-                        />
-                      </div>
-
-                      {/* Sub Scene Interval */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-2">
-                          Sub Scene Interval
-                        </label>
-                        <Input
-                          value={scene.sub_scene_interval}
-                          onChange={(e) =>
-                            handleSceneEdit(
-                              sceneIndex,
-                              "sub_scene_interval",
-                              e.target.value
-                            )
-                          }
-                          className="w-full"
-                        />
-                      </div>
-
-                      {/* Sub Scenes */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-3">
-                          Detail Sub Scene
-                        </label>
-                        <div className="space-y-3">
-                          {scene.sub_scene_detail.map(
-                            (subScene, subSceneIndex) => (
-                              <Card
-                                key={subSceneIndex}
-                                className="bg-muted/50 border border-border"
-                              >
-                                <CardContent className="p-4 space-y-3">
-                                  <div className="flex items-center justify-between mb-2">
-                                    <Badge variant="secondary">
-                                      {subScene.waktu}
-                                    </Badge>
-                                  </div>
-
-                                  <div>
-                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                      Waktu
-                                    </label>
-                                    <Input
-                                      value={subScene.waktu}
-                                      onChange={(e) =>
-                                        handleSubSceneEdit(
-                                          sceneIndex,
-                                          subSceneIndex,
-                                          "waktu",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="w-full"
-                                      size={1}
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                      Aksi dan Kamera
-                                    </label>
-                                    <textarea
-                                      value={subScene.aksi_dan_kamera}
-                                      onChange={(e) =>
-                                        handleSubSceneEdit(
-                                          sceneIndex,
-                                          subSceneIndex,
-                                          "aksi_dan_kamera",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
-                                      rows={2}
-                                    />
-                                  </div>
-
-                                  <div>
-                                    <label className="block text-xs font-medium text-muted-foreground mb-1">
-                                      Atmosfer
-                                    </label>
-                                    <textarea
-                                      value={subScene.atmosfer}
-                                      onChange={(e) =>
-                                        handleSubSceneEdit(
-                                          sceneIndex,
-                                          subSceneIndex,
-                                          "atmosfer",
-                                          e.target.value
-                                        )
-                                      }
-                                      className="w-full min-h-[60px] px-3 py-2 border border-input bg-background rounded-md text-sm"
-                                      rows={2}
-                                    />
-                                  </div>
-                                </CardContent>
-                              </Card>
-                            )
+                    {/* Scenes Grid */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                      {editedScenes.map((scene, index) => (
+                        <div
+                          key={index}
+                          className="bg-slate-900/50 rounded-xl p-4 border border-white/5 hover:border-purple-500/30 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/10"
+                        >
+                          <div className="flex items-start justify-between mb-3">
+                            <Badge className="bg-purple-600 text-white">
+                              Scene {scene.scene}
+                            </Badge>
+                            <span className="text-xs text-gray-500">
+                              {scene.durasi_scene}
+                            </span>
+                          </div>
+                          <h4 className="text-sm font-semibold text-white mb-2 line-clamp-2">
+                            {scene.judul}
+                          </h4>
+                          <p className="text-xs text-gray-400 line-clamp-2 mb-3">
+                            {scene.bagian}
+                          </p>
+                          {scene.karakter && scene.karakter.length > 0 && (
+                            <div className="mt-2">
+                              <p className="text-xs text-gray-500 mb-1">
+                                Karakter:
+                              </p>
+                              <div className="flex flex-wrap gap-1">
+                                {scene.karakter.map((kar, idx) => (
+                                  <span
+                                    key={idx}
+                                    className="text-xs bg-purple-500/20 text-purple-300 px-2 py-0.5 rounded"
+                                  >
+                                    {kar.nama_karakter}
+                                  </span>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          {scene.latar && (
+                            <div className="mt-2 text-xs text-gray-500">
+                              <span className="text-cyan-400">📍</span>{" "}
+                              {scene.latar.tempat} • {scene.latar.waktu}
+                            </div>
                           )}
                         </div>
-                      </div>
+                      ))}
+                    </div>
 
-                      {/* Audio dan Suara */}
-                      <div>
-                        <label className="block text-sm font-semibold text-foreground mb-2">
-                          Audio dan Suara
-                        </label>
-                        <textarea
-                          value={scene.audio_dan_suara}
-                          onChange={(e) =>
-                            handleSceneEdit(
-                              sceneIndex,
-                              "audio_dan_suara",
-                              e.target.value
-                            )
-                          }
-                          className="w-full min-h-[80px] px-3 py-2 border border-input bg-background rounded-md text-sm"
-                          rows={3}
-                        />
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-
-                {/* Confirmation Box */}
-                {!isDone ? (
-                  <Card className="border-2 border-yellow-200 dark:border-yellow-800 bg-yellow-50 dark:bg-yellow-950/20">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-start space-x-3">
-                          <Clock className="w-5 h-5 text-yellow-600 dark:text-yellow-400 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-sm font-medium text-foreground mb-1">
-                              Batch Scene Belum Selesai
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Masih ada batch berikutnya. Lanjutkan chat dengan
-                              AI untuk mendapatkan semua scene video Anda. Saat
-                              ini {editedScenes.length} scene sudah tersedia.
-                            </p>
-                          </div>
+                    {/* Progress Indicator */}
+                    {jsonData?.total_batch && (
+                      <div className="mt-6 pt-4 border-t border-white/10">
+                        <div className="flex items-center justify-between text-sm mb-2">
+                          <span className="text-gray-400">Progress Batch</span>
+                          <span className="text-purple-300 font-semibold">
+                            {jsonData.batch || 0}/{jsonData.total_batch}
+                          </span>
                         </div>
-                        <Button
-                          disabled
-                          size="lg"
-                          className="bg-gray-400 cursor-not-allowed whitespace-nowrap ml-4 px-8"
-                        >
-                          <CreditCard className="w-5 h-5 mr-2" />
-                          Lanjut ke Pembayaran
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ) : !hasEdited ? (
-                  <Card className="border-2 border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-start space-x-3">
-                          <CheckCircle className="w-5 h-5 text-green-600 dark:text-green-400 flex-shrink-0 mt-0.5" />
-                          <div>
-                            <p className="text-sm font-medium text-foreground mb-1">
-                              Review Setup Video Anda
-                            </p>
-                            <p className="text-xs text-muted-foreground">
-                              Periksa detail video di atas. Anda dapat mengedit
-                              jika diperlukan, atau konfirmasi untuk
-                              melanjutkan.
-                            </p>
-                          </div>
+                        <div className="w-full h-2 bg-slate-900 rounded-full overflow-hidden">
+                          <div
+                            className="h-full bg-gradient-to-r from-purple-500 to-blue-500 transition-all duration-500"
+                            style={{
+                              width: `${
+                                ((jsonData.batch || 0) / jsonData.total_batch) *
+                                100
+                              }%`,
+                            }}
+                          ></div>
                         </div>
-                        <Button
-                          onClick={() => setHasEdited(true)}
-                          className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 whitespace-nowrap ml-4"
-                        >
-                          <CheckCircle className="w-4 h-4 mr-2" />
-                          Konfirmasi Setup
-                        </Button>
                       </div>
-                    </CardContent>
-                  </Card>
-                ) : (
-                  <Card className="border-2 border-purple-200 dark:border-purple-800 bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20">
-                    <CardContent className="p-6">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                          <div className="w-14 h-14 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 flex items-center justify-center flex-shrink-0">
-                            <Sparkles className="w-7 h-7 text-white" />
-                          </div>
-                          <div>
-                            <p className="text-lg font-bold text-foreground mb-1">
-                              Setup Video Selesai!
-                            </p>
-                            <p className="text-sm text-muted-foreground">
-                              Data video Anda ({editedScenes.length} scene) siap
-                              untuk diproses. Lanjutkan ke pembayaran untuk
-                              membuat video Anda.
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          onClick={handleGoToPayment}
-                          size="lg"
-                          className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 whitespace-nowrap ml-4 px-8"
-                        >
-                          <CreditCard className="w-5 h-5 mr-2" />
-                          Lanjut ke Pembayaran
-                        </Button>
-                      </div>
-                    </CardContent>
-                  </Card>
-                )}
+                    )}
+                  </div>
+                </div>
               </div>
             )}
 

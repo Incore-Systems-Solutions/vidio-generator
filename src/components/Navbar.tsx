@@ -26,20 +26,10 @@ interface Step {
 interface NavbarProps {
   currentStep?: number;
   totalSteps?: number;
-  onVideoHistoryClick?: () => void;
 }
 
-export function Navbar({
-  currentStep = 1,
-  totalSteps = 4,
-  onVideoHistoryClick,
-}: NavbarProps) {
+export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const handleVideoHistoryClick = () => {
-    onVideoHistoryClick?.();
-    setMobileMenuOpen(false);
-  };
 
   const steps: Step[] = [
     {
@@ -105,33 +95,52 @@ export function Navbar({
               </div>
             </div>
 
-            {/* Desktop Actions */}
+            {/* Desktop Navigation Menu */}
             <div className="hidden md:flex items-center space-x-3">
-              {/* Video-making Consultant Button */}
+              {/* Galeri Video Button */}
               <Button
                 variant="ghost"
                 size="sm"
-                className="group relative overflow-hidden bg-gradient-to-r from-purple-500/10 to-blue-500/10 hover:from-purple-500/20 hover:to-blue-500/20 border border-purple-500/20 hover:border-purple-500/40 text-purple-300 hover:text-purple-200 transition-all duration-300 px-4"
-                onClick={() => (window.location.href = "/konsultan-video")}
+                className="group relative overflow-hidden bg-gradient-to-r from-slate-500/10 to-gray-500/10 hover:from-slate-500/20 hover:to-gray-500/20 border border-slate-500/20 hover:border-slate-500/40 text-slate-300 hover:text-slate-200 transition-all duration-300 px-4"
+                onClick={() => (window.location.href = "/")}
               >
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <MessageCircle className="w-4 h-4 mr-2 relative z-10" />
+                <div className="absolute inset-0 bg-gradient-to-r from-slate-500/0 via-slate-500/10 to-slate-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <Sparkles className="w-4 h-4 mr-2 relative z-10" />
                 <span className="relative z-10 text-sm font-medium">
-                  Consultant
+                  Galeri Video
                 </span>
               </Button>
+
+              {/* Video Making Consultant Button - PROMINENT/CORE */}
+              <div className="relative">
+                {/* Outer Glow Effect for Prominence */}
+                <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-xl opacity-30 blur-lg group-hover:opacity-50 animate-pulse"></div>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="group relative overflow-hidden bg-gradient-to-r from-purple-500/30 to-pink-500/30 hover:from-purple-500/40 hover:to-pink-500/40 border-2 border-purple-400/50 hover:border-purple-400/70 text-white hover:text-white transition-all duration-300 px-5 py-2.5 font-semibold shadow-lg shadow-purple-500/30"
+                  onClick={() => (window.location.href = "/konsultan-video")}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-400/20 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <MessageCircle className="w-5 h-5 mr-2 relative z-10" />
+                  <span className="relative z-10 text-sm">
+                    Video Making Consultant
+                  </span>
+                </Button>
+              </div>
 
               {/* Riwayat Video Button */}
               <Button
                 variant="ghost"
                 size="sm"
                 className="group relative overflow-hidden bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 hover:border-blue-500/40 text-blue-300 hover:text-blue-200 transition-all duration-300 px-4"
-                onClick={handleVideoHistoryClick}
+                onClick={() => (window.location.href = "/riwayat-video")}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <History className="w-4 h-4 mr-2 relative z-10" />
                 <span className="relative z-10 text-sm font-medium">
-                  Riwayat
+                  Riwayat Video
                 </span>
               </Button>
 
@@ -165,26 +174,46 @@ export function Navbar({
       {mobileMenuOpen && (
         <div className="md:hidden border-t border-white/10 bg-slate-950/95 backdrop-blur-xl animate-in slide-in-from-top duration-300">
           <div className="container mx-auto px-4 py-4 space-y-2">
+            {/* Galeri Video - Mobile */}
             <Button
               variant="ghost"
               size="sm"
-              className="w-full justify-start bg-gradient-to-r from-purple-500/10 to-blue-500/10 hover:from-purple-500/20 hover:to-blue-500/20 border border-purple-500/20 text-purple-300 hover:text-purple-200"
+              className="w-full justify-start bg-gradient-to-r from-slate-500/10 to-gray-500/10 hover:from-slate-500/20 hover:to-gray-500/20 border border-slate-500/20 text-slate-300 hover:text-slate-200"
               onClick={() => {
-                window.location.href = "/konsultan-video";
+                window.location.href = "/";
                 setMobileMenuOpen(false);
               }}
             >
-              <MessageCircle className="w-4 h-4 mr-3" />
-              <span className="text-sm font-medium">
-                Video-making Consultant
-              </span>
+              <Sparkles className="w-4 h-4 mr-3" />
+              <span className="text-sm font-medium">Galeri Video</span>
             </Button>
 
+            {/* AI Consultant - Mobile (PROMINENT) */}
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-20 blur-md animate-pulse"></div>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="relative w-full justify-start bg-gradient-to-r from-purple-500/30 to-pink-500/30 hover:from-purple-500/40 hover:to-pink-500/40 border-2 border-purple-400/50 text-white hover:text-white font-semibold shadow-lg shadow-purple-500/20"
+                onClick={() => {
+                  window.location.href = "/konsultan-video";
+                  setMobileMenuOpen(false);
+                }}
+              >
+                <MessageCircle className="w-5 h-5 mr-3" />
+                <span className="text-sm">Video Making Consultant</span>
+              </Button>
+            </div>
+
+            {/* Riwayat Video - Mobile */}
             <Button
               variant="ghost"
               size="sm"
               className="w-full justify-start bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 text-blue-300 hover:text-blue-200"
-              onClick={handleVideoHistoryClick}
+              onClick={() => {
+                window.location.href = "/riwayat-video";
+                setMobileMenuOpen(false);
+              }}
             >
               <History className="w-4 h-4 mr-3" />
               <span className="text-sm font-medium">Riwayat Video</span>
