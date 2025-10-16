@@ -95,7 +95,9 @@ export function Navbar({
                 onClick={() => (window.location.href = "/konsultan-video")}
               >
                 <MessageCircle className="w-3 h-3 sm:w-4 sm:h-4" />
-                <span className="hidden md:inline">Video-making Consultant</span>
+                <span className="hidden md:inline">
+                  Video-making Consultant
+                </span>
                 <span className="md:hidden">Consultant</span>
               </Button>
 
@@ -110,19 +112,13 @@ export function Navbar({
                 <span className="hidden md:inline">Riwayat Video</span>
                 <span className="md:hidden">Riwayat</span>
               </Button>
-
-              {/* Step Progress Info */}
-              <div className="text-xs sm:text-sm text-muted-foreground font-medium hidden sm:block">
-                Langkah {currentStep} dari {totalSteps}
-              </div>
               <ThemeToggle />
             </div>
           </div>
 
           {/* Bottom Row - Progress Stepper Centered */}
-          <div className="flex justify-center px-2 sm:px-4 md:px-8">
+          {/* <div className="flex justify-center px-2 sm:px-4 md:px-8">
             <div className="flex items-start justify-between w-full max-w-2xl relative">
-              {/* Progress Line - Perfectly centered between circles */}
               <div className="absolute top-4 sm:top-6 left-0 right-0 h-0.5 bg-border">
                 <div
                   className="h-full bg-gradient-to-r from-purple-600 to-blue-600 transition-all duration-500 ease-out"
@@ -131,8 +127,6 @@ export function Navbar({
                   }}
                 />
               </div>
-
-              {/* Steps */}
               {steps.map((step, index) => {
                 const Icon = step.icon;
 
@@ -141,7 +135,6 @@ export function Navbar({
                     key={step.id}
                     className="flex flex-col items-center relative z-10 min-w-0"
                   >
-                    {/* Step Circle */}
                     <div
                       className={`
                       flex items-center justify-center w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 rounded-full border-2 transition-all duration-300 bg-background
@@ -165,7 +158,7 @@ export function Navbar({
                       )}
                     </div>
 
-                    {/* Step Label */}
+
                     <div className="mt-2 sm:mt-3 md:mt-4 text-center max-w-16 sm:max-w-20 md:max-w-24">
                       <div
                         className={`
@@ -192,7 +185,7 @@ export function Navbar({
                 );
               })}
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </nav>
