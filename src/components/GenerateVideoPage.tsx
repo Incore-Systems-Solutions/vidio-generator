@@ -277,6 +277,11 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       setGenerateData(transformedData);
       setLoading(false);
       setRefreshing(false);
+
+      // If final video is ready, clear localStorage except x-api-key and konsultan-email
+      if (transformedData.final_url_merge_video) {
+        clearLocalStorageExceptKeys(["x-api-key", "konsultan-email"]);
+      }
     } catch (err) {
       console.error("Error fetching generate status:", err);
       setError(
@@ -287,6 +292,38 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const clearLocalStorageExceptKeys = (keysToKeep: string[]) => {
+    const itemsToKeep: { [key: string]: string } = {};
+
+    // Save items we want to keep
+    keysToKeep.forEach((key) => {
+      const value = localStorage.getItem(key);
+      if (value) {
+        itemsToKeep[key] = value;
+      }
+    });
+
+    // Clear all localStorage
+    localStorage.clear();
+
+    // Restore saved items
+    Object.keys(itemsToKeep).forEach((key) => {
+      localStorage.setItem(key, itemsToKeep[key]);
+    });
+
+    console.log("Cleared localStorage except:", keysToKeep);
+  };
+
+  const handleCreateNewVideo = () => {
+    clearLocalStorageExceptKeys(["x-api-key", "konsultan-email"]);
+    window.location.href = "/konsultan-video";
+  };
+
+  const handleViewHistory = () => {
+    clearLocalStorageExceptKeys(["x-api-key", "konsultan-email"]);
+    window.location.href = "/riwayat-video";
   };
 
   const handleRefresh = () => {
@@ -752,19 +789,82 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                   </div>
                 </div>
               </div>
+
+              {/* Action Buttons */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                  <Button
+                    className="relative w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/30"
+                    onClick={handleCreateNewVideo}
+                  >
+                    <Sparkles className="w-4 h-4 mr-2" />
+                    Buat Video Baru
+                  </Button>
+                </div>
+
+                <div className="relative group">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                  <Button
+                    className="relative w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30"
+                    onClick={handleViewHistory}
+                  >
+                    <Film className="w-4 h-4 mr-2" />
+                    Lihat Riwayat Video
+                  </Button>
+                </div>
+              </div>
             </div>
           ) : (
-            <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-6 backdrop-blur-sm text-center">
-              <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-3" />
-              <p className="font-semibold text-yellow-300 mb-1">
-                {generateData.estimated_merge.status === "merging"
-                  ? "Sedang menggabungkan scene..."
-                  : "Menunggu semua scene selesai..."}
-              </p>
-              <p className="text-sm text-yellow-400/80">
-                Proses ini membutuhkan waktu beberapa menit. Mohon tunggu
-                sebentar.
-              </p>
+            <div className="space-y-4">
+              <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-6 backdrop-blur-sm text-center">
+                <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-3" />
+                <p className="font-semibold text-yellow-300 mb-1">
+                  {generateData.estimated_merge.status === "merging"
+                    ? "Sedang menggabungkan scene..."
+                    : "Menunggu semua scene selesai..."}
+                </p>
+                <p className="text-sm text-yellow-400/80 mb-4">
+                  Proses ini membutuhkan waktu beberapa menit. Mohon tunggu
+                  sebentar.
+                </p>
+              </div>
+
+              {/* Info box - dapat melihat di riwayat */}
+              <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+                <div className="text-center mb-3">
+                  <p className="text-sm text-blue-300 mb-2">
+                    💡 Tidak ingin menunggu? Anda dapat melihat hasil video
+                    final di halaman riwayat setelah proses selesai.
+                  </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <Button
+                      variant="outline"
+                      className="relative w-full bg-slate-800/50 border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 hover:border-purple-500/50"
+                      onClick={handleCreateNewVideo}
+                    >
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      Buat Video Baru
+                    </Button>
+                  </div>
+
+                  <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <Button
+                      variant="outline"
+                      className="relative w-full bg-slate-800/50 border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10 hover:border-cyan-500/50"
+                      onClick={handleViewHistory}
+                    >
+                      <Film className="w-4 h-4 mr-2" />
+                      Lihat Riwayat
+                    </Button>
+                  </div>
+                </div>
+              </div>
             </div>
           )}
         </div>
