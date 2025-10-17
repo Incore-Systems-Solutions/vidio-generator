@@ -53,6 +53,13 @@ interface SceneData {
   prompt: string;
 }
 
+interface PromptOptimizationData {
+  uuid: string;
+  prompt_video: any;
+  minutes: string;
+  estimated_script: string;
+}
+
 interface GenerateData {
   uuid_konsultan: string;
   estimated_scene: SceneData[];
@@ -63,6 +70,7 @@ interface GenerateData {
   final_url_merge_video: string | null;
   total_scenes: number;
   completed_scenes: number;
+  promptOptimization?: PromptOptimizationData;
 }
 
 interface GenerateVideoPageProps {
@@ -74,25 +82,94 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [isOptimizing, setIsOptimizing] = useState(true);
+  const [promptOptimizationData, setPromptOptimizationData] =
+    useState<PromptOptimizationData | null>(null);
 
-  // Fetch generate status and set up polling
+  // Fetch prompt optimization status first
   useEffect(() => {
-    fetchGenerateStatus();
+    checkPromptOptimization();
+  }, [uuid]);
 
-    // Set up polling every 5 seconds
-    // Stop polling when final video is ready
-    const interval = setInterval(() => {
-      // Check if we should stop polling
-      if (generateData?.final_url_merge_video) {
-        console.log("Final video is ready, stopping polling");
-        clearInterval(interval);
-        return;
-      }
+  // Fetch generate status and set up polling (only after optimization is complete)
+  useEffect(() => {
+    if (!isOptimizing) {
       fetchGenerateStatus();
-    }, 5000);
 
-    return () => clearInterval(interval);
-  }, [uuid, generateData?.final_url_merge_video]);
+      // Set up polling every 5 seconds
+      // Stop polling when final video is ready
+      const interval = setInterval(() => {
+        // Check if we should stop polling
+        if (generateData?.final_url_merge_video) {
+          console.log("Final video is ready, stopping polling");
+          clearInterval(interval);
+          return;
+        }
+        fetchGenerateStatus();
+      }, 5000);
+
+      return () => clearInterval(interval);
+    }
+  }, [uuid, generateData?.final_url_merge_video, isOptimizing]);
+
+  const checkPromptOptimization = async () => {
+    try {
+      setError(null);
+
+      // Get UUID from localStorage (saved by PaymentPage)
+      const savedUuid = localStorage.getItem("generate-uuid") || uuid;
+      console.log("Checking prompt optimization for UUID:", savedUuid);
+
+      // Get x-api-key from localStorage
+      const xApiKey = localStorage.getItem("x-api-key");
+
+      if (!xApiKey) {
+        throw new Error("API key tidak ditemukan. Silakan login kembali.");
+      }
+
+      // Call check-prompt API
+      const response = await fetch(
+        `${BASE_URL}/api/chat-ai/check-prompt/${savedUuid}`,
+        {
+          headers: {
+            "x-api-key": xApiKey,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.status) {
+        throw new Error(result.message || "Gagal mengecek optimasi prompt");
+      }
+
+      console.log("Prompt optimization response:", result);
+
+      setPromptOptimizationData(result.data);
+
+      // If prompt_video is not null, optimization is complete
+      if (result.data.prompt_video !== null) {
+        setIsOptimizing(false);
+        setLoading(false);
+      } else {
+        // Still optimizing, poll again after 5 seconds
+        setTimeout(() => {
+          checkPromptOptimization();
+        }, 5000);
+      }
+    } catch (err) {
+      console.error("Error checking prompt optimization:", err);
+      setError(
+        err instanceof Error ? err.message : "Gagal mengecek optimasi prompt"
+      );
+      setLoading(false);
+      setIsOptimizing(false);
+    }
+  };
 
   const fetchGenerateStatus = async () => {
     try {
@@ -250,6 +327,78 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
         return "bg-gray-500/20 text-gray-300 border-gray-500/30";
     }
   };
+
+  if (loading && isOptimizing) {
+    return (
+      <div className="w-full min-h-screen flex items-center justify-center">
+        <div className="max-w-2xl w-full px-4">
+          {/* Optimization Progress Card */}
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+
+            <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
+              <div className="text-center mb-6">
+                <div className="relative inline-block mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                  <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
+                </div>
+
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                  Optimasi Prompt Video
+                </h3>
+                <p className="text-gray-400 text-lg mb-6">
+                  AI sedang mengoptimalkan prompt video Anda untuk hasil terbaik
+                </p>
+
+                {promptOptimizationData && (
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
+                      <div className="grid grid-cols-2 gap-4 text-center">
+                        <div>
+                          <div className="text-3xl font-bold text-purple-300 mb-2">
+                            {promptOptimizationData.minutes}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            Estimasi Waktu
+                          </div>
+                        </div>
+                        <div>
+                          <div className="text-sm font-semibold text-blue-300 mb-2">
+                            {new Date(
+                              promptOptimizationData.estimated_script
+                            ).toLocaleTimeString("id-ID", {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              second: "2-digit",
+                            })}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            Selesai Pada
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="text-center text-sm text-gray-500">
+                      <p>
+                        💡 Proses ini memastikan video Anda memiliki kualitas
+                        optimal
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Animated Progress Bar */}
+              <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -636,6 +785,13 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
         }
         .animate-shimmer {
           animation: shimmer 2s ease-in-out infinite;
+        }
+        @keyframes shimmer-slow {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        .animate-shimmer-slow {
+          animation: shimmer-slow 3s ease-in-out infinite;
         }
       `}</style>
     </div>

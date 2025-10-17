@@ -1,0 +1,25 @@
+{
+  "status": true,
+  "message": "Berhasil mendapatkan data transaksi",
+  "data": {
+    "id": 99,
+    "user_video_id": 2,
+    "quantity": 600,
+    "invoice_number": "INV-17102025-4289",
+    "order_id": "order_id12",
+    "transaction_status": "pending",
+    "payment_type": "other_qris",
+    "payment_url": "https://payment.url",
+    "total_fee": 0,
+    "total_payment": 60000,
+    "referral_by": null,
+    "status_ref": "unpaid",
+    "promo": 0,
+    "subtotal": 60000,
+    "transaction_expired": "2025-10-17 21:58:15",
+    "deleted_at": null,
+    "created_at": "2025-10-17T14:43:15.000000Z",
+    "updated_at": "2025-10-17T14:43:15.000000Z",
+    "chat_uuid": "93c051bc-bb64-4411-99e4-f1f4c53457b4"
+  }
+}

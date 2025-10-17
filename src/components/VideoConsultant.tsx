@@ -133,7 +133,6 @@ export function VideoConsultant() {
     const savedChatUuid = localStorage.getItem("konsultan-chat-uuid");
     const savedMessages = localStorage.getItem("konsultan-chat-messages");
     const savedCollectingData = localStorage.getItem("collection_data");
-    const savedBatchScene = localStorage.getItem("batch_scene");
 
     if (savedApiKey) {
       setXApiKey(savedApiKey);
@@ -168,28 +167,6 @@ export function VideoConsultant() {
           setCollectingData(parsedData);
         } catch (err) {
           console.error("Error parsing collecting data:", err);
-        }
-      }
-
-      // Restore batch scenes
-      if (savedBatchScene) {
-        try {
-          const parsedScenes = JSON.parse(savedBatchScene);
-          setEditedScenes(parsedScenes);
-
-          // If we have batch scenes, set isDone to true (all batches completed)
-          if (parsedScenes.length > 0) {
-            setIsDone(true);
-            // Create a dummy jsonData for UI purposes
-            setJsonData({
-              type: "prompt_video",
-              batch: 3, // Assume last batch
-              total_batch: 3,
-              data: parsedScenes,
-            });
-          }
-        } catch (err) {
-          console.error("Error parsing batch scenes:", err);
         }
       }
 
@@ -586,13 +563,15 @@ export function VideoConsultant() {
       "handleGoToPayment called - isDone:",
       isDone,
       "editedScenes:",
-      editedScenes.length
+      editedScenes.length,
+      "collectingData:",
+      collectingData
     );
 
-    // Check if batch is completed (isDone must be true)
+    // Check if data collection is completed (isDone must be true)
     if (!isDone) {
       setError(
-        "Silakan selesaikan semua batch terlebih dahulu sebelum melanjutkan ke pembayaran"
+        "Silakan selesaikan pengumpulan data terlebih dahulu sebelum melanjutkan ke pembayaran"
       );
       return;
     }
@@ -601,11 +580,12 @@ export function VideoConsultant() {
     const konsultanData = {
       type: "konsultan",
       uuid_chat: chatUuid,
-      list: editedScenes,
+      list: editedScenes.length > 0 ? editedScenes : [], // Use editedScenes if available, otherwise empty array
       email: email,
       xApiKey: xApiKey,
       is_share: "y",
       affiliate_by: "",
+      collectingData: collectingData, // Include collecting data
     };
 
     console.log("Saving konsultan data to localStorage:", konsultanData);
@@ -1079,27 +1059,26 @@ export function VideoConsultant() {
 
                   {/* Futuristic Input Area */}
                   <div className="border-t border-white/10 p-4 bg-gradient-to-b from-slate-900/50 to-slate-950/80 backdrop-blur-sm">
-                    {collectingData && !jsonData ? (
-                      // When collecting_data received, show button to start batch video creation
-                      <div className="relative">
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
-                        <button
-                          onClick={handleContinueBatchVideo}
-                          disabled={isLoading || isInitializing}
-                          className="relative w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-3 shadow-lg shadow-purple-500/30"
-                        >
-                          {isLoading ? (
-                            <>
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                              <span>Memproses...</span>
-                            </>
-                          ) : (
-                            <>
-                              <Film className="w-5 h-5" />
-                              <span>Lanjut Pembuatan Batch Video</span>
-                            </>
-                          )}
-                        </button>
+                    {collectingData && isDone ? (
+                      // When collecting_data received and is_done true, show payment button
+                      <div className="space-y-3">
+                        <div className="flex items-center justify-center space-x-2 py-3 bg-green-500/10 rounded-xl border border-green-500/30">
+                          <CheckCircle className="w-5 h-5 text-green-400" />
+                          <p className="text-sm font-medium text-green-300">
+                            Data telah dikumpulkan! Siap untuk melanjutkan ke
+                            pembayaran.
+                          </p>
+                        </div>
+                        <div className="relative">
+                          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
+                          <button
+                            onClick={handleGoToPayment}
+                            className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30"
+                          >
+                            <CreditCard className="w-5 h-5" />
+                            <span>Lanjutkan ke Pembayaran</span>
+                          </button>
+                        </div>
                       </div>
                     ) : jsonData && isDone ? (
                       // When all batches done, show payment button

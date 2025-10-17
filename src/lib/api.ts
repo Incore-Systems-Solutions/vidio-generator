@@ -209,13 +209,9 @@ export interface SceneData {
 
 export interface VideoStoreMultipleData {
   uuid_chat?: string | null;
-  list: SceneData[];
   metode_pengiriman: "pembayaran" | "kuota";
   metode?: string | null;
-  jumlah?: number | null;
   email: string;
-  no_wa?: string | null;
-  is_share: "y" | "n";
   affiliate_by: string;
 }
 
@@ -251,16 +247,14 @@ export const videoStoreApi = {
     }
   },
 
-  async storeMultipleVideoData(
-    data: VideoStoreMultipleData,
-    xApiKey?: string
-  ): Promise<{
+  async storeMultipleVideoData(data: VideoStoreMultipleData): Promise<{
     status: boolean;
     message: string;
     data: {
       is_payment: boolean;
       invoice: string;
       "x-api-key": string;
+      uuid_konsultan: string;
     };
   }> {
     try {
@@ -268,16 +262,14 @@ export const videoStoreApi = {
         "Content-Type": "application/json",
       };
 
-      // Add x-api-key to headers if provided
-      if (xApiKey) {
-        headers["x-api-key"] = xApiKey;
-      }
-
-      const response = await fetch(`${BASE_URL}/api/video-ai/store-multiple`, {
-        method: "POST",
-        headers: headers,
-        body: JSON.stringify(data),
-      });
+      const response = await fetch(
+        `${BASE_URL}/api/video-ai/create-transaction`,
+        {
+          method: "POST",
+          headers: headers,
+          body: JSON.stringify(data),
+        }
+      );
 
       const result = await response.json();
 

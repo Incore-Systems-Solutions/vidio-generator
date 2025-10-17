@@ -61,6 +61,24 @@ export function TransactionDetail({
             (response.data as any)["x-api-key"]
           );
         }
+
+        // If payment is successful, handle localStorage
+        if (response.data.transaction_status === "success") {
+          // Clear konsultan chat data
+          localStorage.removeItem("konsultan-chat-messages");
+          localStorage.removeItem("konsultan-chat-uuid");
+          localStorage.removeItem("konsultan-video-data");
+          console.log("Cleared konsultan chat data after successful payment");
+
+          // Save uuid_konsultan for generate page (prioritize uuid_konsultan, fallback to chat_uuid)
+          const uuidKonsultan =
+            (response.data as any).uuid_konsultan ||
+            (response.data as any).chat_uuid;
+          if (uuidKonsultan) {
+            localStorage.setItem("generate-uuid", uuidKonsultan);
+            console.log("Saved generate-uuid:", uuidKonsultan);
+          }
+        }
       } else {
         throw new Error(response.message || "Failed to fetch transaction");
       }
@@ -510,7 +528,11 @@ export function TransactionDetail({
                           size="sm"
                           className="relative w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/30"
                           onClick={() => {
-                            window.location.href = "/generate";
+                            const generateUuid =
+                              localStorage.getItem("generate-uuid");
+                            if (generateUuid) {
+                              window.location.href = `/generate/${generateUuid}`;
+                            }
                           }}
                         >
                           <Video className="w-4 h-4 mr-2" />

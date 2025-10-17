@@ -248,10 +248,7 @@ export function PaymentPage() {
           payload
         );
 
-        const result = await videoStoreApi.storeMultipleVideoData(
-          payload,
-          konsultanData.xApiKey
-        );
+        const result = await videoStoreApi.storeMultipleVideoData(payload);
 
         if (result.status) {
           console.log(
@@ -268,11 +265,12 @@ export function PaymentPage() {
             );
           }
 
-          // Get UUID from konsultan data for dynamic redirect
-          const generateUuid = konsultanData.uuid_chat || "default";
+          // Get uuid_konsultan from response for dynamic redirect
+          const generateUuid = result.data?.uuid_konsultan || "default";
 
           // Save generate UUID to localStorage for tracking
           localStorage.setItem("generate-uuid", generateUuid);
+          console.log("Saved generate-uuid:", generateUuid);
 
           // Clear konsultan data from localStorage
           localStorage.removeItem("konsultan-video-data");
@@ -345,13 +343,6 @@ export function PaymentPage() {
       setIsProcessing(true);
       setError(null);
 
-      // Calculate price based on mode
-      const pricePerVideo = 10000;
-      const totalPrice =
-        isKonsultanMode && konsultanData?.list
-          ? pricePerVideo * konsultanData.list.length
-          : pricePerVideo;
-
       // Check if this is konsultan mode
       if (isKonsultanMode && konsultanData) {
         // Use store-multiple API for konsultan
@@ -366,22 +357,16 @@ export function PaymentPage() {
 
         const payload = {
           uuid_chat: konsultanData.uuid_chat || null,
-          list: konsultanData.list,
           metode_pengiriman: "pembayaran" as const,
-          metode: metode,
-          jumlah: totalPrice, // Dynamic price based on list count
+          metode: metode, // Dynamic price based on list count
           email: email,
           no_wa: phoneNumber || null,
-          is_share: konsultanData.is_share || "y",
           affiliate_by: konsultanData.affiliate_by || "",
         };
 
         console.log("Sending konsultan payload to store-multiple:", payload);
 
-        const result = await videoStoreApi.storeMultipleVideoData(
-          payload,
-          konsultanData.xApiKey
-        );
+        const result = await videoStoreApi.storeMultipleVideoData(payload);
 
         if (result.status) {
           console.log(
@@ -398,6 +383,12 @@ export function PaymentPage() {
             );
           }
 
+          // Save uuid_konsultan to localStorage for generate page
+          if (result.data && result.data.uuid_konsultan) {
+            localStorage.setItem("generate-uuid", result.data.uuid_konsultan);
+            console.log("Saved generate-uuid:", result.data.uuid_konsultan);
+          }
+
           // Clear konsultan data from localStorage
           // localStorage.removeItem("konsultan-video-data");
 
@@ -406,7 +397,8 @@ export function PaymentPage() {
             window.location.href = `/transaksi/${result.data.invoice}`;
           } else if (result.data && result.data.is_payment === false) {
             // No payment required, redirect to generate page
-            window.location.href = "/generate";
+            const generateUuid = result.data.uuid_konsultan || "default";
+            window.location.href = `/generate/${generateUuid}`;
           } else {
             alert("Pembayaran berhasil! Video Anda sedang diproses.");
           }
@@ -475,8 +467,22 @@ export function PaymentPage() {
 
   // Calculate dynamic pricing
   const pricePerVideo = 10000;
-  const videoCount =
-    isKonsultanMode && konsultanData?.list ? konsultanData.list.length : 1;
+
+  // Get videoCount from collection_data in localStorage
+  const getVideoCount = () => {
+    try {
+      const collectionDataStr = localStorage.getItem("collection_data");
+      if (collectionDataStr) {
+        const collectionData = JSON.parse(collectionDataStr);
+        return collectionData?.data?.count_scene_video || 1;
+      }
+    } catch (err) {
+      console.error("Error parsing collection_data:", err);
+    }
+    return 1;
+  };
+
+  const videoCount = getVideoCount();
   const totalPrice = pricePerVideo * videoCount;
   const productionCost = 7500 * videoCount;
   const bonusCoins = 2500 * videoCount;
@@ -698,13 +704,27 @@ export function PaymentPage() {
                         {isKonsultanMode ? (
                           <>
                             • Jumlah Video: <strong>{videoCount}</strong>
-                            <br />• Minimal Transaksi:{" "}
-                            <strong>{formatCurrency(totalPrice)}</strong>
-                            <br />• Biaya produksi video:{" "}
-                            <strong>{formatCurrency(productionCost)}</strong>
-                            <br />• Sisa{" "}
-                            <strong>{formatCurrency(bonusCoins)}</strong>{" "}
-                            dikonversi menjadi koin untuk video berikutnya
+                            {totalPrice > 10000 ? (
+                              <>
+                                <br />• Biaya produksi: <strong>7.500</strong> x{" "}
+                                <strong>{videoCount}</strong> video ={" "}
+                                <strong>
+                                  {formatCurrency(productionCost)}
+                                </strong>
+                              </>
+                            ) : (
+                              <>
+                                <br />• Minimal Transaksi:{" "}
+                                <strong>{formatCurrency(totalPrice)}</strong>
+                                <br />• Biaya produksi video:{" "}
+                                <strong>
+                                  {formatCurrency(productionCost)}
+                                </strong>
+                                <br />• Sisa{" "}
+                                <strong>{formatCurrency(bonusCoins)}</strong>{" "}
+                                dikonversi menjadi koin untuk video berikutnya
+                              </>
+                            )}
                           </>
                         ) : (
                           <>
