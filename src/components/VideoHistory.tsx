@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
@@ -19,14 +18,30 @@ import {
   Sparkles,
   Calendar,
   Film,
-  ChevronLeft,
-  ChevronRight,
 } from "lucide-react";
 import {
   videoHistoryApi,
   type VideoHistoryItem,
   type VideoHistoryResponse,
 } from "@/lib/api";
+
+// Helper function for status colors
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case "completed":
+    case "success":
+      return "bg-green-500/20 text-green-300 border-green-500/30";
+    case "processing":
+    case "pending":
+    case "progress":
+      return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+    case "failed":
+    case "error":
+      return "bg-red-500/20 text-red-300 border-red-500/30";
+    default:
+      return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+  }
+};
 
 export function VideoHistory() {
   // Authentication states
@@ -41,8 +56,6 @@ export function VideoHistory() {
   // History states
   const [videos, setVideos] = useState<VideoHistoryItem[]>([]);
   const [loading, setLoading] = useState(false);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
   const [totalVideos, setTotalVideos] = useState(0);
   const [selectedVideo, setSelectedVideo] = useState<VideoHistoryItem | null>(
     null
@@ -75,7 +88,7 @@ export function VideoHistory() {
     if (xApiKey && step === "history") {
       fetchVideos();
     }
-  }, [xApiKey, step, currentPage]);
+  }, [xApiKey, step]);
 
   const handleRequestOTP = async () => {
     if (!email.trim()) {
@@ -126,15 +139,10 @@ export function VideoHistory() {
       setLoading(true);
       setError(null);
 
-      const response = await videoHistoryApi.getVideoList(
-        xApiKey,
-        currentPage,
-        12
-      );
+      const response = await videoHistoryApi.getVideoList(xApiKey);
 
       setVideos(response.data);
-      setTotalPages(response.last_page);
-      setTotalVideos(response.total);
+      setTotalVideos(response.data.length);
     } catch (err) {
       console.error("Error fetching videos:", err);
       setError("Gagal memuat riwayat video. Silakan coba lagi.");
@@ -162,22 +170,6 @@ export function VideoHistory() {
       hour: "2-digit",
       minute: "2-digit",
     });
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "completed":
-      case "success":
-        return "bg-green-500/20 text-green-300 border-green-500/30";
-      case "processing":
-      case "pending":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
-      case "failed":
-      case "error":
-        return "bg-red-500/20 text-red-300 border-red-500/30";
-      default:
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
-    }
   };
 
   return (
@@ -516,111 +508,84 @@ export function VideoHistory() {
               // Video Grid
               <>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
-                  {videos.map((video) => (
-                    <div
-                      key={video.id}
-                      className="group cursor-pointer relative"
-                      onClick={() => setSelectedVideo(video)}
-                    >
-                      {/* Glow Effect */}
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-lg transition-all duration-500"></div>
+                  {videos.map((videoGroup) => {
+                    // Get the merged video or first video from list
+                    const displayVideo = videoGroup.final_url_merge_video;
+                    const firstVideo = videoGroup.list_video[0];
+                    const status = firstVideo?.status_video || "processing";
+                    const prompt = firstVideo?.prompt || "No description";
 
-                      {/* Card */}
-                      <div className="relative overflow-hidden rounded-2xl border border-slate-800/50 bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-sm aspect-video transition-all duration-300 group-hover:border-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/10">
-                        <div className="relative w-full h-full">
-                          {video.url_video ? (
-                            <video
-                              className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
-                              muted
-                              loop
-                              playsInline
-                              preload="metadata"
-                            >
-                              <source src={video.url_video} type="video/mp4" />
-                            </video>
-                          ) : (
-                            <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-                              <div className="text-center px-4">
-                                <Video className="w-12 h-12 mx-auto mb-2 text-gray-500 opacity-30" />
-                                <p className="text-xs text-gray-500">
-                                  {video.status_video}
-                                </p>
-                              </div>
-                            </div>
-                          )}
+                    return (
+                      <div
+                        key={videoGroup.id}
+                        className="group cursor-pointer relative"
+                        onClick={() => setSelectedVideo(videoGroup)}
+                      >
+                        {/* Glow Effect */}
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-lg transition-all duration-500"></div>
 
-                          {/* Gradient Overlay */}
-                          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-
-                          {/* Content Overlay */}
-                          <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                            {/* Status Badge */}
-                            <div className="flex justify-end">
-                              <Badge
-                                className={`text-xs px-2 py-1 ${getStatusColor(
-                                  video.status_video
-                                )}`}
+                        {/* Card */}
+                        <div className="relative overflow-hidden rounded-2xl border border-slate-800/50 bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-sm aspect-video transition-all duration-300 group-hover:border-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/10">
+                          <div className="relative w-full h-full">
+                            {displayVideo ? (
+                              <video
+                                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                                muted
+                                loop
+                                playsInline
+                                preload="metadata"
                               >
-                                {video.status_video}
-                              </Badge>
-                            </div>
-
-                            {/* Bottom Info */}
-                            <div>
-                              <p className="text-white text-sm font-medium mb-2 line-clamp-2">
-                                {video.prompt}
-                              </p>
-                              <div className="flex items-center justify-between">
-                                <div className="flex items-center text-gray-400 text-xs">
-                                  <Calendar className="w-3 h-3 mr-1" />
-                                  {formatDate(video.created_at)}
+                                <source src={displayVideo} type="video/mp4" />
+                              </video>
+                            ) : (
+                              <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
+                                <div className="text-center px-4">
+                                  <Video className="w-12 h-12 mx-auto mb-2 text-gray-500 opacity-30" />
+                                  <p className="text-xs text-gray-500">
+                                    {status}
+                                  </p>
                                 </div>
-                                <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full p-2 shadow-lg shadow-blue-500/30">
-                                  <Eye className="w-3 h-3 text-white" />
+                              </div>
+                            )}
+
+                            {/* Gradient Overlay */}
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+
+                            {/* Content Overlay */}
+                            <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                              {/* Status Badge */}
+                              <div className="flex justify-end">
+                                <Badge
+                                  className={`text-xs px-2 py-1 ${getStatusColor(
+                                    status
+                                  )}`}
+                                >
+                                  {status}
+                                </Badge>
+                              </div>
+
+                              {/* Bottom Info */}
+                              <div>
+                                <p className="text-white text-sm font-medium mb-2 line-clamp-2">
+                                  {prompt}
+                                </p>
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center text-gray-400 text-xs">
+                                    <Calendar className="w-3 h-3 mr-1" />
+                                    {formatDate(videoGroup.created_at)}
+                                  </div>
+                                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full p-2 shadow-lg shadow-blue-500/30">
+                                    <Eye className="w-3 h-3 text-white" />
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
                         </div>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
-
-                {/* Pagination */}
-                {totalPages > 1 && (
-                  <div className="flex items-center justify-center space-x-4">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
-                      disabled={currentPage === 1}
-                      className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 text-blue-300 disabled:opacity-30"
-                    >
-                      <ChevronLeft className="w-4 h-4 mr-1" />
-                      Sebelumnya
-                    </Button>
-
-                    <div className="flex items-center space-x-2">
-                      <span className="text-gray-400 text-sm">
-                        Halaman {currentPage} dari {totalPages}
-                      </span>
-                    </div>
-
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() =>
-                        setCurrentPage((p) => Math.min(totalPages, p + 1))
-                      }
-                      disabled={currentPage === totalPages}
-                      className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 text-blue-300 disabled:opacity-30"
-                    >
-                      Selanjutnya
-                      <ChevronRight className="w-4 h-4 ml-1" />
-                    </Button>
-                  </div>
-                )}
               </>
             )}
           </>
@@ -663,6 +628,10 @@ interface VideoDetailModalProps {
 }
 
 function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
+  const displayVideo = video.final_url_merge_video;
+  const firstVideo = video.list_video[0];
+  const status = firstVideo?.status_video || "processing";
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Backdrop */}
@@ -705,14 +674,14 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
         <div className="flex h-[calc(100vh-80px)]">
           {/* Video Player */}
           <div className="flex-1 bg-slate-900/50 relative">
-            {video.url_video ? (
+            {displayVideo ? (
               <div className="w-full h-full relative p-8">
                 <div className="absolute inset-8 bg-gradient-to-r from-blue-500/20 via-cyan-500/20 to-blue-500/20 rounded-xl blur-2xl" />
                 <video
                   controls
                   className="relative w-full h-full object-contain rounded-xl border border-blue-500/20 shadow-2xl shadow-blue-500/20"
                 >
-                  <source src={video.url_video} type="video/mp4" />
+                  <source src={displayVideo} type="video/mp4" />
                 </video>
               </div>
             ) : (
@@ -720,7 +689,7 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
                 <div className="text-center">
                   <Video className="w-24 h-24 mx-auto mb-6 text-blue-500/30" />
                   <div className="text-2xl font-bold text-gray-300 mb-4">
-                    Video {video.status_video}
+                    Video {status}
                   </div>
                   <p className="text-gray-500">
                     Video sedang diproses atau tidak tersedia
@@ -739,9 +708,7 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
                   <h3 className="text-blue-300 font-semibold text-sm">
                     Status
                   </h3>
-                  <Badge className={getStatusColor(video.status_video)}>
-                    {video.status_video}
-                  </Badge>
+                  <Badge className={getStatusColor(status)}>{status}</Badge>
                 </div>
                 <div className="text-gray-400 text-xs">
                   <div className="flex justify-between mb-1">
@@ -751,67 +718,65 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>ID:</span>
-                    <span className="text-gray-300 font-mono">
-                      {video.user_video_id}
+                    <span>UUID:</span>
+                    <span className="text-gray-300 font-mono text-xs">
+                      {video.uuid_flag.substring(0, 8)}...
                     </span>
                   </div>
                 </div>
               </div>
 
-              {/* Video Details */}
+              {/* Video List */}
               <div className="bg-slate-900/50 border border-white/10 rounded-xl p-4">
                 <h3 className="text-blue-300 font-semibold mb-4 flex items-center">
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Video Details
+                  Scene List ({video.list_video.length} scenes)
                 </h3>
-                <div className="space-y-3 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Model AI:</span>
-                    <Badge className="bg-blue-500/20 text-blue-300 border-blue-500/30">
-                      {video.model_ai}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Aspect Ratio:</span>
-                    <Badge className="bg-cyan-500/20 text-cyan-300 border-cyan-500/30">
-                      {video.aspect_ratio}
-                    </Badge>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-400">Resolusi:</span>
-                    <span className="text-white">{video.resolusi_video}</span>
-                  </div>
-                  {video.bahasa && (
-                    <div className="flex justify-between">
-                      <span className="text-gray-400">Bahasa:</span>
-                      <span className="text-white uppercase">
-                        {video.bahasa}
-                      </span>
+                <div className="space-y-2 max-h-64 overflow-y-auto">
+                  {video.list_video.map((scene, index) => (
+                    <div
+                      key={scene.id}
+                      className="bg-slate-800/50 border border-white/5 rounded-lg p-3"
+                    >
+                      <div className="flex items-center justify-between mb-2">
+                        <span className="text-xs text-blue-300 font-semibold">
+                          Scene {index + 1}
+                        </span>
+                        <Badge
+                          className={`text-xs ${getStatusColor(
+                            scene.status_video
+                          )}`}
+                        >
+                          {scene.status_video}
+                        </Badge>
+                      </div>
+                      <p className="text-gray-400 text-xs line-clamp-2">
+                        {scene.prompt}
+                      </p>
                     </div>
-                  )}
+                  ))}
                 </div>
               </div>
 
-              {/* Prompt */}
-              <div className="bg-gradient-to-br from-blue-500/5 to-cyan-500/5 border border-blue-500/20 rounded-xl p-4">
+              {/* Prompt (First Scene) */}
+              {/* <div className="bg-gradient-to-br from-blue-500/5 to-cyan-500/5 border border-blue-500/20 rounded-xl p-4">
                 <h3 className="text-blue-300 font-semibold mb-3 flex items-center">
                   <Film className="w-4 h-4 mr-2" />
-                  Prompt
+                  First Scene Prompt
                 </h3>
                 <div className="bg-slate-900/80 border border-white/10 rounded-lg p-4">
                   <p className="text-gray-300 text-sm leading-relaxed">
-                    {video.prompt}
+                    {firstVideo?.prompt || "No prompt available"}
                   </p>
                 </div>
-              </div>
+              </div> */}
 
               {/* Actions */}
-              {video.url_video && (
+              {displayVideo && (
                 <div className="relative">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur-lg opacity-30" />
                   <a
-                    href={video.url_video}
+                    href={displayVideo}
                     download
                     className="relative block w-full py-3.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 text-center shadow-lg shadow-blue-500/30"
                   >

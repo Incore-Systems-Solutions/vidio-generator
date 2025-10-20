@@ -25,38 +25,33 @@ export interface ApiResponse<T> {
   data: T;
 }
 
-export interface VideoHistoryItem {
+export interface VideoListItem {
   id: number;
   user_video_id: string;
   task_id: string | null;
-  prompt: string;
-  model_ai: string;
-  aspect_ratio: string;
-  enableFallback: number;
-  enableTranslation: number;
-  seeds: string | null;
-  image_urls: string;
   status_video: string;
+  url_video: string | null;
+  flag_multiple_uuid: string;
+  prompt: string;
+  created_at: string;
+  estimated_scene: string | null;
+}
+
+export interface VideoHistoryItem {
+  id: number;
+  user_video_id: number;
+  uuid_flag: string;
+  final_url_merge_video: string | null;
+  list_merge_video: string | null;
   created_at: string;
   updated_at: string;
-  bahasa: string | null;
-  gaya_suara: string | null;
-  voice_over: string | null;
-  tone: string | null;
-  background_music: string | null;
-  resolusi_video: string;
-  url_video: string | null;
-  url_video_share: string | null;
-  share_url: string;
+  list_video: VideoListItem[];
+  estimated_merge: string | null;
 }
 
 export interface VideoHistoryResponse {
   status: boolean;
   message: string;
-  current_page: number;
-  last_page: number;
-  per_page: string;
-  total: number;
   data: VideoHistoryItem[];
 }
 
@@ -769,22 +764,15 @@ export const videoHistoryApi = {
     }
   },
 
-  async getVideoList(
-    xApiKey: string,
-    page: number = 1,
-    perPage: number = 5
-  ): Promise<VideoHistoryResponse> {
+  async getVideoList(xApiKey: string): Promise<VideoHistoryResponse> {
     try {
-      const response = await fetch(
-        `${BASE_URL}/api/video-ai/check-list-video?page=${page}&per_page=${perPage}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "x-api-key": xApiKey,
-          },
-        }
-      );
+      const response = await fetch(`${BASE_URL}/api/konsultan-video-merge`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          "x-api-key": xApiKey,
+        },
+      });
 
       const result = await response.json();
 
