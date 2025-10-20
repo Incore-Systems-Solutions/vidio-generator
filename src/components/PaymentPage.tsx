@@ -302,13 +302,9 @@ export function PaymentPage() {
         // Use store-multiple API for konsultan with coins
         const payload = {
           uuid_chat: konsultanData.uuid_chat || null,
-          list: konsultanData.list,
           metode_pengiriman: "kuota" as const,
           metode: null,
-          jumlah: totalPrice, // Dynamic price based on list count
           email: email,
-          no_wa: phoneNumber || null,
-          is_share: konsultanData.is_share || "y",
           affiliate_by: konsultanData.affiliate_by || "",
         };
 

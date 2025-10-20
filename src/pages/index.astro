@@ -1,6 +1,7 @@
 ---
 import { NavbarWithModal } from "@/components/NavbarWithModal.tsx"
 import { VideoGallery } from "@/components/VideoGallery"
+import { AIAssistantBubble } from "@/components/AIAssistantBubble"
 import "../styles/global.css"
 ---
 
@@ -51,6 +52,9 @@ import "../styles/global.css"
 				</div>
 			</div>
 		</footer>
+
+		<!-- AI Assistant Bubble -->
+		<AIAssistantBubble client:load />
 
 		<script>
 			function updateStep(step: number) {
