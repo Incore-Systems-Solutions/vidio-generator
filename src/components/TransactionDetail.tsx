@@ -417,30 +417,12 @@ export function TransactionDetail({
                   {optimizationProgress && (
                     <div className="space-y-4">
                       <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
-                        <div className="grid grid-cols-2 gap-4 text-center">
-                          <div>
-                            <div className="text-3xl font-bold text-purple-300 mb-2">
-                              {optimizationProgress.minutes}
-                            </div>
-                            <div className="text-sm text-gray-400">
-                              Estimasi Waktu
-                            </div>
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-purple-300 mb-2">
+                            {optimizationProgress.minutes}
                           </div>
-                          <div>
-                            <div className="text-sm font-semibold text-blue-300 mb-2">
-                              {optimizationProgress.estimated_script
-                                ? new Date(
-                                    optimizationProgress.estimated_script
-                                  ).toLocaleTimeString("id-ID", {
-                                    hour: "2-digit",
-                                    minute: "2-digit",
-                                    second: "2-digit",
-                                  })
-                                : "-"}
-                            </div>
-                            <div className="text-sm text-gray-400">
-                              Selesai Pada
-                            </div>
+                          <div className="text-sm text-gray-400">
+                            Estimasi Waktu
                           </div>
                         </div>
                       </div>
