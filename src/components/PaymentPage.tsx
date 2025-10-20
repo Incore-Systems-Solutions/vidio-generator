@@ -16,10 +16,13 @@ import {
   Sparkles,
   AlertCircle,
   Play,
+  Loader2,
 } from "lucide-react";
 import { OTPModal } from "./OTPModal";
 import { videoSetupStorage } from "@/lib/videoSetupStorage";
 import { videoStoreApi } from "@/lib/api";
+
+const BASE_URL = "https://api.instantvideoapp.com";
 
 export function PaymentPage() {
   const [name, setName] = useState("");
@@ -41,6 +44,8 @@ export function PaymentPage() {
   const [konsultanData, setKonsultanData] = useState<any>(null);
   const [hasExistingApiKey, setHasExistingApiKey] = useState(false);
   const [existingApiKey, setExistingApiKey] = useState<string | null>(null);
+  const [isOptimizingPrompt, setIsOptimizingPrompt] = useState(false);
+  const [optimizationProgress, setOptimizationProgress] = useState<any>(null);
 
   // Load existing data from localStorage on component mount
   useEffect(() => {
@@ -216,6 +221,70 @@ export function PaymentPage() {
 
   // Removed handlePackageSelect - using fixed pricing
 
+  // Check prompt optimization status
+  const checkPromptOptimization = async (
+    uuidChat: string,
+    apiKey: string
+  ): Promise<boolean> => {
+    try {
+      console.log("Checking prompt optimization for uuid_chat:", uuidChat);
+
+      const response = await fetch(
+        `${BASE_URL}/api/chat-ai/check-prompt/${uuidChat}`,
+        {
+          headers: {
+            "x-api-key": apiKey,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.status) {
+        throw new Error(result.message || "Gagal mengecek optimasi prompt");
+      }
+
+      console.log("Prompt optimization response:", result);
+      setOptimizationProgress(result.data);
+
+      // If prompt_video is not null, optimization is complete
+      if (result.data.prompt_video !== null) {
+        console.log("Prompt optimization complete!");
+        return true;
+      } else {
+        // Still optimizing, return false
+        console.log("Prompt still optimizing...");
+        return false;
+      }
+    } catch (err) {
+      console.error("Error checking prompt optimization:", err);
+      throw err;
+    }
+  };
+
+  // Poll prompt optimization until complete
+  const waitForPromptOptimization = async (
+    uuidChat: string,
+    apiKey: string
+  ): Promise<void> => {
+    setIsOptimizingPrompt(true);
+
+    // Poll every 5 seconds until optimization is complete
+    while (true) {
+      const isComplete = await checkPromptOptimization(uuidChat, apiKey);
+      if (isComplete) {
+        setIsOptimizingPrompt(false);
+        return;
+      }
+      // Wait 5 seconds before checking again
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  };
+
   const handleCoinsPayment = async () => {
     try {
       setIsProcessing(true);
@@ -257,8 +326,10 @@ export function PaymentPage() {
           );
 
           // Save x-api-key from response to localStorage
+          let apiKeyToUse = existingApiKey;
           if (result.data && result.data["x-api-key"]) {
             localStorage.setItem("x-api-key", result.data["x-api-key"]);
+            apiKeyToUse = result.data["x-api-key"];
             console.log(
               "Saved x-api-key from store-multiple:",
               result.data["x-api-key"]
@@ -272,56 +343,27 @@ export function PaymentPage() {
           localStorage.setItem("generate-uuid", generateUuid);
           console.log("Saved generate-uuid:", generateUuid);
 
+          // Get uuid_chat for prompt optimization check
+          const uuidChat = konsultanData.uuid_chat;
+
+          if (!apiKeyToUse) {
+            throw new Error("API key tidak tersedia");
+          }
+
+          // Save konsultan-chat-uuid to localStorage
+          localStorage.setItem("konsultan-chat-uuid", uuidChat);
+          console.log("Saved konsultan-chat-uuid:", uuidChat);
+
+          // Wait for prompt optimization to complete
+          console.log("Starting prompt optimization check...");
+          await waitForPromptOptimization(uuidChat, apiKeyToUse);
+          console.log("Prompt optimization complete, redirecting...");
+
           // Clear konsultan data from localStorage
           localStorage.removeItem("konsultan-video-data");
 
           // Redirect to dynamic generate page with UUID
           window.location.href = `/generate/${generateUuid}`;
-        } else {
-          throw new Error(result.message || "Gagal menyimpan data video");
-        }
-      } else {
-        // Regular mode - use normal store API
-        const videoData = videoSetupStorage.load();
-        if (!videoData) {
-          throw new Error(
-            "Data video tidak ditemukan. Silakan kembali ke halaman setup."
-          );
-        }
-
-        // Prepare data for API call
-        const storeData = {
-          prompt: videoData.prompt,
-          karakter_image: videoData.karakter_image,
-          background_image: videoData.background_image,
-          aspek_rasio: videoData.aspek_rasio,
-          seeds: null,
-          model_ai: "veo3_fast",
-          metode_pengiriman: "kuota",
-          metode: null,
-          jumlah: videoData.jumlah,
-          email: videoData.email || email,
-          no_wa: videoData.no_wa || phoneNumber,
-          affiliate_by: "", // Empty string as per requirement
-        };
-
-        // Call the store API
-        const result = await videoStoreApi.storeVideoData(storeData);
-
-        if (result.status) {
-          // Success - save x-api-key and redirect to generate video
-          console.log(
-            "Video data stored successfully with coins:",
-            result.message
-          );
-
-          // Save x-api-key to localStorage for video generation
-          if (result.data && result.data["x-api-key"]) {
-            localStorage.setItem("x-api-key", result.data["x-api-key"]);
-          }
-
-          // Redirect directly to generate video page since payment is completed
-          window.location.href = "/generate";
         } else {
           throw new Error(result.message || "Gagal menyimpan data video");
         }
@@ -399,53 +441,6 @@ export function PaymentPage() {
             // No payment required, redirect to generate page
             const generateUuid = result.data.uuid_konsultan || "default";
             window.location.href = `/generate/${generateUuid}`;
-          } else {
-            alert("Pembayaran berhasil! Video Anda sedang diproses.");
-          }
-        } else {
-          throw new Error(result.message || "Gagal menyimpan data video");
-        }
-      } else {
-        // Regular mode - use normal store API
-        const videoData = videoSetupStorage.load();
-        if (!videoData) {
-          throw new Error(
-            "Data video tidak ditemukan. Silakan kembali ke halaman setup."
-          );
-        }
-
-        // Prepare data for API call
-        const storeData = {
-          prompt: videoData.prompt,
-          karakter_image: videoData.karakter_image,
-          background_image: videoData.background_image,
-          aspek_rasio: videoData.aspek_rasio,
-          seeds: null,
-          model_ai: "veo3_fast",
-          metode_pengiriman: videoData.metode_pengiriman || "pembayaran",
-          metode: videoData.metode,
-          jumlah: videoData.jumlah,
-          email: videoData.email || email,
-          no_wa: videoData.no_wa || phoneNumber,
-          affiliate_by: "", // Empty string as per requirement
-        };
-
-        // Call the store API
-        const result = await videoStoreApi.storeVideoData(storeData);
-
-        if (result.status) {
-          // Success - redirect to transaction detail page
-          console.log("Video data stored successfully:", result.message);
-
-          // Save x-api-key to localStorage for video generation
-          if (result.data && result.data["x-api-key"]) {
-            localStorage.setItem("x-api-key", result.data["x-api-key"]);
-          }
-
-          // Extract invoice number from result.data.invoice
-          if (result.data && result.data.invoice) {
-            // Redirect to transaction detail page
-            window.location.href = `/transaksi/${result.data.invoice}`;
           } else {
             alert("Pembayaran berhasil! Video Anda sedang diproses.");
           }
@@ -537,6 +532,79 @@ export function PaymentPage() {
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
+      {/* Prompt Optimization Overlay */}
+      {isOptimizingPrompt && (
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center">
+          <div className="max-w-2xl w-full px-4">
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+
+              <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
+                <div className="text-center mb-6">
+                  <div className="relative inline-block mb-6">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                    <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
+                  </div>
+
+                  <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                    Optimasi Prompt Video
+                  </h3>
+                  <p className="text-gray-400 text-lg mb-6">
+                    AI sedang mengoptimalkan prompt video Anda untuk hasil
+                    terbaik
+                  </p>
+
+                  {optimizationProgress && (
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
+                        <div className="grid grid-cols-2 gap-4 text-center">
+                          <div>
+                            <div className="text-3xl font-bold text-purple-300 mb-2">
+                              {optimizationProgress.minutes}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Estimasi Waktu
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-blue-300 mb-2">
+                              {optimizationProgress.estimated_script
+                                ? new Date(
+                                    optimizationProgress.estimated_script
+                                  ).toLocaleTimeString("id-ID", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                  })
+                                : "-"}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Selesai Pada
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-center text-sm text-gray-500">
+                        <p>
+                          💡 Proses ini memastikan video Anda memiliki kualitas
+                          optimal
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Animated Progress Bar */}
+                <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                  <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Futuristic Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -1226,6 +1294,13 @@ export function PaymentPage() {
         }
         .animate-shimmer {
           animation: shimmer 3s ease-in-out infinite;
+        }
+        @keyframes shimmer-slow {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        .animate-shimmer-slow {
+          animation: shimmer-slow 3s ease-in-out infinite;
         }
       `}</style>
     </div>

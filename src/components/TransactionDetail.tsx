@@ -21,9 +21,12 @@ import {
   Sparkles,
   List,
   Film,
+  Loader2,
 } from "lucide-react";
 import { transactionApi, type TransactionData } from "@/lib/api";
 import { videoSetupStorage } from "@/lib/videoSetupStorage";
+
+const BASE_URL = "https://api.instantvideoapp.com";
 
 interface TransactionDetailProps {
   invoiceNumber: string;
@@ -42,6 +45,8 @@ export function TransactionDetail({
   const [isKonsultanMode, setIsKonsultanMode] = useState(false);
   const [konsultanData, setKonsultanData] = useState<any>(null);
   const [collectionData, setCollectionData] = useState<any>(null);
+  const [isOptimizingPrompt, setIsOptimizingPrompt] = useState(false);
+  const [optimizationProgress, setOptimizationProgress] = useState<any>(null);
 
   const fetchTransaction = async () => {
     try {
@@ -66,7 +71,6 @@ export function TransactionDetail({
         if (response.data.transaction_status === "success") {
           // Clear konsultan chat data
           localStorage.removeItem("konsultan-chat-messages");
-          localStorage.removeItem("konsultan-chat-uuid");
           localStorage.removeItem("konsultan-video-data");
           console.log("Cleared konsultan chat data after successful payment");
 
@@ -95,6 +99,116 @@ export function TransactionDetail({
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchTransaction();
+  };
+
+  // Check prompt optimization status
+  const checkPromptOptimization = async (
+    uuidChat: string,
+    apiKey: string
+  ): Promise<boolean> => {
+    try {
+      console.log("Checking prompt optimization for uuid_chat:", uuidChat);
+
+      const response = await fetch(
+        `${BASE_URL}/api/chat-ai/check-prompt/${uuidChat}`,
+        {
+          headers: {
+            "x-api-key": apiKey,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+
+      if (!result.status) {
+        throw new Error(result.message || "Gagal mengecek optimasi prompt");
+      }
+
+      console.log("Prompt optimization response:", result);
+      setOptimizationProgress(result.data);
+
+      // If prompt_video is not null, optimization is complete
+      if (result.data.prompt_video !== null) {
+        console.log("Prompt optimization complete!");
+        return true;
+      } else {
+        // Still optimizing, return false
+        console.log("Prompt still optimizing...");
+        return false;
+      }
+    } catch (err) {
+      console.error("Error checking prompt optimization:", err);
+      throw err;
+    }
+  };
+
+  // Poll prompt optimization until complete
+  const waitForPromptOptimization = async (
+    uuidChat: string,
+    apiKey: string
+  ): Promise<void> => {
+    setIsOptimizingPrompt(true);
+
+    // Poll every 5 seconds until optimization is complete
+    while (true) {
+      const isComplete = await checkPromptOptimization(uuidChat, apiKey);
+      if (isComplete) {
+        setIsOptimizingPrompt(false);
+        return;
+      }
+      // Wait 5 seconds before checking again
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+    }
+  };
+
+  // Handle Generate Video button click
+  const handleGenerateVideo = async () => {
+    try {
+      // Get konsultan-chat-uuid from localStorage
+      const konsultanChatUuid = localStorage.getItem("konsultan-chat-uuid");
+      const xApiKey = localStorage.getItem("x-api-key");
+
+      if (!konsultanChatUuid) {
+        console.log(
+          "No konsultan-chat-uuid found, redirecting to generate page directly"
+        );
+        // If no konsultan-chat-uuid, redirect directly
+        const generateUuid = localStorage.getItem("generate-uuid");
+        if (generateUuid) {
+          window.location.href = `/generate/${generateUuid}`;
+        }
+        return;
+      }
+
+      if (!xApiKey) {
+        throw new Error("API key tidak ditemukan. Silakan login kembali.");
+      }
+
+      // Wait for prompt optimization to complete
+      console.log("Starting prompt optimization check...");
+      await waitForPromptOptimization(konsultanChatUuid, xApiKey);
+      console.log("Prompt optimization complete, redirecting...");
+
+      // Redirect to generate page
+      const generateUuid = localStorage.getItem("generate-uuid");
+      if (generateUuid) {
+        window.location.href = `/generate/${generateUuid}`;
+      } else {
+        throw new Error("Generate UUID tidak ditemukan");
+      }
+    } catch (err) {
+      console.error("Error during generate video process:", err);
+      setError(
+        err instanceof Error
+          ? err.message
+          : "Terjadi kesalahan saat memproses video"
+      );
+      setIsOptimizingPrompt(false);
+    }
   };
 
   useEffect(() => {
@@ -278,6 +392,79 @@ export function TransactionDetail({
 
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
+      {/* Prompt Optimization Overlay */}
+      {isOptimizingPrompt && (
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center">
+          <div className="max-w-2xl w-full px-4">
+            <div className="relative">
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+
+              <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
+                <div className="text-center mb-6">
+                  <div className="relative inline-block mb-6">
+                    <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                    <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
+                  </div>
+
+                  <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                    Optimasi Prompt Video
+                  </h3>
+                  <p className="text-gray-400 text-lg mb-6">
+                    AI sedang mengoptimalkan prompt video Anda untuk hasil
+                    terbaik
+                  </p>
+
+                  {optimizationProgress && (
+                    <div className="space-y-4">
+                      <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
+                        <div className="grid grid-cols-2 gap-4 text-center">
+                          <div>
+                            <div className="text-3xl font-bold text-purple-300 mb-2">
+                              {optimizationProgress.minutes}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Estimasi Waktu
+                            </div>
+                          </div>
+                          <div>
+                            <div className="text-sm font-semibold text-blue-300 mb-2">
+                              {optimizationProgress.estimated_script
+                                ? new Date(
+                                    optimizationProgress.estimated_script
+                                  ).toLocaleTimeString("id-ID", {
+                                    hour: "2-digit",
+                                    minute: "2-digit",
+                                    second: "2-digit",
+                                  })
+                                : "-"}
+                            </div>
+                            <div className="text-sm text-gray-400">
+                              Selesai Pada
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="text-center text-sm text-gray-500">
+                        <p>
+                          💡 Proses ini memastikan video Anda memiliki kualitas
+                          optimal
+                        </p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Animated Progress Bar */}
+                <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                  <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Futuristic Background Effects */}
       <div className="fixed inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
@@ -527,16 +714,20 @@ export function TransactionDetail({
                         <Button
                           size="sm"
                           className="relative w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/30"
-                          onClick={() => {
-                            const generateUuid =
-                              localStorage.getItem("generate-uuid");
-                            if (generateUuid) {
-                              window.location.href = `/generate/${generateUuid}`;
-                            }
-                          }}
+                          onClick={handleGenerateVideo}
+                          disabled={isOptimizingPrompt}
                         >
-                          <Video className="w-4 h-4 mr-2" />
-                          Generate Video
+                          {isOptimizingPrompt ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              Memproses...
+                            </>
+                          ) : (
+                            <>
+                              <Video className="w-4 h-4 mr-2" />
+                              Generate Video
+                            </>
+                          )}
                         </Button>
                       </div>
                     </div>
@@ -1153,6 +1344,13 @@ export function TransactionDetail({
         }
         .animate-gradient {
           animation: gradient 6s ease infinite;
+        }
+        @keyframes shimmer-slow {
+          0% { transform: translateX(-100%); }
+          100% { transform: translateX(200%); }
+        }
+        .animate-shimmer-slow {
+          animation: shimmer-slow 3s ease-in-out infinite;
         }
       `}</style>
     </div>

@@ -53,13 +53,6 @@ interface SceneData {
   prompt: string;
 }
 
-interface PromptOptimizationData {
-  uuid: string;
-  prompt_video: any;
-  minutes: string;
-  estimated_script: string;
-}
-
 interface GenerateData {
   uuid_konsultan: string;
   estimated_scene: SceneData[];
@@ -70,7 +63,6 @@ interface GenerateData {
   final_url_merge_video: string | null;
   total_scenes: number;
   completed_scenes: number;
-  promptOptimization?: PromptOptimizationData;
 }
 
 interface GenerateVideoPageProps {
@@ -82,94 +74,27 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [isOptimizing, setIsOptimizing] = useState(true);
-  const [promptOptimizationData, setPromptOptimizationData] =
-    useState<PromptOptimizationData | null>(null);
+  const [isWaitingForGeneration, setIsWaitingForGeneration] = useState(false);
 
-  // Fetch prompt optimization status first
+  // Fetch generate status and set up polling
   useEffect(() => {
-    checkPromptOptimization();
-  }, [uuid]);
+    fetchGenerateStatus();
 
-  // Fetch generate status and set up polling (only after optimization is complete)
-  useEffect(() => {
-    if (!isOptimizing) {
+    // Set up polling every 5 seconds
+    // Stop polling when final video is ready
+    const interval = setInterval(() => {
+      // Check if we should stop polling
+      if (generateData?.final_url_merge_video) {
+        console.log("Final video is ready, stopping polling");
+        clearInterval(interval);
+        return;
+      }
+      // Continue polling even if waiting for generation (404)
       fetchGenerateStatus();
+    }, 5000);
 
-      // Set up polling every 5 seconds
-      // Stop polling when final video is ready
-      const interval = setInterval(() => {
-        // Check if we should stop polling
-        if (generateData?.final_url_merge_video) {
-          console.log("Final video is ready, stopping polling");
-          clearInterval(interval);
-          return;
-        }
-        fetchGenerateStatus();
-      }, 5000);
-
-      return () => clearInterval(interval);
-    }
-  }, [uuid, generateData?.final_url_merge_video, isOptimizing]);
-
-  const checkPromptOptimization = async () => {
-    try {
-      setError(null);
-
-      // Get UUID from localStorage (saved by PaymentPage)
-      const savedUuid = localStorage.getItem("generate-uuid") || uuid;
-      console.log("Checking prompt optimization for UUID:", savedUuid);
-
-      // Get x-api-key from localStorage
-      const xApiKey = localStorage.getItem("x-api-key");
-
-      if (!xApiKey) {
-        throw new Error("API key tidak ditemukan. Silakan login kembali.");
-      }
-
-      // Call check-prompt API
-      const response = await fetch(
-        `${BASE_URL}/api/chat-ai/check-prompt/${savedUuid}`,
-        {
-          headers: {
-            "x-api-key": xApiKey,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-
-      if (!result.status) {
-        throw new Error(result.message || "Gagal mengecek optimasi prompt");
-      }
-
-      console.log("Prompt optimization response:", result);
-
-      setPromptOptimizationData(result.data);
-
-      // If prompt_video is not null, optimization is complete
-      if (result.data.prompt_video !== null) {
-        setIsOptimizing(false);
-        setLoading(false);
-      } else {
-        // Still optimizing, poll again after 5 seconds
-        setTimeout(() => {
-          checkPromptOptimization();
-        }, 5000);
-      }
-    } catch (err) {
-      console.error("Error checking prompt optimization:", err);
-      setError(
-        err instanceof Error ? err.message : "Gagal mengecek optimasi prompt"
-      );
-      setLoading(false);
-      setIsOptimizing(false);
-    }
-  };
+    return () => clearInterval(interval);
+  }, [uuid, generateData?.final_url_merge_video]);
 
   const fetchGenerateStatus = async () => {
     try {
@@ -196,6 +121,14 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
         }
       );
 
+      // Handle 404 - video generation not ready yet
+      if (response.status === 404) {
+        console.log("Video generation not ready yet (404), will retry...");
+        setIsWaitingForGeneration(true);
+        setLoading(false);
+        return; // Don't throw error, just return and let polling continue
+      }
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -207,6 +140,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       }
 
       console.log("API Response:", apiData);
+
+      // If we get here with valid data, generation is ready
+      setIsWaitingForGeneration(false);
 
       // Helper function to normalize status
       const normalizeStatus = (status: string): string => {
@@ -365,11 +301,10 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     }
   };
 
-  if (loading && isOptimizing) {
+  if (loading || isWaitingForGeneration) {
     return (
-      <div className="w-full min-h-screen flex items-center justify-center">
+      <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center">
         <div className="max-w-2xl w-full px-4">
-          {/* Optimization Progress Card */}
           <div className="relative">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
@@ -381,49 +316,26 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                 </div>
 
                 <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                  Optimasi Prompt Video
+                  {isWaitingForGeneration
+                    ? "Memproses Video Anda"
+                    : "Memuat Status Generate"}
                 </h3>
                 <p className="text-gray-400 text-lg mb-6">
-                  AI sedang mengoptimalkan prompt video Anda untuk hasil terbaik
+                  {isWaitingForGeneration
+                    ? "AI sedang menyiapkan video Anda. Proses ini membutuhkan waktu beberapa saat..."
+                    : "Mengambil informasi status generate video..."}
                 </p>
 
-                {promptOptimizationData && (
-                  <div className="space-y-4">
-                    <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
-                      <div className="grid grid-cols-2 gap-4 text-center">
-                        <div>
-                          <div className="text-3xl font-bold text-purple-300 mb-2">
-                            {promptOptimizationData.minutes}
-                          </div>
-                          <div className="text-sm text-gray-400">
-                            Estimasi Waktu
-                          </div>
-                        </div>
-                        <div>
-                          <div className="text-sm font-semibold text-blue-300 mb-2">
-                            {new Date(
-                              promptOptimizationData.estimated_script
-                            ).toLocaleTimeString("id-ID", {
-                              hour: "2-digit",
-                              minute: "2-digit",
-                              second: "2-digit",
-                            })}
-                          </div>
-                          <div className="text-sm text-gray-400">
-                            Selesai Pada
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="text-center text-sm text-gray-500">
-                      <p>
-                        💡 Proses ini memastikan video Anda memiliki kualitas
-                        optimal
-                      </p>
-                    </div>
+                <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
+                  <div className="space-y-3 text-sm text-center">
+                    <p className="text-blue-300">
+                      💡 Sistem sedang memproses permintaan Anda
+                    </p>
+                    <p className="text-gray-400">
+                      Halaman akan otomatis diperbarui saat proses selesai
+                    </p>
                   </div>
-                )}
+                </div>
               </div>
 
               {/* Animated Progress Bar */}
@@ -432,22 +344,6 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (loading) {
-    return (
-      <div className="w-full min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-lg opacity-30 animate-pulse"></div>
-            <Loader2 className="relative w-16 h-16 animate-spin text-purple-400" />
-          </div>
-          <span className="text-gray-300 font-medium text-lg">
-            Memuat status generate...
-          </span>
         </div>
       </div>
     );
