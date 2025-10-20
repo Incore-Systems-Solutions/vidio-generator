@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, Video, X, Calendar, Play } from "lucide-react";
-import {
-  publicVideoGalleryApi,
-  type PublicVideoItem,
-} from "@/lib/api";
+import { publicVideoGalleryApi, type PublicVideoItem } from "@/lib/api";
 
 export function VideoGallery() {
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoItem | null>(
@@ -322,7 +319,7 @@ function VideoModal({ video, onClose, formatDate }: VideoModalProps) {
               <div className="relative aspect-video">
                 {/* Glow Effect around video */}
                 <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 blur-3xl" />
-                
+
                 <video
                   controls
                   autoPlay
