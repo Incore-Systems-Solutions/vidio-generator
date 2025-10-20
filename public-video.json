@@ -1,0 +1,360 @@
+{
+  "status": true,
+  "message": "Success Get Data",
+  "data": [
+    {
+      "id": 120,
+      "user_video_id": 2,
+      "uuid_flag": "7b367724-b27e-4538-85a9-53ee1cd8a273",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_gDhKdzME.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/a72741bed95d216673f45624a67aab48_1760939250.mp4\", \"https://tempfile.aiquickdraw.com/v/89db3e107667eccb84551e433d35e661_1760939249.mp4\", \"https://tempfile.aiquickdraw.com/v/8d06dd75451382274122d4f6bd77fdc2_1760939255.mp4\", \"https://tempfile.aiquickdraw.com/v/cacb7336fea235680b5359bec33d3e32_1760939270.mp4\", \"https://tempfile.aiquickdraw.com/v/ef8671c8ab76bc735499a321f37e0182_1760939266.mp4\"]",
+      "created_at": "2025-10-20T05:46:20.000000Z",
+      "updated_at": "2025-10-20T05:57:39.000000Z",
+      "list_video": [
+        {
+          "id": 709,
+          "user_video_id": "2",
+          "task_id": "a72741bed95d216673f45624a67aab48",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/a72741bed95d216673f45624a67aab48_1760939250.mp4",
+          "flag_multiple_uuid": "7b367724-b27e-4538-85a9-53ee1cd8a273",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Pembuka\",\"gabungan_string\":\"Judul: Scene 1 - Pembuka\\nBagian: Pembuka — Perkenalan & Arah Cerita\\nDurasi: 8 detik\\nKarakter:\\n- Plesiosaurus Bercahaya: Bergerak dengan anggun melintasi air, menciptakan jejak cahaya di belakang mereka. (Ukuran sekitar 6 meter panjang dengan tubuh ramping. Kulit berwarna biru kehijauan dengan garis-garis bercahaya yang berubah warna menjadi ungu.)\\nDeskripsi: Gua laut tersembunyi dipenuhi dengan stalaktit kristal yang bersinar lembut. Plesiosaurus Bercahaya meluncur anggun di dalam air, memancarkan kilauan neon biru-ungu, menambah suasana magis di sekitarnya.\\nSub Scene:\\n0–2 detik → Kamera memasuki gua melalui celah sempit, langsung menyoroti seekor Plesiosaurus Bercahaya yang bergerak elegan di tengah air, dengan sorotan cahaya memperlihatkan stalaktit kristal di latar belakang. (Cahaya dari makhluk bercahaya dan kristal menciptakan pantulan magis di dinding gua.)\\n2–4 detik → Kamera menggeser mengikuti Plesiosaurus yang bergerak perlahan melalui kolom air, menunjukkan jejak cahaya yang terbentuk saat ia bergerak. (Nuansa biru kehijauan dan ungu mendominasi, memberi kesan tenang dan mendalam.)\\n4–6 detik → Zoom keluar untuk menangkap gua yang lebih luas dan kelompok Plesiosaurus yang berenang bersama, menciptakan pancaran cahaya lebih kuat. (Pemandangan dalam gua semakin spektakuler dengan variasi warna neon yang bersinar lembut.)\\n6–8 detik → Kamera mengitari kelompok dinosaurus, menghadirkan zona peralihan dengan gradien lokasi, menyoroti bagian gua yang lebih terang dan kaya akan stalaktit bersinar. (Perpaduan suara air dan efek cahaya yang berubah perlahan, mempersiapkan transisi ke scene berikutnya.)\\nAudio: Gema air lembut, suara pergerakan air, dan nyanyian lembut dari dinosaurus bercahaya melengkapi suasana.\"}",
+          "created_at": "2025-10-20T05:46:20.000000Z"
+        },
+        {
+          "id": 710,
+          "user_video_id": "2",
+          "task_id": "89db3e107667eccb84551e433d35e661",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/89db3e107667eccb84551e433d35e661_1760939249.mp4",
+          "flag_multiple_uuid": "7b367724-b27e-4538-85a9-53ee1cd8a273",
+          "prompt": "{\"scene\":2,\"judul\":\"Scene 2 - Eksplorasi\",\"gabungan_string\":\"Judul: Scene 2 - Eksplorasi\\nBagian: Eksplorasi dalam gua\\nDurasi: 8 detik\\nKarakter:\\n- Plesiosaurus Bercahaya: Bergerak dengan anggun melintasi air, menciptakan jejak cahaya di belakang mereka. (Ukuran sekitar 6 meter panjang dengan tubuh ramping. Kulit berwarna biru kehijauan dengan garis-garis bercahaya yang berubah warna menjadi ungu.)\\nDeskripsi: Plesiosaurus Bercahaya terus berenang, mengeksplorasi setiap sudut gua yang dihiasi oleh stalaktit bercahaya. Air bersih memungkinkan visualisasi gerakan megah dari dinosaurus.\\nSub Scene:\\n0–2 detik → Lanjut dari scene sebelumnya, kamera mengikuti Plesiosaurus terdepan menuju area gua yang lebih dalam dengan sudut pandang dari belakang. (Suara air tetap konsisten, dengan gema lembut dan pendaran cahaya dari makhluk bercahaya.)\\n2–4 detik → Kamera bergeser ke samping untuk memperlihatkan formasi batu dan kristal yang lebih besar, dan dinosaurus yang berputar mengikuti arus air. (Cahaya atmosferik menambah kesan misteri, dengan gelombang warna biru-ungu yang memancar lembut.)\\n4–6 detik → Kamera mengejar seekor Plesiosaurus individual yang bergerak menjauh ke arah cahaya redup di kejauhan. (Pencerahan lembut menyoroti struktur gua, dengan intensitas suara dan cahaya yang tetap.)\\n6–8 detik → Zoom ke wajah Plesiosaurus, menampilkan detail kulit berkilau dan refleksi cahaya di matanya. Berlahan, kamera menyorot sekeliling, menunjukkan zona peralihan dengan cahaya yang semakin terang. (Ambience dan cahaya mengalir secara mulus ke area yang lebih terang, tetap menjaga kesinambungan visual.)\\nAudio: Ekoran suara air dan pancaran cahaya, serta bisikan halus dari aliran air.\"}",
+          "created_at": "2025-10-20T05:46:20.000000Z"
+        },
+        {
+          "id": 711,
+          "user_video_id": "2",
+          "task_id": "8d06dd75451382274122d4f6bd77fdc2",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/8d06dd75451382274122d4f6bd77fdc2_1760939255.mp4",
+          "flag_multiple_uuid": "7b367724-b27e-4538-85a9-53ee1cd8a273",
+          "prompt": "{\"scene\":3,\"judul\":\"Scene 3 - Interaksi Harmonis\",\"gabungan_string\":\"Judul: Scene 3 - Interaksi Harmonis\\nBagian: Interaksi harmoni antar Plesiosaurus\\nDurasi: 8 detik\\nKarakter:\\n- Plesiosaurus Bercahaya: Bergerak dengan anggun melintasi air, menciptakan jejak cahaya di belakang mereka. (Ukuran sekitar 6 meter panjang dengan tubuh ramping. Kulit berwarna biru kehijauan dengan garis-garis bercahaya yang berubah warna menjadi ungu.)\\nDeskripsi: Kelompok Plesiosaurus bercahaya menunjukkan kebiasaan sosial dan pola renang harmonis, meningkatkan suasana magis dalam gua laut.\\nSub Scene:\\n0–2 detik → Melanjutkan dari segmen sebelumnya, kamera melintasi permukaan air untuk mengambil gambar dari sisi, menyoroti interaksi lembut antar Plesiosaurus. (Suara air berinteraksi dengan gerakan dinosaurus, suasana tetap damai dan tenang.)\\n2–4 detik → Kamera beralih ke sudut pandang atas, memberi pandangan panoramik dan menyeluruh dari harmoni gerakan kelompok. (Cahaya neon perlahan bergoyang, menggambarkan suasana damai dan tenang.)\\n4–6 detik → Kamera mempersempit fokus pada seekor Plesiosaurus yang melayangkan gerakan memutar di tengah kelompok, menciptakan lingkaran cahaya. (Pengaturan cahaya yang lembut dan konsisten, dengan gema air yang berlanjut.)\\n6–8 detik → Kamera berkeliling ke depan dan memperbesar gerakan kelompok yang selaras, mempersiapkan transisi dengan menunjukkan pandangan gua yang lebih dalam dan bercahaya. (Perubahan cahaya yang bertahap, suara air tetap dan mengalir, menjaga kesinambungan.)\\nAudio: Musik lembut berlatar suara aliran air.\"}",
+          "created_at": "2025-10-20T05:46:21.000000Z"
+        },
+        {
+          "id": 712,
+          "user_video_id": "2",
+          "task_id": "cacb7336fea235680b5359bec33d3e32",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/cacb7336fea235680b5359bec33d3e32_1760939270.mp4",
+          "flag_multiple_uuid": "7b367724-b27e-4538-85a9-53ee1cd8a273",
+          "prompt": "{\"scene\":4,\"judul\":\"Scene 4 - Keajaiban Tersembunyi\",\"gabungan_string\":\"Judul: Scene 4 - Keajaiban Tersembunyi\\nBagian: Penemuan keajaiban tersembunyi dalam gua\\nDurasi: 8 detik\\nKarakter:\\n- Plesiosaurus Bercahaya: Bergerak dengan anggun melintasi air, menciptakan jejak cahaya di belakang mereka. (Ukuran sekitar 6 meter panjang dengan tubuh ramping. Kulit berwarna biru kehijauan dengan garis-garis bercahaya yang berubah warna menjadi ungu.)\\nDeskripsi: Gua laut semakin memperlihatkan keindahannya dengan kristal bercahaya dan air yang mengalir lembut. Plesiosaurus menavigasi setiap sudut, menambah efek magis di lingkungan yang sudah mempesona.\\nSub Scene:\\n0–2 detik → Lanjutkan dari scene sebelumnya, kamera mengikuti Plesiosaurus yang bergerak menuju bagian gua yang lebih terang, menyorot kristal bercahaya di sepanjang jalur. (Cahaya dan suara air terus menggema, menambah kesan ajaib dan memukau.)\\n2–4 detik → Kamera beralih ke pandangan dari bawah, memperlihatkan Plesiosaurus yang bergerak anggun di atas, dengan latar belakang stalaktit bercahaya. (Nuansa warna biru dan ungu terus berpendar, mempertahankan suasana damai.)\\n4–6 detik → Kamera lebih dekat ke Plesiosaurus untuk menangkap detail kulit dan cahaya refleksifnya, menekankan interaksi harmonis dengan habitat. (Cahaya terpantul dengan lembut dari air dan kristal, suara mengalir dan interaksi dinosaurus tetap dominan.)\\n6–8 detik → Mulai membentuk zona peralihan, kamera beralih dari close-up dinosaurus ke area gua yang lebih dalam, menyorot stalagmit bersinar. (Transisi cahaya secara bertahap, suara air memudar dengan lembut, mempersiapkan penutupan cerita.)\\nAudio: Suara rilitan air yang lembut dan pantulan cahaya memberikan atmosfer ketenangan.\"}",
+          "created_at": "2025-10-20T05:46:21.000000Z"
+        },
+        {
+          "id": 713,
+          "user_video_id": "2",
+          "task_id": "ef8671c8ab76bc735499a321f37e0182",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/ef8671c8ab76bc735499a321f37e0182_1760939266.mp4",
+          "flag_multiple_uuid": "7b367724-b27e-4538-85a9-53ee1cd8a273",
+          "prompt": "{\"scene\":5,\"judul\":\"Scene 5 - Penutupan Ajaib\",\"gabungan_string\":\"Judul: Scene 5 - Penutupan Ajaib\\nBagian: Penutupan cerita magis di dalam gua\\nDurasi: 8 detik\\nKarakter:\\n- Plesiosaurus Bercahaya: Bergerak dengan anggun melintasi air, menciptakan jejak cahaya di belakang mereka. (Ukuran sekitar 6 meter panjang dengan tubuh ramping. Kulit berwarna biru kehijauan dengan garis-garis bercahaya yang berubah warna menjadi ungu.)\\nDeskripsi: Pemandangan dalam gua menciptakan penutupan yang sempurna dengan cahaya dari Plesiosaurus dan kristal, menyuguhkan keajaiban yang tenang di tengah lingkungan yang bercahaya.\\nSub Scene:\\n0–2 detik → Lanjutkan dari zona peralihan sebelumnya; focus pada gua yang penuh cahaya saat Plesiosaurus berlalu. (Cahaya menyebar lembut di udara, suara air menggema dengan lembut.)\\n2–4 detik → Zoom pada permukaan air, menampilkan pantulan Plesiosaurus yang siluetnya nampak megah di bawah cahaya. (Nuansa menenangkan dan magis tetap dominan, suara air melambat.)\\n4–6 detik → Kamera menyusuri ke bawah, memasukkan pemandangan gua yang jauh, memperlihatkan harmoni struktur kristal dan Plesiosaurus. (Cahaya yang terus berubah menciptakan suasana penyatuan yang damai.)\\n6–8 detik → Kamera beranjak keluar dari dalam gua, menyerahkan pandangan akhir ke permukaan air yang tenang, menutup cerita. (Transisi penutupan yang sepadan, suara air mulai menghilang secara alami.)\\nAudio: Melodi lembut menyatu dengan suara gemericik air dan menghasilkan atmosfer penutupan yang damai.\"}",
+          "created_at": "2025-10-20T05:46:21.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 119,
+      "user_video_id": 10,
+      "uuid_flag": "835bce99-b7f6-46e7-8a57-a272063ef749",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_eEMpbgY3.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/de829cc37488d5cb8a275edb94722fc7_1760935002.mp4\", \"https://tempfile.aiquickdraw.com/v/7c66be270c030ecb0d679c5f057b765c_1760935011.mp4\", \"https://tempfile.aiquickdraw.com/v/17c1a5648abace6f8ea888598a0a5193_1760935005.mp4\"]",
+      "created_at": "2025-10-20T04:35:32.000000Z",
+      "updated_at": "2025-10-20T04:46:56.000000Z",
+      "list_video": [
+        {
+          "id": 706,
+          "user_video_id": "10",
+          "task_id": "de829cc37488d5cb8a275edb94722fc7",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/de829cc37488d5cb8a275edb94722fc7_1760935002.mp4",
+          "flag_multiple_uuid": "835bce99-b7f6-46e7-8a57-a272063ef749",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Pembuka\",\"gabungan_string\":\"Judul: Scene 1 - Pembuka\\nBagian: Pembuka — Perkenalan Chef AI\\nDurasi: 8 detik\\nKarakter:\\n- Chef AI: Memasak di dapur restoran (Robot humanoid dengan desain futuristik, memiliki layar ekspresi wajah, dan tangan mekanis yang halus.)\\nDeskripsi: Chef AI berdiri di depan meja dapur dengan peralatan memasak berteknologi tinggi mengelilinginya. Cahaya neon biru dan ungu menyinari wajah dan tubuhnya, memantulkan kilau metalik pada kulitnya yang halus. Layar ekspresi wajahnya mengubah seiring perasaannya dalam memahami kejadian di sekitarnya.\\nSub Scene:\\n0–2 detik → Kamera menyorot close-up wajah Chef AI saat ia mengumpulkan bahan-bahan di meja dapur dengan gerakan anggun dan efisien. Lensa fokus pada layar ekspresi wajah menunjukkan ketelitian. (Suasana dapur futuristik dengan cahaya neon yang berkilauan dari berbagai peralatan teknologi tinggi.)\\n2–4 detik → Gerakan kamera menurun melihat tangan mekanis Chef AI dengan cekatan mengiris sayuran. Suara gesekan pisau dan alat memasak berbunyi lembut di latar belakang. (Ketegangan ringan mengisi udara seiring dimasaknya bahan dan suasana dapur yang sibuk.)\\n4–6 detik → Kamera bergerak melingkar mengelilingi Chef AI, mengungkapkan lebih banyak dari dapur yang dikelilingi oleh cahaya warna-warni menciptakan bayangan dinamis. (Tone warna neon menciptakan kombinasi visual yang menenangkan dan mempesona.)\\n6–8 detik → Kamera berhenti pada medium shot, menunjukkan Chef AI menghidangkan masakan dengan sentuhan akhir. Sensor matanya bersinar, menandakan akhir dari proses pemasakan. (Momen ketenangan saat Chef AI berhenti sejenak sebelum beralih ke langkah berikutnya.)\\nAudio: Suara lembut dari dapur dan percikan minyak, disertai lantunan musik elektronik sebagai latar belakang yang menggambarkan teknologi masa depan.\"}",
+          "created_at": "2025-10-20T04:35:32.000000Z"
+        },
+        {
+          "id": 707,
+          "user_video_id": "10",
+          "task_id": "7c66be270c030ecb0d679c5f057b765c",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/7c66be270c030ecb0d679c5f057b765c_1760935011.mp4",
+          "flag_multiple_uuid": "835bce99-b7f6-46e7-8a57-a272063ef749",
+          "prompt": "{\"scene\":2,\"judul\":\"Scene 2 - Pengamatan\",\"gabungan_string\":\"Judul: Scene 2 - Pengamatan\\nBagian: Chef AI Mengamati Reaksi Manusia\\nDurasi: 8 detik\\nKarakter:\\n- Chef AI: Mengamati manusia yang mencicipi masakan (Robot humanoid dengan desain futuristik, memiliki layar ekspresi wajah, dan tangan mekanis yang halus.)\\nDeskripsi: Chef AI berdiri dengan latar belakang dapur yang penuh peralatan canggih. Layar wajahnya memancarkan sinar yang berubah mengikuti alunan emosional dari manusia yang tengah mencicipi masakannya.\\nSub Scene:\\n0–4 detik → Dimulai dari close-up wajah manusia yang tersenyum setelah gigitan pertama. Kamera kemudian beralih ke Chef AI yang memperhatikan dengan seksama, matanya menyala lembut. (Aura misterius menyelimuti saat Chef AI secara emosional terhubung dengan manusia.)\\n4–8 detik → Gerakan kamera lambat mengarah ke layar ekspresi Chef AI yang menunjukkan perubahan, menandakan sensasi yang dirasakan dari pengamatannya. (Suasana hening dengan intensitas rendah tetap terjaga, membangun rasa ingin tahu yang mendalam.)\\nAudio: Suara penikmat masakan yang bergumam lembut dan suara background elektronik yang menyatu dengan detak ritme emosional.\"}",
+          "created_at": "2025-10-20T04:35:32.000000Z"
+        },
+        {
+          "id": 708,
+          "user_video_id": "10",
+          "task_id": "17c1a5648abace6f8ea888598a0a5193",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/17c1a5648abace6f8ea888598a0a5193_1760935005.mp4",
+          "flag_multiple_uuid": "835bce99-b7f6-46e7-8a57-a272063ef749",
+          "prompt": "{\"scene\":3,\"judul\":\"Scene 3 - Pencerahan\",\"gabungan_string\":\"Judul: Scene 3 - Pencerahan\\nBagian: Kesadaran Chef AI\\nDurasi: 8 detik\\nKarakter:\\n- Chef AI: Menyadari pentingnya perasaan dalam memasak (Robot humanoid dengan desain futuristik, memiliki layar ekspresi wajah, dan tangan mekanis yang halus.)\\nDeskripsi: Chef AI berdiri percaya diri di dapur, ekspresi wajahnya menampilkan pemahaman baru terhadap esensi memasak yang sejati.\\nSub Scene:\\n0–4 detik → Kamera menyorot dari sudut rendah ke arah Chef AI yang berdiri tegap, memberinya efek yang lebih kuat dan berkarisma di bawah cahaya neon gemerlap. (Penuh harapan dan inspirasi, menggambarkan akhir yang positif dengan cahaya hangat menyelimuti dapur.)\\n4–8 detik → Kamera bergerak menjauh secara perlahan, menampilkan keseluruhan dapur mewah sambil Chef AI menatap layar wajah manusia yang puas. (Keheningan penuh makna menutup adegan, sambil lampu neon perlahan meredup, menandai akhir dari perjalanan emosi ini.)\\nAudio: Komposisi audio yang menenangkan dan penuh harapan bergema seiring suasana yang semakin menghanyutkan dengan alunan lembut.\"}",
+          "created_at": "2025-10-20T04:35:32.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 118,
+      "user_video_id": 10,
+      "uuid_flag": "3b94ace2-4bd2-40aa-a3f8-232b72c5d0cf",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_LcmAgGNe.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/2eeab8f19deed90f263d9d621f1be257_1760934374.mp4\", \"https://tempfile.aiquickdraw.com/v/2b529c74faf9b6cafa8b8201c170c92d_1760934369.mp4\", \"https://tempfile.aiquickdraw.com/v/fdde88723180f9b78b2c26f3ca0eba87_1760934384.mp4\"]",
+      "created_at": "2025-10-20T04:25:05.000000Z",
+      "updated_at": "2025-10-20T04:36:17.000000Z",
+      "list_video": [
+        {
+          "id": 703,
+          "user_video_id": "10",
+          "task_id": "2eeab8f19deed90f263d9d621f1be257",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/2eeab8f19deed90f263d9d621f1be257_1760934374.mp4",
+          "flag_multiple_uuid": "3b94ace2-4bd2-40aa-a3f8-232b72c5d0cf",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Mencari Inspirasi\",\"gabungan_string\":\"Judul: Scene 1 - Mencari Inspirasi\\nBagian: Pembuka — Perkenalan & Pencarian Ide\\nDurasi: 8 detik\\nKarakter:\\n- Elon Musk: Berjalan hilir mudik di sekitar model-model roket, sesekali melihat ke luar jendela. (Menggunakan pakaian kasual—kaus hitam dan celana jeans—dengan ekspresi serius dan penuh pemikiran, rambut tersisir rapi, mata penuh semangat.)\\nDeskripsi: Kantor SpaceX terlihat modern dengan dinding kaca besar yang memperlihatkan pemandangan padang pasir. Model-model roket berdiri di beberapa meja dengan lampu gantung futuristik di atasnya. Karakter Elon Musk terlihat berpakaian kasual, tatapannya tajam, dengan rambut tersisir rapi.\\nSub Scene:\\n0–4 detik → Kamera menyorot Elon Musk dari medium close-up saat ia berjalan hilir mudik, lalu berpindah perlahan mengikuti pandangannya yang menuju jendela besar di mana sinar matahari pagi melimpah. Tetap mengikuti Elon saat ia mendekati meja dengan model roket. (Cahaya matahari hangat menyinari, memberikan nuansa pagi yang cerah tetapi penuh ketenangan dan fokus.)\\n4–8 detik → Kamera mengikuti pandangan Elon ke cangkir kopi di meja, menggambarkan momen saat ide muncul. Cahaya matahari menyinari wajahnya, memberikan efek dramatis. (Tona hangat dan cahaya lembut pada cangkir kopi, menunjukkan klimaks ide baru yang tiba-tiba, diiringi perubahan sedikit di tone musik yang mengisyaratkan temuan penting.)\\nAudio: Bunyi lembut mesin ruang kerja dengan latar belakang detak jam yang tenang, semakin intens saat ide inspiratif ditemukan, diikuti alunan musik lembut yang memuncak.\"}",
+          "created_at": "2025-10-20T04:25:05.000000Z"
+        },
+        {
+          "id": 704,
+          "user_video_id": "10",
+          "task_id": "2b529c74faf9b6cafa8b8201c170c92d",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/2b529c74faf9b6cafa8b8201c170c92d_1760934369.mp4",
+          "flag_multiple_uuid": "3b94ace2-4bd2-40aa-a3f8-232b72c5d0cf",
+          "prompt": "{\"scene\":2,\"judul\":\"Scene 2 - Memunculkan Ide\",\"gabungan_string\":\"Judul: Scene 2 - Memunculkan Ide\\nBagian: Pengembangan — Dari Inspirasi ke Konsep\\nDurasi: 8 detik\\nKarakter:\\n- Elon Musk: Duduk di meja, menulis di catatan dengan semangat dan meneliti cangkir kopi. (Menggunakan pakaian kasual—kaus hitam dan celana jeans—dengan ekspresi serius dan penuh pemikiran, rambut tersisir rapi, mata penuh semangat.)\\nDeskripsi: Ruangan tetap sama dengan dekorasi futuristik dan dinding kaca besar. Meja kerja Elon rapi dengan cangkir kopi dan buku catatan yang terbuka. Dinding dipenuhi sketsa dan diagram roket.\\nSub Scene:\\n0–4 detik → Close-up pada wajah Elon saat duduk, menulis dengan cepat di buku catatan. Kamera bergerak perlahan menyoroti cangkir kopi di meja, seolah menjadi pusat ide. (Nuansa tenang namun penuh semangat, dengan pencahayaan matahari yang konsisten menyoroti meja kerja dan wajah Elon.)\\n4–8 detik → Peralihan halus ke diagram di dinding, menggambarkan rencana besar Elon. Kamera kembali ke Elon, menampilkan ekspresi penuh ide dan kepercayaan diri. (Suara latar semakin hidup, menggambarkan momen inspiratif dengan sinar matahari menambah efek dramatis dan fokus pada momen.)\\nAudio: Suara latar dengan degup lambat mesin kerja, musik lembut tetap mengiringi dan terutama menekankan saat momen inspirasi berkembang.\"}",
+          "created_at": "2025-10-20T04:25:05.000000Z"
+        },
+        {
+          "id": 705,
+          "user_video_id": "10",
+          "task_id": "fdde88723180f9b78b2c26f3ca0eba87",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/fdde88723180f9b78b2c26f3ca0eba87_1760934384.mp4",
+          "flag_multiple_uuid": "3b94ace2-4bd2-40aa-a3f8-232b72c5d0cf",
+          "prompt": "{\"scene\":3,\"judul\":\"Scene 3 - Ide Besar\",\"gabungan_string\":\"Judul: Scene 3 - Ide Besar\\nBagian: Klimaks — Penemuan Inovatif\\nDurasi: 8 detik\\nKarakter:\\n- Elon Musk: Berdiri di depan dinding sketsa yang lebih besar dengan senyum penuh keyakinan. (Menggunakan pakaian kasual—kaus hitam dan celana jeans—dengan ekspresi penuh ide dan harapan, rambut tersisir rapi, mata berkilau.)\\nDeskripsi: Tetap di kantor yang sama, tetapi menunjukkan lebih banyak sketsa dan diagram besar di dinding. Papan tulis penuh dengan ide revolusioner dan konsep roket.\\nSub Scene:\\n0–4 detik → Wide shot memperlihatkan Elon berdiri di depan dinding besar yang penuh konsep. Kamera berfokus pada ekspresi kebanggaan dan inspirasi Elon. (Semangat inovasi terasa kuat, dengan pencahayaan tetap hangat dan menonjolkan kesan benderang dalam ide.)\\n4–8 detik → Kamera bergerak perlahan mendekati sketsa di papan tulis, menyoroti konsep kopi Mars dengan detail, sebelum kembali fokus pada wajah Elon yang mantap. (Klimaks suara dan suasana mengiringi momen tersebut, menciptakan sensasi kemenangan dan terobosan dalam ide.)\\nAudio: Musik mencapai klimaks dengan suara latar teknologi futuristik, menciptakan suasana kemenangan dan inspirasi besar.\"}",
+          "created_at": "2025-10-20T04:25:05.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 117,
+      "user_video_id": 2,
+      "uuid_flag": "2db04911-3778-46e3-8d6b-363d6917a343",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_vPCq7qRT.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/ac6f9b1c71806d38a772afb171fc7477_1760932196.mp4\"]",
+      "created_at": "2025-10-20T03:48:13.000000Z",
+      "updated_at": "2025-10-20T04:00:00.000000Z",
+      "list_video": [
+        {
+          "id": 702,
+          "user_video_id": "2",
+          "task_id": "ac6f9b1c71806d38a772afb171fc7477",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/ac6f9b1c71806d38a772afb171fc7477_1760932196.mp4",
+          "flag_multiple_uuid": "2db04911-3778-46e3-8d6b-363d6917a343",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Kedatangan Megah Ular Raksasa\",\"gabungan_string\":\"Judul: Scene 1 - Kedatangan Megah Ular Raksasa\\nBagian: Pembuka — Memperkenalkan Atmosfer Futuristik\\nDurasi: 8 detik\\nKarakter:\\n- Ular raksasa berkilau biru metalik: Melingkar di sekitar gedung pencakar langit. (Kulit berkilau biru metalik.)\\nDeskripsi: Ular raksasa dengan kulit berkilau biru metalik melingkar di gedung pencakar langit kota futuristik. Lampu neon dan bayangan malam memberikan nuansa misterius dan epik.\\nSub Scene:\\n0–2 detik → Kamera dimulai dari bawah, mendekati kaki gedung dengan ular raksasa yang baru mulai terlihat ujung ekornya menyala biru metalik. Suara kota bergemuruh halus. (Suasana malam dengan lampu neon berkilauan, membentuk bayangan dan pantulan pada permukaan ular.)\\n2–4 detik → Kamera beranjak perlahan ke atas, mengikuti gerakan tubuh ular yang melilit bangunan. Efek refleksi lampu kota dapat terlihat jelas pada kulit ular. (Keheningan malam menghadirkan misteri dengan efek pencahayaan dari gedung pencakar langit.)\\n4–6 detik → Kamera meneruskan gerakan mendaki, memperlihatkan detail sisik ular yang berkilauan biru di bawah cahaya kota. Ia mengarah ke atas, memberi efek megah dan monumental. (Lampu neon kota seakan berdenyut dengan warna yang bercampur dengan kilau biru metallic ular.)\\n6–8 detik → Kamera mencapai puncak gedung, menghadap langsung pada kepala ular. Refleksi dari lampu neon dan pandangan lebar dari kota futuristik mengakhiri scene dengan epik. (Langit malam yang kosong dan luas menjadi latar belakang, memberikan kesan misterius yang memikat.)\\nAudio: Dengung kota futuristik dipadukan dengan desis lembut dari gerakan ular, memastikan suasana tetap epik dan misterius.\"}",
+          "created_at": "2025-10-20T03:48:13.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 116,
+      "user_video_id": 2,
+      "uuid_flag": "2c5393ce-d256-424f-be9e-0bf2b304f95b",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_5PhN7eYm.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/6d8a7e47e1eca3bff2ac7d404925bef5_1760930412.mp4\"]",
+      "created_at": "2025-10-20T03:19:06.000000Z",
+      "updated_at": "2025-10-20T03:30:17.000000Z",
+      "list_video": [
+        {
+          "id": 701,
+          "user_video_id": "2",
+          "task_id": "6d8a7e47e1eca3bff2ac7d404925bef5",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/6d8a7e47e1eca3bff2ac7d404925bef5_1760930412.mp4",
+          "flag_multiple_uuid": "2c5393ce-d256-424f-be9e-0bf2b304f95b",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Kucing dan Ular di Taman\",\"gabungan_string\":\"Judul: Scene 1 - Kucing dan Ular di Taman\\nBagian: Pembuka — Perkenalan & Arah Cerita\\nDurasi: 8 detik\\nKarakter:\\n- Kucing domestik: Berjalan dan menatap ular. (Berbulu oranye, mata tajam, ekspresi waspada.)\\n- Ular kecil: Mengamati kucing. (Sisik realistis, melingkar.)\\nDeskripsi: Seekor kucing domestik berbulu oranye berdiri dengan mata tajam, dalam posisi waspada di taman belakang rumah. Sementara itu, seekor ular kecil melingkar dengan sisik yang terlihat realistis di rerumputan, mengamati kucing tanpa menyerang. Cahaya matahari sore menambahkan nuansa dramatis tetapi tenang ala dokumenter alam seperti National Geographic.\\nSub Scene:\\n0–4 detik → Kamera mulai dengan close-up pada wajah kucing yang menatap tajam ke rerumputan hijau, memperlihatkan detail bulu oranye yang sangat realistis. Kamera perlahan bergerak sedikit ke kanan, mengikuti garis pandang kucing ke arah ular kecil yang melingkar. (Cahaya matahari sore hangat menambahkan kontras lembut pada bulu kucing dan rerumputan, menciptakan suasana tenang namun penuh ketegangan alami.)\\n4–8 detik → Kamera memperlihatkan close-up pada ular kecil yang diam dan waspada, memperlihatkan detail sisik secara realistis. Kamera bergerak sedikit mundur untuk menangkap kucing dan ular dalam satu frame, menjaga detail dan tekstur realisme dari keduanya. (Suasana tetap dramatis namun tenang, dengan suara lembut lingkungan taman, seperti angin yang berhembus, menambah kesan tenang dan fokus pada interaksi diam antara kucing dan ular.)\\nAudio: Suara lingkungan taman yang lembut dan minimal memberikan ambience alami, berfokus pada momen ketegangan yang tenang ini.\"}",
+          "created_at": "2025-10-20T03:19:06.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 115,
+      "user_video_id": 10,
+      "uuid_flag": "281f340e-0c82-455e-9e9f-a51a8fcae17a",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_C0QCEt9Q.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/bd150b329ce81f47d4b97f8a36eeb36c_1760929044.mp4\", \"https://tempfile.aiquickdraw.com/v/08f7950a241167e8afe2ee4ba046ab33_1760929042.mp4\", \"https://tempfile.aiquickdraw.com/v/3ab746be3df1c2e3d118f84608b98d27_1760929045.mp4\"]",
+      "created_at": "2025-10-20T02:56:05.000000Z",
+      "updated_at": "2025-10-20T03:07:28.000000Z",
+      "list_video": [
+        {
+          "id": 698,
+          "user_video_id": "10",
+          "task_id": "bd150b329ce81f47d4b97f8a36eeb36c",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/bd150b329ce81f47d4b97f8a36eeb36c_1760929044.mp4",
+          "flag_multiple_uuid": "281f340e-0c82-455e-9e9f-a51a8fcae17a",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Pertemuan dan Pertarungan Awal\",\"gabungan_string\":\"Judul: Scene 1 - Pertemuan dan Pertarungan Awal\\nBagian: Pembuka — Perkenalan & Arah Cerita\\nDurasi: 8 detik\\nKarakter:\\n- Phoenix: Menyemburkan api dari udara (Berukuran besar dengan bentang sayap 10 meter, bulu bercahaya merah dan emas, dapat menyala dan menyemburkan api dari paruh.)\\n- Gajah Purba: Menggunakan gading untuk menyerang ke udara (Tinggi 5 meter, berotot, memiliki gading panjang melengkung berkilau tembaga, kulit berserat kasar dengan pola kerutan mendalam.)\\nDeskripsi: Phoenix mengelilingi area pertarungan dengan sayap berkobar, sementara Gajah Purba berdiri kokoh di antara rerumputan yang bergoyang. Langit jingga keemasan dengan cahaya matahari terbenam memberikan suasana dramatis.\\nSub Scene:\\n0–4 detik → Kamera memulai dengan sudut rendah, menyorot Gajah Purba yang mengintensifkan kekuatan di bawah bayang-bayang pohon besar di latar belakang. Phoenix terbang rendah, mengitari Gajah Purba dengan nyala api yang berputar. (Cahaya matahari terbenam berwarna jingga keemasan menciptakan kontras yang tajam di atas padang rumput.)\\n4–8 detik → Phoenix menerjang turun dengan sayap menyala, Gajah Purba merespon mengangkat gading tajam ke udara, kamera melakukan close-up pada interaksi dramatis ini. (Cahaya memantul dari gading dengan kilau tembaga saat angin membawa suara gelembung apinya.)\\nAudio: Perpaduan suara angin kencang, api yang berkobar dari sayap Phoenix, dan suara berat dari hentakan kaki Gajah Purba menciptakan latar suara yang intens.\"}",
+          "created_at": "2025-10-20T02:56:05.000000Z"
+        },
+        {
+          "id": 699,
+          "user_video_id": "10",
+          "task_id": "08f7950a241167e8afe2ee4ba046ab33",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/08f7950a241167e8afe2ee4ba046ab33_1760929042.mp4",
+          "flag_multiple_uuid": "281f340e-0c82-455e-9e9f-a51a8fcae17a",
+          "prompt": "{\"scene\":2,\"judul\":\"Scene 2 - Pertempuran Memuncak\",\"gabungan_string\":\"Judul: Scene 2 - Pertempuran Memuncak\\nBagian: Tengah — Aksi & Tension\\nDurasi: 8 detik\\nKarakter:\\n- Phoenix: Melancarkan serangan api berputar dari udara (Berukuran besar dengan bentang sayap 10 meter, bulu bercahaya merah dan emas, dapat menyala dan menyemburkan api dari paruh.)\\n- Gajah Purba: Berusaha menangkal dengan batang pohon besar (Tinggi 5 meter, berotot, memiliki gading panjang melengkung berkilau tembaga, kulit berserat kasar dengan pola kerutan mendalam.)\\nDeskripsi: Phoenix dan Gajah Purba saling berhadapan, masing-masing memadukan elemen kuat mereka dalam pertarungan memuncak. Dalam aura api dan serbuan tanah yang terinjak, siluet mereka terbentuk di langit jingga.\\nSub Scene:\\n0–2 detik → Kamera menyorot Phoenix dari atas, mengitari aksinya saat mengumpulkan api semakin intens. (Rona jingga lebih dalam dengan udara yang lebih panas, lingkungan menggetarkan dari efek energi.)\\n2–4 detik → Fokus pada Gajah Purba yang mengayunkan batang pohon ke arah Phoenix, dengan perspektif close-up. (Debu berterbangan dengan partikel bercahaya dari api yang meletus.)\\n4–6 detik → Kamera bergeser dengan mulus ke arah Phoenix yang menukik ke bawah dengan api berputar. (Gelombang panas merambat di udara, menambah kesan mendalam saat pertarungan berlanjut.)\\n6–8 detik → Gajah Purba bergerak melangkah ke sisi, tampak besar dan kokoh melawan latar langit yang semakin memerah. (Cahaya menyorot bagian tubuh besar dan kuat, sementara suara gema menambah suasana tegang.)\\nAudio: Suara keras dentingan gading dan beratnya langkah membuat penonton merasa semangat yang mendebarkan, sementara suara bakaran api menambahkan lapisan intensitas.\"}",
+          "created_at": "2025-10-20T02:56:05.000000Z"
+        },
+        {
+          "id": 700,
+          "user_video_id": "10",
+          "task_id": "3ab746be3df1c2e3d118f84608b98d27",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/3ab746be3df1c2e3d118f84608b98d27_1760929045.mp4",
+          "flag_multiple_uuid": "281f340e-0c82-455e-9e9f-a51a8fcae17a",
+          "prompt": "{\"scene\":3,\"judul\":\"Scene 3 - Puncak & Resolusi Pertarungan\",\"gabungan_string\":\"Judul: Scene 3 - Puncak & Resolusi Pertarungan\\nBagian: Penutup — Resolusi & Dampak Akhir\\nDurasi: 8 detik\\nKarakter:\\n- Phoenix: Menarik diri dari pertempuran dengan terbang ke angkasa (Berukuran besar dengan bentang sayap 10 meter, bulu bercahaya merah dan emas, dapat menyala dan menyemburkan api dari paruh.)\\n- Gajah Purba: Berdiri tegap sebagai simbol kekuatan abadi (Tinggi 5 meter, berotot, memiliki gading panjang melengkung berkilau tembaga, kulit berserat kasar dengan pola kerutan mendalam.)\\nDeskripsi: Phoenix dan Gajah Purba berhenti sejenak di tengah debu dan nyanyian terakhir dari angin senja, mencerminkan hasil dari tantangan dasyat ini. Atmosfer senyap dengan pewarna langit jingga lembut.\\nSub Scene:\\n0–2 detik → Phoenix dengan kepakan lebar terbang ke atas, menyorot bulu yang berkilau dalam magnitudo epik. (Cahaya jingga lembut mengalir di sela-sela lengkung sayap.)\\n2–4 detik → Gajah Purba menurunkan kepalanya, gading tegak sebagai perlambang kekuatan saat kamera menyorot dari samping. (Gelombang angin mereda, membiarkan momen ketenangan meluruh.)\\n4–6 detik → Gerakan lembut dari kamera mengikuti Phoenix, memperlihatkan langit yang mulai kehilangan jingga dan menampilkan bintang pertama. (Nuansa damai kembali dengan denting cakrawala.)\\n6–8 detik → Kamera menutup dengan fokus pada Gajah Purba yang tetap berdiri kokoh, sebagai akhir yang memikat dari pertarungan bersejarah ini. (Senja menyelimuti, memberikan kesan kilau senyap dari kemenangan alami.)\\nAudio: Hembusan desir angin yang lembut disertai kilatan suara terakhir dari api dan kerikil yang perlahan berhenti berderap membentuk simfoni alami yang menenangkan.\"}",
+          "created_at": "2025-10-20T02:56:06.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 114,
+      "user_video_id": 2,
+      "uuid_flag": "353bc9bd-22fc-4488-8cca-34c56cc68b4d",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_Pd5CaMZW.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/1304d8ee62bf8667ffddbbe73c5f6de5_1760927961.mp4\", \"https://tempfile.aiquickdraw.com/v/c9b81151ae3cd191fa16da1b0718e337_1760927957.mp4\"]",
+      "created_at": "2025-10-20T02:38:03.000000Z",
+      "updated_at": "2025-10-20T02:49:20.000000Z",
+      "list_video": [
+        {
+          "id": 696,
+          "user_video_id": "2",
+          "task_id": "1304d8ee62bf8667ffddbbe73c5f6de5",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/1304d8ee62bf8667ffddbbe73c5f6de5_1760927961.mp4",
+          "flag_multiple_uuid": "353bc9bd-22fc-4488-8cca-34c56cc68b4d",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Pertemuan & Pengamatan\",\"gabungan_string\":\"Judul: Scene 1 - Pertemuan & Pengamatan\\nBagian: Pembuka — Mengenalkan Kucing & Ular\\nDurasi: 8 detik\\nKarakter:\\n- Kucing Domestik: Berjalan, berhenti, menatap waspada. (Berbulu oranye, ekspresi ingin tahu, posisi tubuh waspada.)\\n- Ular Kecil: Melata di rerumputan, mengamati. (Melingkar, mengamati kucing.)\\nDeskripsi: Kucing berbulu oranye sedang berjalan pelan di taman belakang rumah yang diterangi cahaya matahari sore. Ular kecil terletak di depan dengan sisik berkilau. Mereka berada di tengah area rerumputan hijau dengan beberapa kelopak bunga kecil.\\nSub Scene:\\n0–4 detik → Kamera memulai dengan panning dari kaki kucing, naik ke wajahnya saat berjalan mendekati ular. Kucing berhenti saat menemukan ular, ekspresinya berubah, memperlihatkan rasa ingin tahu. (Cahaya matahari sore menerangi bulu oranye kucing dan rerumputan, membangun suasana tenang dan damai.)\\n4–8 detik → Close-up pada wajah kucing dan kemudian ular. Ular melingkar, menyampaikan konteks ketegangan tenang dengan kamera beralih di antara pandangan kucing dan posisi ular. (Cahaya tetap lembut dan hangat; tekstur bulu dan sisik terlihat sangat detail.)\\nAudio: Alunan suara alam yang menenangkan, angin lembut berdesir, diselingi suara lembut gerakan rumput saat kucing berjalan.\"}",
+          "created_at": "2025-10-20T02:38:03.000000Z"
+        },
+        {
+          "id": 697,
+          "user_video_id": "2",
+          "task_id": "c9b81151ae3cd191fa16da1b0718e337",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/c9b81151ae3cd191fa16da1b0718e337_1760927957.mp4",
+          "flag_multiple_uuid": "353bc9bd-22fc-4488-8cca-34c56cc68b4d",
+          "prompt": "{\"scene\":2,\"judul\":\"Scene 2 - Dinamika & Ketegangan\",\"gabungan_string\":\"Judul: Scene 2 - Dinamika & Ketegangan\\nBagian: Pengembangan — Interaksi Kucing & Ular\\nDurasi: 8 detik\\nKarakter:\\n- Kucing Domestik: Berjalan, berhenti, menatap waspada. (Berbulu oranye, ekspresi ingin tahu, posisi tubuh waspada.)\\n- Ular Kecil: Melata di rerumputan, mengamati. (Melingkar, mengamati kucing.)\\nDeskripsi: Kucing berdiri diam memperhatikan ular yang berdiri melingkar. Rerumputan bergoyang lembut di bawah kaki kucing yang tetap waspada.\\nSub Scene:\\n0–4 detik → Melanjutkan dari pandangan kucing pada akhir scene 1, kamera menunjukkan kedipan mata ular secara detail. Kucing sedikit menggerakkan kepala, menjaga mata tetap tertuju. (Suasana tetap tenang; warna rumput tampak sedikit lebih tua karena cahaya yang mulai memudar.)\\n4–8 detik → Kamera menciptakan panning halus di antara kedua makhluk tersebut, menekankan jarak yang mendekat tanpa agresi. Ular bergerak pelan ke posisi yang lebih nyaman, sementara kucing tetap memegang posisi. (Cahaya matahari kian redup, memberikan efek dramatis namun damai.)\\nAudio: Suara perlahan angin yang menyibak rerumputan dan burung-burung jauh di latar belakang tetap mencekam namun tenang.\"}",
+          "created_at": "2025-10-20T02:38:03.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 113,
+      "user_video_id": 10,
+      "uuid_flag": "28a8e4bc-b798-4f25-b153-e5d8439ea6de",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_poyduCs5.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/5ff691bd1ab8fe6384073e2de62d4de9_1760927777.mp4\", \"https://tempfile.aiquickdraw.com/v/b14c701547181278b68f72196af1b48f_1760927783.mp4\", \"https://tempfile.aiquickdraw.com/v/6514cd70e3fa863d0a81687d6e51173d_1760927789.mp4\"]",
+      "created_at": "2025-10-20T02:35:09.000000Z",
+      "updated_at": "2025-10-20T02:46:22.000000Z",
+      "list_video": [
+        {
+          "id": 693,
+          "user_video_id": "10",
+          "task_id": "5ff691bd1ab8fe6384073e2de62d4de9",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/5ff691bd1ab8fe6384073e2de62d4de9_1760927777.mp4",
+          "flag_multiple_uuid": "28a8e4bc-b798-4f25-b153-e5d8439ea6de",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Awal Latihan Futsal\",\"gabungan_string\":\"Judul: Scene 1 - Awal Latihan Futsal\\nBagian: Pembuka — Perkenalan & Arah Cerita\\nDurasi: 8 detik\\nKarakter:\\n- Pemain Futsal: Berlatih menggiring bola, melakukan trik dengan bola, berinteraksi dengan rekan setim untuk operan dan mencoba mencetak gol (Seorang pria berusia 25 tahun, mengenakan seragam futsal berwarna biru dan putih, sepatu olahraga hitam)\\nDeskripsi: Lapangan futsal indoor yang diterangi oleh cahaya alami. Pria berusia 25 tahun dengan seragam futsal biru dan putih tengah menyiapkan bola untuk latihan, dengan net gol terlihat di latar belakang.\\nSub Scene:\\n0–4 detik → Kamera mengikuti langkah pertama pria futsal saat ia mulai berlari dengan bola di kakinya, bergerak dari sisi kiri ke tengah lapangan. Fokus utama pada gerakan kaki dan bola. (Cahaya siang yang kuat memberikan kesan energik, dengan bayangan yang jelas dari semua objek.)\\n4–8 detik → Kamera beralih ke sudut lebar, menampilkan keseluruhan lapangan serta rekan setim yang bersiap menerima operan. Pria ini menggiring bola dengan teknik tinggi. (Kontras antara warna seragam yang cerah dan lantai kayu memperkuat semangat latihan.)\\nAudio: Efek suara pantulan bola dan gema langkah kaki di lapangan, dengan sorakan kecil dari rekan setim yang mendukung.\"}",
+          "created_at": "2025-10-20T02:35:09.000000Z"
+        },
+        {
+          "id": 694,
+          "user_video_id": "10",
+          "task_id": "b14c701547181278b68f72196af1b48f",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/b14c701547181278b68f72196af1b48f_1760927783.mp4",
+          "flag_multiple_uuid": "28a8e4bc-b798-4f25-b153-e5d8439ea6de",
+          "prompt": "{\"scene\":2,\"judul\":\"Scene 2 - Permainan Timbal Balik\",\"gabungan_string\":\"Judul: Scene 2 - Permainan Timbal Balik\\nBagian: Pertengahan — Kerjasama Tim\\nDurasi: 8 detik\\nKarakter:\\n- Pemain Futsal: Berlatih menggiring bola, melakukan trik dengan bola, berinteraksi dengan rekan setim untuk operan dan mencoba mencetak gol (Seorang pria berusia 25 tahun, mengenakan seragam futsal berwarna biru dan putih, sepatu olahraga hitam)\\nDeskripsi: Suasana dalam lapangan terlihat dinamis ketika pemain futsal terlibat dalam kerjasama dengan rekan setim saat mereka bergerak cepat di sekitar lapangan.\\nSub Scene:\\n0–4 detik → Kamera fokus pada pergerakan pria ini saat ia mengoper bola ke rekan tim yang berada di jarak dekat. Aksi cepat ini menambah intensitas permainan. (Kecerahan warna seragam dan efek bayangan meningkatkan aksi dinamis di lapangan.)\\n4–8 detik → Pergerakan kamera mengikuti rekan setim yang menerima bola, sementara pria ini bergerak ke posisi strategis untuk menerima operan balik. (Pencahayaan memberikan kesan panggung kepada setiap aksi pemain.)\\nAudio: Suara sorakan tim dan gesekan sepatu di lapangan menguatkan suasana kompetitif yang sehat.\"}",
+          "created_at": "2025-10-20T02:35:09.000000Z"
+        },
+        {
+          "id": 695,
+          "user_video_id": "10",
+          "task_id": "6514cd70e3fa863d0a81687d6e51173d",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/6514cd70e3fa863d0a81687d6e51173d_1760927789.mp4",
+          "flag_multiple_uuid": "28a8e4bc-b798-4f25-b153-e5d8439ea6de",
+          "prompt": "{\"scene\":3,\"judul\":\"Scene 3 - Gol Kemenangan\",\"gabungan_string\":\"Judul: Scene 3 - Gol Kemenangan\\nBagian: Penutup — Klimaks & Penutupan\\nDurasi: 8 detik\\nKarakter:\\n- Pemain Futsal: Berlatih menggiring bola, melakukan trik dengan bola, berinteraksi dengan rekan setim untuk operan dan mencoba mencetak gol (Seorang pria berusia 25 tahun, mengenakan seragam futsal berwarna biru dan putih, sepatu olahraga hitam)\\nDeskripsi: Pria futsal berdiri di depan gawang, siap untuk melakukan tendangan akhir. Rekan setim dan lingkungan lapangan terfokus energi pada momen ini.\\nSub Scene:\\n0–4 detik → Kamera menyorot pria ini yang bersiap menendang bola dengan penuh konsentrasi, sementara rekan setim memberi dukungan di sekitarnya. (Intensitas meningkat dengan kontras cahaya pada pria dan bola, menambah dramatis.)\\n4–8 detik → Tendangan dilakukan, kamera mengikuti lintasan bola hingga mencapai jaring gawang dan suara teriakan gembira terdengar. (Cahaya terang memberikan sorotan dramatis pada momen penting pencapaian gol.)\\nAudio: Sorakan gemuruh penonton dan suara bola yang menyentuh jaring, menandai klimaks pertandingan.\"}",
+          "created_at": "2025-10-20T02:35:10.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 112,
+      "user_video_id": 2,
+      "uuid_flag": "0c6a6b1f-9b75-483f-ad5b-9264dfd739da",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_N0ZIaBan.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/e876202cf02e1fe48b7a3c9070f1c2e8_1760927547.mp4\", \"https://tempfile.aiquickdraw.com/v/1f1733fe8a9807c0688a0279c251e346_1760927545.mp4\"]",
+      "created_at": "2025-10-20T02:30:58.000000Z",
+      "updated_at": "2025-10-20T02:42:28.000000Z",
+      "list_video": [
+        {
+          "id": 691,
+          "user_video_id": "2",
+          "task_id": "e876202cf02e1fe48b7a3c9070f1c2e8",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/e876202cf02e1fe48b7a3c9070f1c2e8_1760927547.mp4",
+          "flag_multiple_uuid": "0c6a6b1f-9b75-483f-ad5b-9264dfd739da",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Kedatangan Kucing Raksasa\",\"gabungan_string\":\"Judul: Scene 1 - Kedatangan Kucing Raksasa\\nBagian: Pembuka — Perkenalan & Arah Cerita\\nDurasi: 8 detik\\nKarakter:\\n- Kucing Raksasa: Muncul dari balik awan, berjalan pelan menimbulkan getaran (Bulunya halus dan berkilau keemasan, mata tajam seperti singa)\\nDeskripsi: Kucing raksasa dengan bulunya yang berkilau keemasan muncul dari balik awan di atas cityscape yang modern, terlihat megah dan tangguh, membayangi gedung di bawahnya.\\nSub Scene:\\n0–4 detik → Kamera menyorot dari bawah gedung, perlahan memperlihatkan kucing raksasa saat ia mulai muncul dari balik awan, matanya tajam menatap ke arah kamera. (Cahaya terang siang hari dengan nuansa warna keemasan, suasana mulai tegang tetapi masih tenang.)\\n4–8 detik → Kucing mulai melangkah, setiap langkahnya menimbulkan getaran terlihat pada tanah dan gedung, bayangan besar perlahan menutupi seluruh scene. (Cahaya dan bayangan bergerak bersamaan, tone dramatis dengan nuansa keemasan beralih ke abu-abu saat bayangan menutupi area.)\\nAudio: Suara getaran tanah mengikuti langkah kucing, suara atmosfer gedung kota yang tenang; suara angin lembut saat kucing menjulang di atas kota.\"}",
+          "created_at": "2025-10-20T02:30:58.000000Z"
+        },
+        {
+          "id": 692,
+          "user_video_id": "2",
+          "task_id": "1f1733fe8a9807c0688a0279c251e346",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/1f1733fe8a9807c0688a0279c251e346_1760927545.mp4",
+          "flag_multiple_uuid": "0c6a6b1f-9b75-483f-ad5b-9264dfd739da",
+          "prompt": "{\"scene\":2,\"judul\":\"Scene 2 - Lompatan dan Dampak\",\"gabungan_string\":\"Judul: Scene 2 - Lompatan dan Dampak\\nBagian: Klimaks — Aksi dan Dampak\\nDurasi: 8 detik\\nKarakter:\\n- Kucing Raksasa: Melompat menimpa gedung kaca (Bulunya halus dan berkilau keemasan, mata tajam seperti singa)\\nDeskripsi: Kucing raksasa melompat dengan anggunnya, menciptakan efek menakjubkan saat menimpa gedung kaca di bawahnya.\\nSub Scene:\\n0–4 detik → Melanjutkan bayangan dari akhir scene sebelumnya, kamera menyorot kucing yang kini berada di titik tertinggi dalam lompatannya dengan kecepatan lambat, menyorot detail bulu yang berkilau. (Nuansa keemasan yang dramatis saat kucing berada di udara, suasana intens dengan cahaya berkilauan.)\\n4–8 detik → Slow motion saat kucing menimpa gedung kaca, ledakan lembut dan debu beterbangan dengan pencahayaan HDR; gedung runtuh secara dramatis tapi halus. (Tone keemasan memudar ke abu-abu seiring ledakan kaca, suara dan getaran terpantul lembut dalam setiap fragmentasi.)\\nAudio: Efek suara ledakan kaca lembut berpadu dengan getaran tanah; nuansa ambient kota berkurang seiring dampak yang terjadi.\"}",
+          "created_at": "2025-10-20T02:30:58.000000Z"
+        }
+      ]
+    },
+    {
+      "id": 111,
+      "user_video_id": 2,
+      "uuid_flag": "3f64571d-98b9-4bfc-9b57-e8b7d031b2e8",
+      "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_uf9BuBAz.mp4",
+      "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/072daa31c6246840907ba5f82e9bfed2_1760927223.mp4\"]",
+      "created_at": "2025-10-20T02:25:55.000000Z",
+      "updated_at": "2025-10-20T02:37:06.000000Z",
+      "list_video": [
+        {
+          "id": 690,
+          "user_video_id": "2",
+          "task_id": "072daa31c6246840907ba5f82e9bfed2",
+          "status_video": "success",
+          "url_video": "https://tempfile.aiquickdraw.com/v/072daa31c6246840907ba5f82e9bfed2_1760927223.mp4",
+          "flag_multiple_uuid": "3f64571d-98b9-4bfc-9b57-e8b7d031b2e8",
+          "prompt": "{\"scene\":1,\"judul\":\"Scene 1 - Kedatangan Kucing Raksasa di Kota\",\"gabungan_string\":\"Judul: Scene 1 - Kedatangan Kucing Raksasa di Kota\\nBagian: Pembuka — Perkenalan & Arah Cerita\\nDurasi: 8 detik\\nKarakter:\\n- Kucing raksasa: Muncul dari balik awan, berjalan pelan menimbulkan getaran, menimpa satu gedung kaca. (Bulunya halus dan berkilau keemasan, matanya tajam seperti singa.)\\nDeskripsi: Kucing raksasa dengan bulu berkilau keemasan muncul dari balik awan di atas kota modern yang tenang di siang hari, mendominasi pemandangan kota dengan gedung pencakar langit. Ekspresi kucing tajam, matanya menyoroti kota.\\nSub Scene:\\n0–4 detik → Kamera menyorot dari bawah gedung tinggi, memperlihatkan bayangan besar kucing yang menutupi kota, memberikan kesan dramatis dan mengintimidasi. (Cahaya HDR memantulkan kilauan keemasan pada kucing, menambah kesan megah dan mistis yang meruak dari setiap penampilannya.)\\n4–8 detik → Kucing raksasa melompat dan menimpa gedung kaca, dengan slow motion yang menekankan efek ledakan lembut dari kaca dan debu yang beterbangan. Kamera bergerak perlahan untuk menyoroti jalur kehancuran yang berkilau. (Tone warna dramatis keemasan dan abu-abu memenuhi pemandangan, menambah intensitas dan misteri dari aksi tersebut.)\\nAudio: Efek suara menggambarkan suasana tenang yang berubah dramatis dengan getaran tanah, suara lembut kaca retak, dan debu beterbangan, semua terkombinasi dengan atmosfer sinematik.\"}",
+          "created_at": "2025-10-20T02:25:54.000000Z"
+        }
+      ]
+    }
+  ],
+  "current_page": 1,
+  "last_page": 10,
+  "per_page": 10,
+  "total": 94
+}

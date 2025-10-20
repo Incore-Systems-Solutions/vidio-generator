@@ -526,16 +526,26 @@ export const videoGenerationApi = {
 };
 
 // Public Video Gallery API
-export interface PublicVideoItem {
+export interface PublicVideoListItem {
   id: number;
   user_video_id: string;
-  share_url: "y" | "n";
-  url_video: string;
+  task_id: string | null;
+  status_video: string;
+  url_video: string | null;
+  flag_multiple_uuid: string;
   prompt: string;
-  user: {
-    id: number;
-    name: string;
-  };
+  created_at: string;
+}
+
+export interface PublicVideoItem {
+  id: number;
+  user_video_id: number;
+  uuid_flag: string;
+  final_url_merge_video: string | null;
+  list_merge_video: string | null;
+  created_at: string;
+  updated_at: string;
+  list_video: PublicVideoListItem[];
 }
 
 export interface PublicVideoGalleryResponse {
@@ -555,7 +565,7 @@ export const publicVideoGalleryApi = {
   ): Promise<PublicVideoGalleryResponse> {
     try {
       const response = await fetch(
-        `${BASE_URL}/api/video-ai/public?page=${page}&per_page=${perPage}`,
+        `${BASE_URL}/api/gallery/public?page=${page}&per_page=${perPage}`,
         {
           method: "GET",
           headers: {
@@ -577,7 +587,7 @@ export const publicVideoGalleryApi = {
     }
   },
 
-  async getVideoDetail(id: string): Promise<{
+  async getVideoDetail_OLD(id: string): Promise<{
     status: boolean;
     message: string;
     data: {
