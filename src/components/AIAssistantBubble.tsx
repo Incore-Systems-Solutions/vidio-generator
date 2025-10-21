@@ -143,7 +143,7 @@ export function AIAssistantBubble() {
     <>
       {/* Welcome Bubble - Show when closed */}
       {showWelcome && !isOpen && (
-        <div className="fixed bottom-24 right-6 z-40 animate-in slide-in-from-right duration-500">
+        <div className="fixed bottom-24 right-6 z-[9999] animate-in slide-in-from-right duration-500">
           <div className="relative">
             {/* Glow Effect */}
             <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl blur-lg opacity-30 animate-pulse" />

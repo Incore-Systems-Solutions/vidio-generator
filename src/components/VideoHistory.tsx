@@ -25,6 +25,184 @@ import {
   type VideoHistoryResponse,
 } from "@/lib/api";
 
+// Translations for VideoHistory
+const translations = {
+  ID: {
+    back: "Kembali",
+    videoHistory: "Riwayat Video",
+    accessPortal: "Access Portal",
+    enterEmail: "Masukkan email untuk mengakses riwayat",
+    otpTitle: "Masukkan kode verifikasi untuk mengakses riwayat video",
+    emailAddress: "Email Address",
+    emailPlaceholder: "your.email@example.com",
+    accessHistory: "Akses Riwayat",
+    sendingOTP: "Mengirim OTP...",
+    verificationCodeSent: "Kode verifikasi akan dikirim ke email Anda",
+    securityVerification: "Security Verification",
+    otpSentTo: "Kode OTP telah dikirim ke:",
+    enter6Digit: "Masukkan 6 Digit Kode Verifikasi",
+    resendIn: "Kirim ulang dalam",
+    verifying: "Memverifikasi...",
+    verifyEnter: "Verifikasi & Masuk",
+    backToEmail: "Kembali ke Email",
+    notReceived: "Tidak menerima kode?",
+    resend: "Kirim ulang",
+    videoCount: "video tersimpan",
+    logout: "Keluar",
+    loadingHistory: "Memuat riwayat video...",
+    pleaseWait: "Mohon tunggu sebentar",
+    noVideos: "Belum Ada Video",
+    noVideosDesc:
+      "Anda belum memiliki riwayat video. Mulai buat video pertama Anda!",
+    createVideoNow: "Buat Video Sekarang",
+    sessionExpired: "Sesi telah berakhir. Silakan login ulang.",
+    failedToLoad: "Gagal memuat riwayat video. Silakan coba lagi.",
+    emailRequired: "Email tidak boleh kosong",
+    otpRequired: "OTP tidak boleh kosong",
+    failedSendOTP: "Gagal mengirim OTP",
+    failedVerifyOTP: "Gagal verifikasi OTP",
+    videoStatus: "Status",
+    createdOn: "Dibuat:",
+    uuid: "UUID:",
+    sceneList: "Scene List",
+    scenes: "scenes",
+    downloadVideo: "Download Video",
+    videoProcessing: "Video sedang diproses atau tidak tersedia",
+    detailVideo: "Detail Video",
+    close: "✕ Close",
+  },
+  EN: {
+    back: "Back",
+    videoHistory: "Video History",
+    accessPortal: "Access Portal",
+    enterEmail: "Enter email to access history",
+    otpTitle: "Enter verification code to access video history",
+    emailAddress: "Email Address",
+    emailPlaceholder: "your.email@example.com",
+    accessHistory: "Access History",
+    sendingOTP: "Sending OTP...",
+    verificationCodeSent: "Verification code will be sent to your email",
+    securityVerification: "Security Verification",
+    otpSentTo: "OTP code has been sent to:",
+    enter6Digit: "Enter 6 Digit Verification Code",
+    resendIn: "Resend in",
+    verifying: "Verifying...",
+    verifyEnter: "Verify & Enter",
+    backToEmail: "Back to Email",
+    notReceived: "Didn't receive code?",
+    resend: "Resend",
+    videoCount: "videos saved",
+    logout: "Logout",
+    loadingHistory: "Loading video history...",
+    pleaseWait: "Please wait a moment",
+    noVideos: "No Videos Yet",
+    noVideosDesc:
+      "You don't have any video history yet. Start creating your first video!",
+    createVideoNow: "Create Video Now",
+    sessionExpired: "Session has expired. Please login again.",
+    failedToLoad: "Failed to load video history. Please try again.",
+    emailRequired: "Email cannot be empty",
+    otpRequired: "OTP cannot be empty",
+    failedSendOTP: "Failed to send OTP",
+    failedVerifyOTP: "Failed to verify OTP",
+    videoStatus: "Status",
+    createdOn: "Created:",
+    uuid: "UUID:",
+    sceneList: "Scene List",
+    scenes: "scenes",
+    downloadVideo: "Download Video",
+    videoProcessing: "Video is being processed or unavailable",
+    detailVideo: "Video Detail",
+    close: "✕ Close",
+  },
+  ZH: {
+    back: "返回",
+    videoHistory: "视频历史",
+    accessPortal: "访问门户",
+    enterEmail: "输入电子邮件以访问历史",
+    otpTitle: "输入验证码以访问视频历史",
+    emailAddress: "电子邮件地址",
+    emailPlaceholder: "your.email@example.com",
+    accessHistory: "访问历史",
+    sendingOTP: "发送 OTP...",
+    verificationCodeSent: "验证码将发送到您的电子邮件",
+    securityVerification: "安全验证",
+    otpSentTo: "OTP 代码已发送至：",
+    enter6Digit: "输入 6 位验证码",
+    resendIn: "重新发送",
+    verifying: "验证中...",
+    verifyEnter: "验证并进入",
+    backToEmail: "返回电子邮件",
+    notReceived: "没收到代码？",
+    resend: "重新发送",
+    videoCount: "个视频已保存",
+    logout: "登出",
+    loadingHistory: "正在加载视频历史...",
+    pleaseWait: "请稍候",
+    noVideos: "暂无视频",
+    noVideosDesc: "您还没有任何视频历史。开始创建您的第一个视频！",
+    createVideoNow: "立即创建视频",
+    sessionExpired: "会话已过期。请重新登录。",
+    failedToLoad: "加载视频历史失败。请重试。",
+    emailRequired: "电子邮件不能为空",
+    otpRequired: "OTP 不能为空",
+    failedSendOTP: "发送 OTP 失败",
+    failedVerifyOTP: "验证 OTP 失败",
+    videoStatus: "状态",
+    createdOn: "创建于：",
+    uuid: "UUID：",
+    sceneList: "场景列表",
+    scenes: "个场景",
+    downloadVideo: "下载视频",
+    videoProcessing: "视频正在处理或不可用",
+    detailVideo: "视频详情",
+    close: "✕ 关闭",
+  },
+  AR: {
+    back: "رجوع",
+    videoHistory: "سجل الفيديو",
+    accessPortal: "بوابة الوصول",
+    enterEmail: "أدخل البريد الإلكتروني للوصول إلى السجل",
+    otpTitle: "أدخل رمز التحقق للوصول إلى سجل الفيديو",
+    emailAddress: "عنوان البريد الإلكتروني",
+    emailPlaceholder: "your.email@example.com",
+    accessHistory: "الوصول إلى السجل",
+    sendingOTP: "إرسال OTP...",
+    verificationCodeSent: "سيتم إرسال رمز التحقق إلى بريدك الإلكتروني",
+    securityVerification: "التحقق الأمني",
+    otpSentTo: "تم إرسال رمز OTP إلى:",
+    enter6Digit: "أدخل رمز التحقق المكون من 6 أرقام",
+    resendIn: "إعادة الإرسال في",
+    verifying: "جارٍ التحقق...",
+    verifyEnter: "تحقق وادخل",
+    backToEmail: "العودة إلى البريد الإلكتروني",
+    notReceived: "لم تتلق الرمز؟",
+    resend: "إعادة الإرسال",
+    videoCount: "فيديو محفوظ",
+    logout: "تسجيل الخروج",
+    loadingHistory: "جارٍ تحميل سجل الفيديو...",
+    pleaseWait: "يرجى الانتظار",
+    noVideos: "لا توجد مقاطع فيديو بعد",
+    noVideosDesc: "ليس لديك أي سجل فيديو بعد. ابدأ بإنشاء أول فيديو لك!",
+    createVideoNow: "إنشاء فيديو الآن",
+    sessionExpired: "انتهت صلاحية الجلسة. يرجى تسجيل الدخول مرة أخرى.",
+    failedToLoad: "فشل تحميل سجل الفيديو. يرجى المحاولة مرة أخرى.",
+    emailRequired: "البريد الإلكتروني لا يمكن أن يكون فارغًا",
+    otpRequired: "OTP لا يمكن أن يكون فارغًا",
+    failedSendOTP: "فشل إرسال OTP",
+    failedVerifyOTP: "فشل التحقق من OTP",
+    videoStatus: "الحالة",
+    createdOn: "تم الإنشاء في:",
+    uuid: "UUID:",
+    sceneList: "قائمة المشاهد",
+    scenes: "مشاهد",
+    downloadVideo: "تنزيل الفيديو",
+    videoProcessing: "الفيديو قيد المعالجة أو غير متوفر",
+    detailVideo: "تفاصيل الفيديو",
+    close: "✕ إغلاق",
+  },
+};
+
 // Helper function for status colors
 const getStatusColor = (status: string) => {
   switch (status.toLowerCase()) {
@@ -61,6 +239,45 @@ export function VideoHistory() {
     null
   );
 
+  // Language state
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+
+  // Load language from localStorage and listen for changes
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
+      setSelectedLanguage(savedLanguage);
+    }
+
+    // Check localStorage periodically (for same-window changes)
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+
+    // Listen for language changes via custom event
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (
+        newLanguage &&
+        translations[newLanguage as keyof typeof translations]
+      ) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
+
   // Countdown timer for OTP
   useEffect(() => {
     if (countdown > 0) {
@@ -92,7 +309,7 @@ export function VideoHistory() {
 
   const handleRequestOTP = async () => {
     if (!email.trim()) {
-      setError("Email tidak boleh kosong");
+      setError(t.emailRequired);
       return;
     }
 
@@ -104,7 +321,7 @@ export function VideoHistory() {
       setStep("otp");
       setCountdown(60);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal mengirim OTP");
+      setError(err instanceof Error ? err.message : t.failedSendOTP);
     } finally {
       setAuthLoading(false);
     }
@@ -112,7 +329,7 @@ export function VideoHistory() {
 
   const handleVerifyOTP = async () => {
     if (!otp.trim()) {
-      setError("OTP tidak boleh kosong");
+      setError(t.otpRequired);
       return;
     }
 
@@ -126,7 +343,7 @@ export function VideoHistory() {
       localStorage.setItem("riwayat-email", email);
       setStep("history");
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Gagal verifikasi OTP");
+      setError(err instanceof Error ? err.message : t.failedVerifyOTP);
     } finally {
       setAuthLoading(false);
     }
@@ -150,16 +367,12 @@ export function VideoHistory() {
       if (err.status === 401) {
         localStorage.removeItem("x-api-key");
         localStorage.removeItem("riwayat-email");
-        setError("Sesi telah berakhir. Silakan login ulang.");
+        setError(t.sessionExpired);
 
         // Redirect ke halaman login
         window.location.href = "/riwayat-video";
       } else {
-        setError(
-          err instanceof Error
-            ? err.message
-            : "Gagal memuat riwayat video. Silakan coba lagi."
-        );
+        setError(err instanceof Error ? err.message : t.failedToLoad);
       }
     } finally {
       setLoading(false);
@@ -187,6 +400,9 @@ export function VideoHistory() {
     });
   };
 
+  // Get current translations
+  const t = translations[selectedLanguage as keyof typeof translations];
+
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
       {/* Futuristic Background Effects */}
@@ -212,7 +428,7 @@ export function VideoHistory() {
             onClick={() => (window.location.href = "/")}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali
+            {t.back}
           </Button>
 
           {step !== "history" && (
@@ -228,15 +444,13 @@ export function VideoHistory() {
               {/* Title */}
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                  Riwayat Video
+                  {t.videoHistory}
                 </span>
               </h1>
 
               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                {step === "email" &&
-                  "Masuk untuk melihat semua video yang telah Anda buat"}
-                {step === "otp" &&
-                  "Masukkan kode verifikasi untuk mengakses riwayat video"}
+                {step === "email" && t.enterEmail}
+                {step === "otp" && t.otpTitle}
               </p>
             </div>
           )}
@@ -252,12 +466,12 @@ export function VideoHistory() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                    Riwayat Video
+                    {t.videoHistory}
                   </h1>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
                     <p className="text-sm text-gray-400">
-                      {totalVideos} video tersimpan
+                      {totalVideos} {t.videoCount}
                     </p>
                   </div>
                 </div>
@@ -268,7 +482,7 @@ export function VideoHistory() {
                 onClick={handleLogout}
                 className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/20"
               >
-                Keluar
+                {t.logout}
               </Button>
             </div>
           )}
@@ -286,17 +500,15 @@ export function VideoHistory() {
                     <Mail className="w-7 h-7 text-blue-300" />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">
-                    Access Portal
+                    {t.accessPortal}
                   </h2>
-                  <p className="text-gray-400 text-sm">
-                    Masukkan email untuk mengakses riwayat
-                  </p>
+                  <p className="text-gray-400 text-sm">{t.enterEmail}</p>
                 </div>
 
                 <div className="space-y-5">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email Address
+                      {t.emailAddress}
                     </label>
                     <div className="relative group">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
@@ -305,7 +517,7 @@ export function VideoHistory() {
                         <Mail className="absolute left-3 w-5 h-5 text-gray-400" />
                         <input
                           type="email"
-                          placeholder="your.email@example.com"
+                          placeholder={t.emailPlaceholder}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           onKeyPress={(e) =>
@@ -335,12 +547,12 @@ export function VideoHistory() {
                       {authLoading ? (
                         <>
                           <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>Mengirim OTP...</span>
+                          <span>{t.sendingOTP}</span>
                         </>
                       ) : (
                         <>
                           <Sparkles className="w-5 h-5" />
-                          <span>Akses Riwayat</span>
+                          <span>{t.accessHistory}</span>
                         </>
                       )}
                     </button>
@@ -348,7 +560,7 @@ export function VideoHistory() {
                 </div>
 
                 <p className="text-center text-xs text-gray-500 mt-6">
-                  Kode verifikasi akan dikirim ke email Anda
+                  {t.verificationCodeSent}
                 </p>
               </div>
             </div>
@@ -367,18 +579,16 @@ export function VideoHistory() {
                     <Settings className="w-7 h-7 text-blue-300 animate-spin-slow" />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">
-                    Security Verification
+                    {t.securityVerification}
                   </h2>
-                  <p className="text-gray-400 text-sm mb-1">
-                    Kode OTP telah dikirim ke:
-                  </p>
+                  <p className="text-gray-400 text-sm mb-1">{t.otpSentTo}</p>
                   <p className="font-semibold text-blue-300">{email}</p>
                 </div>
 
                 <div className="space-y-5">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
-                      Masukkan 6 Digit Kode Verifikasi
+                      {t.enter6Digit}
                     </label>
                     <div className="relative group">
                       <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
@@ -403,7 +613,7 @@ export function VideoHistory() {
                     <div className="flex items-center justify-center space-x-2 text-sm">
                       <Clock className="w-4 h-4 text-cyan-400" />
                       <span className="text-gray-400">
-                        Kirim ulang dalam{" "}
+                        {t.resendIn}{" "}
                         <span className="text-cyan-400 font-semibold">
                           {countdown}s
                         </span>
@@ -429,12 +639,12 @@ export function VideoHistory() {
                       {authLoading ? (
                         <>
                           <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>Memverifikasi...</span>
+                          <span>{t.verifying}</span>
                         </>
                       ) : (
                         <>
                           <CheckCircle className="w-5 h-5" />
-                          <span>Verifikasi & Masuk</span>
+                          <span>{t.verifyEnter}</span>
                         </>
                       )}
                     </button>
@@ -445,19 +655,19 @@ export function VideoHistory() {
                     className="w-full py-3 bg-slate-900/50 hover:bg-slate-800/50 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Kembali ke Email</span>
+                    <span>{t.backToEmail}</span>
                   </button>
                 </div>
 
                 <div className="mt-6 text-center">
                   <p className="text-xs text-gray-500">
-                    Tidak menerima kode?{" "}
+                    {t.notReceived}{" "}
                     {countdown === 0 && (
                       <button
                         onClick={handleRequestOTP}
                         className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
                       >
-                        Kirim ulang
+                        {t.resend}
                       </button>
                     )}
                   </p>
@@ -487,10 +697,10 @@ export function VideoHistory() {
                     <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
                     <div className="text-center">
                       <p className="text-gray-300 text-sm font-medium">
-                        Memuat riwayat video...
+                        {t.loadingHistory}
                       </p>
                       <p className="text-gray-500 text-xs mt-1">
-                        Mohon tunggu sebentar
+                        {t.pleaseWait}
                       </p>
                     </div>
                   </div>
@@ -504,18 +714,15 @@ export function VideoHistory() {
                     <Video className="w-10 h-10 text-blue-400" />
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">
-                    Belum Ada Video
+                    {t.noVideos}
                   </h3>
-                  <p className="text-gray-400 text-sm mb-6">
-                    Anda belum memiliki riwayat video. Mulai buat video pertama
-                    Anda!
-                  </p>
+                  <p className="text-gray-400 text-sm mb-6">{t.noVideosDesc}</p>
                   <Button
                     onClick={() => (window.location.href = "/konsultan-video")}
                     className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white border-0 shadow-lg shadow-blue-500/20"
                   >
                     <Sparkles className="w-4 h-4 mr-2" />
-                    Buat Video Sekarang
+                    {t.createVideoNow}
                   </Button>
                 </div>
               </div>
@@ -612,6 +819,7 @@ export function VideoHistory() {
         <VideoDetailModal
           video={selectedVideo}
           onClose={() => setSelectedVideo(null)}
+          t={t}
         />
       )}
 
@@ -640,9 +848,10 @@ export function VideoHistory() {
 interface VideoDetailModalProps {
   video: VideoHistoryItem;
   onClose: () => void;
+  t: any;
 }
 
-function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
+function VideoDetailModal({ video, onClose, t }: VideoDetailModalProps) {
   const displayVideo = video.final_url_merge_video;
   const firstVideo = video.list_video[0];
   const status = firstVideo?.status_video || "processing";
@@ -666,12 +875,12 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
               onClick={onClose}
               className="text-gray-300 hover:text-white hover:bg-blue-500/10 border border-blue-500/20"
             >
-              ← Back
+              {t.back}
             </Button>
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full animate-pulse" />
               <h2 className="text-xl font-semibold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                Detail Video
+                {t.detailVideo}
               </h2>
             </div>
           </div>
@@ -681,7 +890,7 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
             onClick={onClose}
             className="text-gray-300 hover:text-white hover:bg-red-500/10 border border-red-500/20"
           >
-            ✕ Close
+            {t.close}
           </Button>
         </div>
 
@@ -706,9 +915,7 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
                   <div className="text-2xl font-bold text-gray-300 mb-4">
                     Video {status}
                   </div>
-                  <p className="text-gray-500">
-                    Video sedang diproses atau tidak tersedia
-                  </p>
+                  <p className="text-gray-500">{t.videoProcessing}</p>
                 </div>
               </div>
             )}
@@ -721,19 +928,19 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
               <div className="bg-gradient-to-br from-blue-500/10 to-cyan-500/10 border border-blue-500/20 rounded-xl p-4">
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-blue-300 font-semibold text-sm">
-                    Status
+                    {t.videoStatus}
                   </h3>
                   <Badge className={getStatusColor(status)}>{status}</Badge>
                 </div>
                 <div className="text-gray-400 text-xs">
                   <div className="flex justify-between mb-1">
-                    <span>Dibuat:</span>
+                    <span>{t.createdOn}</span>
                     <span className="text-gray-300">
                       {new Date(video.created_at).toLocaleDateString("id-ID")}
                     </span>
                   </div>
                   <div className="flex justify-between">
-                    <span>UUID:</span>
+                    <span>{t.uuid}</span>
                     <span className="text-gray-300 font-mono text-xs">
                       {video.uuid_flag.substring(0, 8)}...
                     </span>
@@ -745,7 +952,7 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
               <div className="bg-slate-900/50 border border-white/10 rounded-xl p-4">
                 <h3 className="text-blue-300 font-semibold mb-4 flex items-center">
                   <Sparkles className="w-4 h-4 mr-2" />
-                  Scene List ({video.list_video.length} scenes)
+                  {t.sceneList} ({video.list_video.length} {t.scenes})
                 </h3>
                 <div className="space-y-2 max-h-64 overflow-y-auto">
                   {video.list_video.map((scene, index) => (
@@ -796,7 +1003,7 @@ function VideoDetailModal({ video, onClose }: VideoDetailModalProps) {
                     className="relative block w-full py-3.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 text-center shadow-lg shadow-blue-500/30"
                   >
                     <Download className="w-5 h-5 inline mr-2" />
-                    Download Video
+                    {t.downloadVideo}
                   </a>
                 </div>
               )}

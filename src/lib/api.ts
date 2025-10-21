@@ -540,12 +540,19 @@ export interface PublicVideoListItem {
 export interface PublicVideoItem {
   id: number;
   user_video_id: number;
+  user_id: string;
   uuid_flag: string;
   final_url_merge_video: string | null;
   list_merge_video: string | null;
   created_at: string;
   updated_at: string;
   list_video: PublicVideoListItem[];
+  prompt: string;
+  user: {
+    id: number;
+    whatsapp_number: string | null;
+    email: string;
+  };
 }
 
 export interface PublicVideoGalleryResponse {

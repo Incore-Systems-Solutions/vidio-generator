@@ -20,6 +20,8 @@ const translations = {
     modalCreatedOn: "Dibuat pada",
     videoNotAvailable: "Video Tidak Tersedia",
     videoUnavailableDesc: "Video ini saat ini tidak tersedia",
+    createdBy: "Dibuat oleh",
+    videoDescription: "Deskripsi",
   },
   EN: {
     badge: "AI Generated Videos",
@@ -36,6 +38,8 @@ const translations = {
     modalCreatedOn: "Created on",
     videoNotAvailable: "Video Not Available",
     videoUnavailableDesc: "This video is currently unavailable",
+    createdBy: "Created by",
+    videoDescription: "Description",
   },
   ZH: {
     badge: "AI 生成的视频",
@@ -52,6 +56,8 @@ const translations = {
     modalCreatedOn: "创建于",
     videoNotAvailable: "视频不可用",
     videoUnavailableDesc: "此视频当前不可用",
+    createdBy: "创建者",
+    videoDescription: "描述",
   },
   AR: {
     badge: "مقاطع فيديو منشأة بالذكاء الاصطناعي",
@@ -68,6 +74,8 @@ const translations = {
     modalCreatedOn: "تم الإنشاء في",
     videoNotAvailable: "الفيديو غير متوفر",
     videoUnavailableDesc: "هذا الفيديو غير متوفر حاليًا",
+    createdBy: "تم إنشاؤه بواسطة",
+    videoDescription: "الوصف",
   },
 };
 
@@ -82,6 +90,7 @@ export function VideoGallery() {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
+  const [userEmails, setUserEmails] = useState<{ [key: string]: string }>({});
 
   // Load language from localStorage and listen for changes
   useEffect(() => {
@@ -144,6 +153,15 @@ export function VideoGallery() {
         }
 
         setTotalPages(response.last_page);
+
+        // Extract user emails from video data
+        const emailMap: { [key: string]: string } = {};
+        response.data.forEach((video: PublicVideoItem) => {
+          if (video.user && video.user.email) {
+            emailMap[video.user_id] = video.user.email;
+          }
+        });
+        setUserEmails((prev) => ({ ...prev, ...emailMap }));
       } catch (err) {
         console.error("Error fetching videos:", err);
         setError("Failed to load videos. Please try again later.");
@@ -189,11 +207,47 @@ export function VideoGallery() {
     });
   };
 
+  const censorEmail = (email: string) => {
+    if (!email) return "";
+    const [username, domain] = email.split("@");
+    if (username.length <= 4) {
+      return `${username[0]}${"*".repeat(username.length - 1)}@${domain}`;
+    }
+    const visibleStart = Math.floor(username.length / 3);
+    const visibleEnd = Math.floor((username.length * 2) / 3);
+    const censored =
+      username.substring(0, visibleStart) +
+      "*".repeat(visibleEnd - visibleStart) +
+      username.substring(visibleEnd);
+    return `${censored}@${domain}`;
+  };
+
+  const getVideoDescription = (video: PublicVideoItem) => {
+    if (video.prompt && typeof video.prompt === "string") {
+      // Extract description from prompt text
+      const promptText = video.prompt;
+
+      // Look for "Deskripsi:" or "Deskripsi Visual:" in the prompt
+      const descriptionMatch = promptText.match(
+        /Deskripsi[:\s]*(.*?)(?=\n\n|\nSub Scene|$)/s
+      );
+      if (descriptionMatch && descriptionMatch[1]) {
+        return descriptionMatch[1].trim();
+      }
+
+      // If no description found, return first part of prompt (first 200 characters)
+      return promptText.length > 200
+        ? promptText.substring(0, 200) + "..."
+        : promptText;
+    }
+    return "No description available";
+  };
+
   // Get current translations
   const t = translations[selectedLanguage as keyof typeof translations];
 
   return (
-    <div className="w-full">
+    <div className="w-full relative z-[200]">
       {/* Futuristic Header */}
       <div className="text-center mb-16 relative">
         {/* Gradient Glow Background */}
@@ -370,6 +424,9 @@ export function VideoGallery() {
           onClose={() => setSelectedVideo(null)}
           formatDate={formatDate}
           translations={t}
+          userEmails={userEmails}
+          censorEmail={censorEmail}
+          getVideoDescription={getVideoDescription}
         />
       )}
 
@@ -396,7 +453,12 @@ interface VideoModalProps {
     modalCreatedOn: string;
     videoNotAvailable: string;
     videoUnavailableDesc: string;
+    createdBy: string;
+    videoDescription: string;
   };
+  userEmails: { [key: string]: string };
+  censorEmail: (email: string) => string;
+  getVideoDescription: (video: PublicVideoItem) => string;
 }
 
 function VideoModal({
@@ -404,11 +466,14 @@ function VideoModal({
   onClose,
   formatDate,
   translations,
+  userEmails,
+  censorEmail,
+  getVideoDescription,
 }: VideoModalProps) {
   const displayVideo = video.final_url_merge_video;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
       {/* Enhanced Backdrop with Blur */}
       <div
         className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl"
@@ -416,7 +481,7 @@ function VideoModal({
       />
 
       {/* Modal Content - Centered & Responsive */}
-      <div className="relative w-full max-w-6xl max-h-[90vh] overflow-hidden">
+      <div className="relative w-full max-w-6xl">
         {/* Outer Glow */}
         <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-30 blur-2xl" />
 
@@ -468,13 +533,32 @@ function VideoModal({
             )}
           </div>
 
-          {/* Footer with Date */}
+          {/* Footer with Date and Creator Info */}
           <div className="p-6 border-t border-white/10 bg-gradient-to-r from-slate-950/90 via-indigo-950/50 to-slate-950/90 backdrop-blur-xl">
-            <div className="flex items-center justify-center space-x-2 text-gray-400">
+            <div className="flex items-center justify-center space-x-2 text-gray-400 mb-4">
               <Calendar className="w-4 h-4 text-purple-400" />
               <span className="text-sm font-medium">
                 {translations.modalCreatedOn} {formatDate(video.created_at)}
               </span>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-center space-x-2 text-gray-300">
+                <span className="font-medium">{translations.createdBy}:</span>
+                <span className="text-purple-300">
+                  {userEmails[video.user_id]
+                    ? censorEmail(userEmails[video.user_id])
+                    : "Loading..."}
+                </span>
+              </div>
+              <div className="text-center text-gray-400">
+                <span className="font-medium">
+                  {translations.videoDescription}:
+                </span>
+                <p className="mt-1 text-gray-300">
+                  {getVideoDescription(video)}
+                </p>
+              </div>
             </div>
           </div>
         </div>
