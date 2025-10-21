@@ -606,7 +606,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
 
             <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
               <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                {t.consultant} #{generateData.uuid_konsultan.slice(0, 8)}
+                {t.consultant}
               </span>
             </h1>
 
