@@ -247,7 +247,7 @@ export function VideoGallery() {
   const t = translations[selectedLanguage as keyof typeof translations];
 
   return (
-    <div className="w-full relative z-[200]">
+    <div className="w-full">
       {/* Futuristic Header */}
       <div className="text-center mb-16 relative">
         {/* Gradient Glow Background */}
@@ -473,7 +473,7 @@ function VideoModal({
   const displayVideo = video.final_url_merge_video;
 
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
       {/* Enhanced Backdrop with Blur */}
       <div
         className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl"
