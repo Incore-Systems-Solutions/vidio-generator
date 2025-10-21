@@ -143,9 +143,24 @@ export function VideoHistory() {
 
       setVideos(response.data);
       setTotalVideos(response.data.length);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error fetching videos:", err);
-      setError("Gagal memuat riwayat video. Silakan coba lagi.");
+
+      // ✅ Tangani error 401 Unauthorized
+      if (err.status === 401) {
+        localStorage.removeItem("x-api-key");
+        localStorage.removeItem("riwayat-email");
+        setError("Sesi telah berakhir. Silakan login ulang.");
+
+        // Redirect ke halaman login
+        window.location.href = "/riwayat-video";
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Gagal memuat riwayat video. Silakan coba lagi."
+        );
+      }
     } finally {
       setLoading(false);
     }

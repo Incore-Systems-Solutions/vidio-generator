@@ -686,7 +686,12 @@ export const chatAIApi = {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to initialize chat");
+        // ❗ Lempar error dengan status agar bisa dibaca di layer atas
+        const error: any = new Error(
+          result.message || "Failed to initialize chat"
+        );
+        error.status = response.status;
+        throw error;
       }
 
       return result;
@@ -787,7 +792,12 @@ export const videoHistoryApi = {
       const result = await response.json();
 
       if (!response.ok) {
-        throw new Error(result.message || "Failed to fetch video list");
+        // ❗Tambahkan status agar bisa dideteksi di catch
+        const error: any = new Error(
+          result.message || "Failed to fetch video history"
+        );
+        error.status = response.status;
+        throw error;
       }
 
       return result;

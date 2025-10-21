@@ -425,7 +425,7 @@ export function VideoConsultant() {
       if (response.status) {
         setChatUuid(response.data.uuid);
 
-        // Save chat UUID to localStorage
+        // Simpan chat UUID ke localStorage
         localStorage.setItem("konsultan-chat-uuid", response.data.uuid);
 
         const initialMessage: Message = {
@@ -436,7 +436,7 @@ export function VideoConsultant() {
         };
         setMessages([initialMessage]);
 
-        // Save initial message to localStorage
+        // Simpan pesan awal ke localStorage
         localStorage.setItem(
           "konsultan-chat-messages",
           JSON.stringify([initialMessage])
@@ -444,13 +444,25 @@ export function VideoConsultant() {
       } else {
         setError(response.message || "Gagal menginisialisasi chat");
       }
-    } catch (err) {
+    } catch (err: any) {
       console.error("Error initializing chat:", err);
-      setError(
-        err instanceof Error
-          ? err.message
-          : "Terjadi kesalahan saat menginisialisasi chat"
-      );
+
+      // ✅ Tangani kasus Unauthorized (401)
+      if (err.status === 401) {
+        localStorage.removeItem("x-api-key");
+        localStorage.removeItem("konsultan-email");
+        localStorage.removeItem("konsultan-chat-uuid");
+        localStorage.removeItem("konsultan-chat-messages");
+        setError("Sesi telah berakhir. Silakan login ulang.");
+        // Opsional: redirect ke halaman login
+        window.location.href = "/konsultan-video";
+      } else {
+        setError(
+          err instanceof Error
+            ? err.message
+            : "Terjadi kesalahan saat menginisialisasi chat"
+        );
+      }
     } finally {
       setIsInitializing(false);
     }

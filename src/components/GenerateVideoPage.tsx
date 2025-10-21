@@ -714,20 +714,20 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                           <>
                             <Loader2 className="w-12 h-12 text-blue-400 animate-spin mx-auto mb-2" />
                             <p className="text-sm text-blue-300">
-                              Processing...
+                              {t.processing2}
                             </p>
                           </>
                         ) : scene.status_video === "pending" ? (
                           <>
                             <Clock className="w-12 h-12 text-yellow-400 mx-auto mb-2" />
                             <p className="text-sm text-yellow-300">
-                              Waiting...
+                              {t.waiting}
                             </p>
                           </>
                         ) : (
                           <>
                             <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-2" />
-                            <p className="text-sm text-red-300">Failed</p>
+                            <p className="text-sm text-red-300">{t.failed}</p>
                           </>
                         )}
                       </div>
@@ -801,11 +801,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
             </div>
             <div>
               <h3 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                Final Video Merge
+                {t.finalVideoMerge}
               </h3>
-              <p className="text-sm text-gray-400">
-                Menggabungkan semua scene menjadi satu video utuh
-              </p>
+              <p className="text-sm text-gray-400">{t.mergingAllScenes}</p>
             </div>
           </div>
 
@@ -849,7 +847,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     }
                   >
                     <Play className="w-4 h-4 mr-2" />
-                    Play Final Video
+                    {t.playFinalVideo}
                   </Button>
                 </div>
 
@@ -862,7 +860,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     }
                   >
                     <Download className="w-4 h-4 mr-2" />
-                    Download
+                    {t.download}
                   </Button>
                 </div>
               </div>
@@ -873,11 +871,10 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                   <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
                   <div>
                     <p className="font-semibold text-green-300">
-                      ✨ Video Final Siap!
+                      {t.videoReady}
                     </p>
                     <p className="text-sm text-green-400/80">
-                      Semua scene telah berhasil digabungkan menjadi satu video
-                      HD berkualitas tinggi.
+                      {t.allScenesMerged}
                     </p>
                   </div>
                 </div>
@@ -892,7 +889,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     onClick={handleCreateNewVideo}
                   >
                     <Sparkles className="w-4 h-4 mr-2" />
-                    Buat Video Baru
+                    {t.createNewVideo}
                   </Button>
                 </div>
 
@@ -903,7 +900,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     onClick={handleViewHistory}
                   >
                     <Film className="w-4 h-4 mr-2" />
-                    Lihat Riwayat Video
+                    {t.viewHistory}
                   </Button>
                 </div>
               </div>
@@ -914,22 +911,16 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                 <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-3" />
                 <p className="font-semibold text-yellow-300 mb-1">
                   {generateData.estimated_merge.status === "merging"
-                    ? "Sedang menggabungkan scene..."
-                    : "Menunggu semua scene selesai..."}
+                    ? t.mergingScenes
+                    : t.waitingAll}
                 </p>
-                <p className="text-sm text-yellow-400/80 mb-4">
-                  Proses ini membutuhkan waktu beberapa menit. Mohon tunggu
-                  sebentar.
-                </p>
+                <p className="text-sm text-yellow-400/80 mb-4">{t.takesTime}</p>
               </div>
 
               {/* Info box - dapat melihat di riwayat */}
               <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
                 <div className="text-center mb-3">
-                  <p className="text-sm text-blue-300 mb-2">
-                    💡 Tidak ingin menunggu? Anda dapat melihat hasil video
-                    final di halaman riwayat setelah proses selesai.
-                  </p>
+                  <p className="text-sm text-blue-300 mb-2">{t.dontWantWait}</p>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -941,7 +932,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                       onClick={handleCreateNewVideo}
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
-                      Buat Video Baru
+                      {t.createNewVideo}
                     </Button>
                   </div>
 
@@ -953,7 +944,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                       onClick={handleViewHistory}
                     >
                       <Film className="w-4 h-4 mr-2" />
-                      Lihat Riwayat
+                      {t.viewHistory}
                     </Button>
                   </div>
                 </div>

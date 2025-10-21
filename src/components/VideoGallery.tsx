@@ -8,7 +8,7 @@ const translations = {
   ID: {
     badge: "Video yang Dibuat AI",
     title: "Galeri Video",
-    description: "Koleksi video AI terbaik yang dibuat oleh komunitas kami.",
+    description: "Koleksi video AI terbaik yang dibuat oleh pengguna kami.",
     loadingTitle: "Memuat video...",
     loadingDesc: "Mengambil galeri AI terbaru",
     errorMessage: "Gagal memuat video. Silakan coba lagi nanti.",
@@ -24,7 +24,7 @@ const translations = {
   EN: {
     badge: "AI Generated Videos",
     title: "Video Gallery",
-    description: "The best AI video collection created by our community.",
+    description: "The best AI video collection created by our users.",
     loadingTitle: "Loading videos...",
     loadingDesc: "Fetching latest AI gallery",
     errorMessage: "Failed to load videos. Please try again later.",
@@ -40,7 +40,7 @@ const translations = {
   ZH: {
     badge: "AI 生成的视频",
     title: "视频库",
-    description: "由我们社区创建的最佳 AI 视频集合。",
+    description: "由我们用户创建的最佳 AI 视频集合。",
     loadingTitle: "加载视频中...",
     loadingDesc: "获取最新 AI 画廊",
     errorMessage: "加载视频失败。请稍后再试。",
@@ -56,7 +56,7 @@ const translations = {
   AR: {
     badge: "مقاطع فيديو منشأة بالذكاء الاصطناعي",
     title: "معرض الفيديو",
-    description: "أفضل مجموعة فيديو AI تم إنشاؤها بواسطة مجتمعنا.",
+    description: "أفضل مجموعة فيديو AI تم إنشاؤها بواسطة مستخدمينا.",
     loadingTitle: "جاري تحميل مقاطع الفيديو...",
     loadingDesc: "جلب أحدث معرض AI",
     errorMessage: "فشل تحميل مقاطع الفيديو. يرجى المحاولة مرة أخرى لاحقًا.",
