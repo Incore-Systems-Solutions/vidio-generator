@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ThemeToggle } from "./ThemeToggle";
@@ -13,57 +13,101 @@ import {
   History,
   MessageCircle,
   X,
+  Globe,
+  ChevronDown,
 } from "lucide-react";
 
-interface Step {
-  id: number;
-  title: string;
-  icon: React.ComponentType<any>;
-  completed: boolean;
-  active: boolean;
-}
+// Translations for navbar
+const translations = {
+  ID: {
+    tagline: "Pembuatan Video AI",
+    videoGallery: "Galeri Video",
+    consultant: "Konsultan Pembuatan Video",
+    videoHistory: "Riwayat Video",
+    language: "Bahasa",
+  },
+  EN: {
+    tagline: "AI Video Generation",
+    videoGallery: "Video Gallery",
+    consultant: "Video Making Consultant",
+    videoHistory: "Video History",
+    language: "Language",
+  },
+  ZH: {
+    tagline: "AI 视频生成",
+    videoGallery: "视频库",
+    consultant: "视频制作顾问",
+    videoHistory: "视频历史",
+    language: "语言",
+  },
+  AR: {
+    tagline: "إنشاء فيديو بالذكاء الاصطناعي",
+    videoGallery: "معرض الفيديو",
+    consultant: "مستشار صناعة الفيديو",
+    videoHistory: "سجل الفيديو",
+    language: "اللغة",
+  },
+};
 
-interface NavbarProps {
-  currentStep?: number;
-  totalSteps?: number;
-}
-
-export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
+export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
 
-  const steps: Step[] = [
-    {
-      id: 1,
-      title: "Setup Video",
-      icon: Settings,
-      completed: currentStep > 1,
-      active: currentStep === 1,
-    },
-    {
-      id: 2,
-      title: "Pembayaran",
-      icon: CreditCard,
-      completed: currentStep > 2,
-      active: currentStep === 2,
-    },
-    {
-      id: 3,
-      title: "Generate Video",
-      icon: Sparkles,
-      completed: currentStep > 3,
-      active: currentStep === 3,
-    },
-    {
-      id: 4,
-      title: "Download",
-      icon: Download,
-      completed: currentStep > 4,
-      active: currentStep === 4,
-    },
+  const languages = [
+    { code: "ID", label: "Indonesia", nativeLabel: "Indonesia" },
+    { code: "EN", label: "English", nativeLabel: "English" },
+    { code: "ZH", label: "Mandarin", nativeLabel: "中文" },
+    { code: "AR", label: "Arabic", nativeLabel: "العربية" },
   ];
 
+  // Load language from localStorage on mount
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
+      setSelectedLanguage(savedLanguage);
+    }
+  }, []);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      const target = event.target as HTMLElement;
+      if (
+        languageDropdownOpen &&
+        !target.closest(".language-dropdown-container")
+      ) {
+        setLanguageDropdownOpen(false);
+      }
+    };
+
+    if (languageDropdownOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [languageDropdownOpen]);
+
+  // Handler to change language and save to localStorage
+  const handleLanguageChange = (langCode: string) => {
+    setSelectedLanguage(langCode);
+    localStorage.setItem("preferredLanguage", langCode);
+    setLanguageDropdownOpen(false);
+
+    // Dispatch custom event for other components
+    window.dispatchEvent(new Event("languageChanged"));
+  };
+
+  // Get current translations
+  const t = translations[selectedLanguage as keyof typeof translations];
+
   return (
-    <nav className="sticky top-0 z-50 w-full border-b border-white/10 bg-gradient-to-r from-slate-950/90 via-indigo-950/90 to-slate-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-opacity-80">
+    <nav className="sticky top-0 z-[100] w-full border-b border-white/10 bg-gradient-to-r from-slate-950/90 via-indigo-950/90 to-slate-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-opacity-80">
       {/* Subtle Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-purple-500/5 pointer-events-none" />
 
@@ -89,7 +133,7 @@ export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
                     InstanVideo
                   </h1>
                   <p className="text-[10px] text-gray-400 font-light tracking-wider">
-                    AI Video Generation
+                    {t.tagline}
                   </p>
                 </div>
               </div>
@@ -107,7 +151,7 @@ export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-500/0 via-slate-500/10 to-slate-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <Sparkles className="w-4 h-4 mr-2 relative z-10" />
                 <span className="relative z-10 text-sm font-medium">
-                  Galeri Video
+                  {t.videoGallery}
                 </span>
               </Button>
 
@@ -124,9 +168,7 @@ export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-400/20 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   <MessageCircle className="w-5 h-5 mr-2 relative z-10" />
-                  <span className="relative z-10 text-sm">
-                    Video Making Consultant
-                  </span>
+                  <span className="relative z-10 text-sm">{t.consultant}</span>
                 </Button>
               </div>
 
@@ -140,14 +182,58 @@ export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <History className="w-4 h-4 mr-2 relative z-10" />
                 <span className="relative z-10 text-sm font-medium">
-                  Riwayat Video
+                  {t.videoHistory}
                 </span>
               </Button>
 
-              {/* Theme Toggle with Glow */}
-              {/* <div className="ml-2">
-                <ThemeToggle />
-              </div> */}
+              {/* Language Switcher */}
+              <div className="relative language-dropdown-container">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="group relative overflow-hidden bg-gradient-to-r from-emerald-500/10 to-teal-500/10 hover:from-emerald-500/20 hover:to-teal-500/20 border border-emerald-500/20 hover:border-emerald-500/40 text-emerald-300 hover:text-emerald-200 transition-all duration-300 px-4"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setLanguageDropdownOpen(!languageDropdownOpen);
+                  }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/0 via-emerald-500/10 to-emerald-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                  <Globe className="w-4 h-4 mr-2 relative z-10" />
+                  <span className="relative z-10 text-sm font-medium">
+                    {selectedLanguage}
+                  </span>
+                  <ChevronDown className="w-3 h-3 ml-1 relative z-10" />
+                </Button>
+
+                {/* Dropdown Menu */}
+                {languageDropdownOpen && (
+                  <div
+                    className="absolute right-0 mt-2 w-40 bg-slate-900/95 backdrop-blur-xl border border-emerald-500/20 rounded-lg shadow-xl overflow-hidden z-[110]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {languages.map((lang) => (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        className={`w-full px-4 py-2.5 text-left text-sm transition-colors duration-200 flex items-center justify-between ${
+                          selectedLanguage === lang.code
+                            ? "bg-emerald-500/20 text-emerald-200"
+                            : "text-gray-300 hover:bg-emerald-500/10 hover:text-emerald-200"
+                        }`}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleLanguageChange(lang.code);
+                        }}
+                      >
+                        <span className="font-medium">{lang.nativeLabel}</span>
+                        <span className="text-xs text-gray-500">
+                          {lang.code}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
             </div>
 
             {/* Mobile Menu Button */}
@@ -185,7 +271,7 @@ export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
               }}
             >
               <Sparkles className="w-4 h-4 mr-3" />
-              <span className="text-sm font-medium">Galeri Video</span>
+              <span className="text-sm font-medium">{t.videoGallery}</span>
             </Button>
 
             {/* AI Consultant - Mobile (PROMINENT) */}
@@ -201,7 +287,7 @@ export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
                 }}
               >
                 <MessageCircle className="w-5 h-5 mr-3" />
-                <span className="text-sm">Video Making Consultant</span>
+                <span className="text-sm">{t.consultant}</span>
               </Button>
             </div>
 
@@ -216,8 +302,36 @@ export function Navbar({ currentStep = 1, totalSteps = 4 }: NavbarProps) {
               }}
             >
               <History className="w-4 h-4 mr-3" />
-              <span className="text-sm font-medium">Riwayat Video</span>
+              <span className="text-sm font-medium">{t.videoHistory}</span>
             </Button>
+
+            {/* Language Switcher - Mobile */}
+            <div className="pt-2 border-t border-white/10">
+              <div className="text-xs text-gray-400 mb-2 px-2 flex items-center">
+                <Globe className="w-3 h-3 mr-1" />
+                {t.language}
+              </div>
+              <div className="grid grid-cols-4 gap-2">
+                {languages.map((lang) => (
+                  <button
+                    key={lang.code}
+                    type="button"
+                    className={`px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 ${
+                      selectedLanguage === lang.code
+                        ? "bg-gradient-to-r from-emerald-500/30 to-teal-500/30 border-2 border-emerald-400/50 text-emerald-200"
+                        : "bg-gradient-to-r from-emerald-500/10 to-teal-500/10 border border-emerald-500/20 text-gray-400 hover:text-emerald-300 hover:border-emerald-500/40"
+                    }`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleLanguageChange(lang.code);
+                    }}
+                  >
+                    <div className="text-xs">{lang.nativeLabel}</div>
+                    <div className="text-[10px] opacity-70">{lang.code}</div>
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         </div>
       )}

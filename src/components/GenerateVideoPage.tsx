@@ -18,6 +18,171 @@ import {
 
 const BASE_URL = "https://api.instantvideoapp.com";
 
+// Translations for GenerateVideoPage
+const translations = {
+  ID: {
+    backToHome: "Kembali ke Beranda",
+    aiVideoGeneration: "AI Video Generation",
+    consultant: "Konsultan AI",
+    processing: "Video Anda sedang diproses dengan teknologi AI canggih",
+    totalScenes: "Scene Total",
+    completedScenes: "Scene Selesai",
+    overallProgress: "Overall Progress",
+    from: "dari",
+    scenesCompleted: "scene selesai",
+    refresh: "Refresh",
+    progress: "Progress",
+    sceneList: "Daftar Scene",
+    processing2: "Processing...",
+    waiting: "Waiting...",
+    failed: "Failed",
+    finalVideoMerge: "Final Video Merge",
+    mergingAllScenes: "Menggabungkan semua scene menjadi satu video utuh",
+    mergeProgress: "Merge Progress",
+    playFinalVideo: "Play Final Video",
+    download: "Download",
+    videoReady: "✨ Video Final Siap!",
+    allScenesMerged:
+      "Semua scene telah berhasil digabungkan menjadi satu video HD berkualitas tinggi.",
+    createNewVideo: "Buat Video Baru",
+    viewHistory: "Lihat Riwayat Video",
+    mergingScenes: "Sedang menggabungkan scene...",
+    waitingAll: "Menunggu semua scene selesai...",
+    takesTime:
+      "Proses ini membutuhkan waktu beberapa menit. Mohon tunggu sebentar.",
+    dontWantWait:
+      "💡 Tidak ingin menunggu? Anda dapat melihat hasil video final di halaman riwayat setelah proses selesai.",
+    processingVideo: "Memproses Video Anda",
+    loadingStatus: "Memuat Status Generate",
+    aiPreparing:
+      "AI sedang menyiapkan video Anda. Proses ini membutuhkan waktu beberapa saat...",
+    fetchingInfo: "Mengambil informasi status generate video...",
+    systemProcessing: "💡 Sistem sedang memproses permintaan Anda",
+    autoUpdate: "Halaman akan otomatis diperbarui saat proses selesai",
+    failedToLoad: "Gagal Memuat Data",
+    tryAgain: "Coba Lagi",
+  },
+  EN: {
+    backToHome: "Back to Home",
+    aiVideoGeneration: "AI Video Generation",
+    consultant: "AI Consultant",
+    processing: "Your video is being processed with advanced AI technology",
+    totalScenes: "Total Scenes",
+    completedScenes: "Completed Scenes",
+    overallProgress: "Overall Progress",
+    from: "of",
+    scenesCompleted: "scenes completed",
+    refresh: "Refresh",
+    progress: "Progress",
+    sceneList: "Scene List",
+    processing2: "Processing...",
+    waiting: "Waiting...",
+    failed: "Failed",
+    finalVideoMerge: "Final Video Merge",
+    mergingAllScenes: "Merging all scenes into one complete video",
+    mergeProgress: "Merge Progress",
+    playFinalVideo: "Play Final Video",
+    download: "Download",
+    videoReady: "✨ Final Video Ready!",
+    allScenesMerged:
+      "All scenes have been successfully merged into one high-quality HD video.",
+    createNewVideo: "Create New Video",
+    viewHistory: "View Video History",
+    mergingScenes: "Merging scenes...",
+    waitingAll: "Waiting for all scenes to complete...",
+    takesTime: "This process takes a few minutes. Please wait.",
+    dontWantWait:
+      "💡 Don't want to wait? You can view the final video result in the history page after the process is complete.",
+    processingVideo: "Processing Your Video",
+    loadingStatus: "Loading Generate Status",
+    aiPreparing:
+      "AI is preparing your video. This process takes a few moments...",
+    fetchingInfo: "Fetching video generation status information...",
+    systemProcessing: "💡 System is processing your request",
+    autoUpdate: "Page will automatically update when process is complete",
+    failedToLoad: "Failed to Load Data",
+    tryAgain: "Try Again",
+  },
+  ZH: {
+    backToHome: "返回主页",
+    aiVideoGeneration: "AI 视频生成",
+    consultant: "AI 顾问",
+    processing: "您的视频正在使用先进的 AI 技术进行处理",
+    totalScenes: "总场景",
+    completedScenes: "已完成场景",
+    overallProgress: "总体进度",
+    from: "的",
+    scenesCompleted: "个场景已完成",
+    refresh: "刷新",
+    progress: "进度",
+    sceneList: "场景列表",
+    processing2: "处理中...",
+    waiting: "等待中...",
+    failed: "失败",
+    finalVideoMerge: "最终视频合并",
+    mergingAllScenes: "将所有场景合并成一个完整视频",
+    mergeProgress: "合并进度",
+    playFinalVideo: "播放最终视频",
+    download: "下载",
+    videoReady: "✨ 最终视频已准备好！",
+    allScenesMerged: "所有场景已成功合并成一个高质量 HD 视频。",
+    createNewVideo: "创建新视频",
+    viewHistory: "查看视频历史",
+    mergingScenes: "正在合并场景...",
+    waitingAll: "等待所有场景完成...",
+    takesTime: "此过程需要几分钟。请稍候。",
+    dontWantWait: "💡 不想等待？您可以在流程完成后在历史页面查看最终视频结果。",
+    processingVideo: "正在处理您的视频",
+    loadingStatus: "正在加载生成状态",
+    aiPreparing: "AI 正在准备您的视频。此过程需要一些时间...",
+    fetchingInfo: "正在获取视频生成状态信息...",
+    systemProcessing: "💡 系统正在处理您的请求",
+    autoUpdate: "流程完成后页面将自动更新",
+    failedToLoad: "无法加载数据",
+    tryAgain: "重试",
+  },
+  AR: {
+    backToHome: "العودة إلى الصفحة الرئيسية",
+    aiVideoGeneration: "إنشاء فيديو AI",
+    consultant: "مستشار AI",
+    processing: "يتم معالجة الفيديو الخاص بك باستخدام تقنية AI المتقدمة",
+    totalScenes: "إجمالي المشاهد",
+    completedScenes: "المشاهد المكتملة",
+    overallProgress: "التقدم الإجمالي",
+    from: "من",
+    scenesCompleted: "مشهد مكتمل",
+    refresh: "تحديث",
+    progress: "التقدم",
+    sceneList: "قائمة المشاهد",
+    processing2: "جارٍ المعالجة...",
+    waiting: "في الانتظار...",
+    failed: "فشل",
+    finalVideoMerge: "دمج الفيديو النهائي",
+    mergingAllScenes: "دمج جميع المشاهد في فيديو واحد كامل",
+    mergeProgress: "تقدم الدمج",
+    playFinalVideo: "تشغيل الفيديو النهائي",
+    download: "تنزيل",
+    videoReady: "✨ الفيديو النهائي جاهز!",
+    allScenesMerged: "تم دمج جميع المشاهد بنجاح في فيديو HD واحد عالي الجودة.",
+    createNewVideo: "إنشاء فيديو جديد",
+    viewHistory: "عرض سجل الفيديو",
+    mergingScenes: "جارٍ دمج المشاهد...",
+    waitingAll: "في انتظار اكتمال جميع المشاهد...",
+    takesTime: "تستغرق هذه العملية بضع دقائق. يرجى الانتظار.",
+    dontWantWait:
+      "💡 لا تريد الانتظار؟ يمكنك عرض نتيجة الفيديو النهائية في صفحة السجل بعد اكتمال العملية.",
+    processingVideo: "جارٍ معالجة الفيديو الخاص بك",
+    loadingStatus: "جارٍ تحميل حالة الإنشاء",
+    aiPreparing:
+      "AI يقوم بإعداد الفيديو الخاص بك. تستغرق هذه العملية بعض الوقت...",
+    fetchingInfo: "جارٍ جلب معلومات حالة إنشاء الفيديو...",
+    systemProcessing: "💡 النظام يعالج طلبك",
+    autoUpdate: "ستتم تحديث الصفحة تلقائيًا عند اكتمال العملية",
+    failedToLoad: "فشل تحميل البيانات",
+    tryAgain: "حاول مرة أخرى",
+  },
+};
+
 interface ApiSceneData {
   id: number;
   user_video_id: string;
@@ -75,6 +240,45 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [isWaitingForGeneration, setIsWaitingForGeneration] = useState(false);
+
+  // Language state
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+
+  // Load language from localStorage and listen for changes
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
+      setSelectedLanguage(savedLanguage);
+    }
+
+    // Check localStorage periodically (for same-window changes)
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+
+    // Listen for language changes via custom event
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (
+        newLanguage &&
+        translations[newLanguage as keyof typeof translations]
+      ) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
 
   // Fetch generate status and set up polling
   useEffect(() => {
@@ -301,6 +505,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     }
   };
 
+  // Get current translations
+  const t = translations[selectedLanguage as keyof typeof translations];
+
   if (loading || isWaitingForGeneration) {
     return (
       <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center">
@@ -316,24 +523,16 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                 </div>
 
                 <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                  {isWaitingForGeneration
-                    ? "Memproses Video Anda"
-                    : "Memuat Status Generate"}
+                  {isWaitingForGeneration ? t.processingVideo : t.loadingStatus}
                 </h3>
                 <p className="text-gray-400 text-lg mb-6">
-                  {isWaitingForGeneration
-                    ? "AI sedang menyiapkan video Anda. Proses ini membutuhkan waktu beberapa saat..."
-                    : "Mengambil informasi status generate video..."}
+                  {isWaitingForGeneration ? t.aiPreparing : t.fetchingInfo}
                 </p>
 
                 <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
                   <div className="space-y-3 text-sm text-center">
-                    <p className="text-blue-300">
-                      💡 Sistem sedang memproses permintaan Anda
-                    </p>
-                    <p className="text-gray-400">
-                      Halaman akan otomatis diperbarui saat proses selesai
-                    </p>
+                    <p className="text-blue-300">{t.systemProcessing}</p>
+                    <p className="text-gray-400">{t.autoUpdate}</p>
                   </div>
                 </div>
               </div>
@@ -358,7 +557,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
             <AlertCircle className="relative w-16 h-16 text-red-400 mx-auto" />
           </div>
           <h3 className="text-2xl font-bold text-white mb-3">
-            Gagal Memuat Data
+            {t.failedToLoad}
           </h3>
           <p className="text-gray-400 mb-6">{error}</p>
           <Button
@@ -366,7 +565,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
             className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
           >
             <RefreshCw className="w-4 h-4 mr-2" />
-            Coba Lagi
+            {t.tryAgain}
           </Button>
         </div>
       </div>
@@ -390,7 +589,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
           onClick={() => (window.location.href = "/")}
         >
           <ArrowLeft className="w-4 h-4 mr-2" />
-          Kembali ke Beranda
+          {t.backToHome}
         </Button>
 
         {/* Title Section */}
@@ -401,28 +600,26 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
             <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-6">
               <Sparkles className="w-4 h-4 text-purple-400" />
               <span className="text-sm font-medium text-purple-300">
-                AI Video Generation
+                {t.aiVideoGeneration}
               </span>
             </div>
 
             <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
               <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                Konsultan AI #{generateData.uuid_konsultan.slice(0, 8)}
+                {t.consultant} #{generateData.uuid_konsultan.slice(0, 8)}
               </span>
             </h1>
 
-            <p className="text-gray-400 text-lg mb-4">
-              Video Anda sedang diproses dengan teknologi AI canggih
-            </p>
+            <p className="text-gray-400 text-lg mb-4">{t.processing}</p>
 
             <div className="flex items-center justify-center space-x-4">
               <Badge className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-purple-200 px-4 py-2">
                 <Film className="w-4 h-4 mr-2" />
-                {generateData.total_scenes} Scene Total
+                {generateData.total_scenes} {t.totalScenes}
               </Badge>
               <Badge className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 text-green-200 px-4 py-2">
                 <CheckCircle className="w-4 h-4 mr-2" />
-                {generateData.completed_scenes} Scene Selesai
+                {generateData.completed_scenes} {t.completedScenes}
               </Badge>
             </div>
           </div>
@@ -445,11 +642,11 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                 </div>
                 <div>
                   <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                    Overall Progress
+                    {t.overallProgress}
                   </h3>
                   <p className="text-sm text-gray-400">
-                    {generateData.completed_scenes} dari{" "}
-                    {generateData.total_scenes} scene selesai
+                    {generateData.completed_scenes} {t.from}{" "}
+                    {generateData.total_scenes} {t.scenesCompleted}
                   </p>
                 </div>
               </div>
@@ -464,7 +661,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                 <RefreshCw
                   className={`w-4 h-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
                 />
-                Refresh
+                {t.refresh}
               </Button>
             </div>
 
@@ -478,7 +675,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
             </div>
 
             <div className="flex justify-between mt-2">
-              <span className="text-sm text-gray-400">Progress</span>
+              <span className="text-sm text-gray-400">{t.progress}</span>
               <span className="text-sm font-bold text-cyan-300">
                 {overallProgress}%
               </span>
@@ -491,7 +688,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       <div className="mb-12">
         <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
           <Film className="w-6 h-6 mr-3 text-purple-400" />
-          Daftar Scene
+          {t.sceneList}
         </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

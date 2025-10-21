@@ -24,6 +24,198 @@ import { videoStoreApi } from "@/lib/api";
 
 const BASE_URL = "https://api.instantvideoapp.com";
 
+// Translations for PaymentPage
+const translations = {
+  ID: {
+    back: "Kembali",
+    paymentPage: "Halaman Pembayaran",
+    aiVideoPayment: "Pembayaran Video AI",
+    choosePayment:
+      "Pilih metode pembayaran untuk melanjutkan proses pembuatan video AI Anda",
+    completeInfo:
+      "Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan video AI Anda",
+    fromConsultant: "Video dari Konsultan AI",
+    scene: "Scene",
+    verifiedAccount: "Akun Terverifikasi",
+    videoAI: "Video AI",
+    fixedPrice: "Harga tetap per video",
+    highQualityHD: "Video HD berkualitas tinggi",
+    hdQualityVideo: "Video HD Berkualitas Tinggi",
+    hdResolution: "Resolusi 720p atau 1080p sesuai pilihan",
+    customCharacterBg: "Karakter & Background Custom",
+    customChoice: "Pilihan karakter AI dan background sesuai keinginan",
+    directDownload: "Download Langsung",
+    downloadAfter: "Unduh video setelah proses selesai",
+    usageDetails: "Rincian Penggunaan:",
+    videoCount: "Jumlah Video:",
+    productionCost: "Biaya produksi:",
+    minTransaction: "Minimal Transaksi:",
+    remaining: "Sisa",
+    convertedToCoins: "dikonversi menjadi koin untuk video berikutnya",
+    paymentInfo: "Informasi Pembayaran",
+    personalData: "Data Personal",
+    email: "Email",
+    phoneNumber: "Nomor Telepon",
+    verify: "Verifikasi",
+    paymentMethod: "Metode Pembayaran",
+    useCoins: "Gunakan Koin",
+    verifyFirst: "Verifikasi OTP terlebih dahulu",
+    verifyEmailFirst: "Verifikasi email terlebih dahulu",
+    balance: "Saldo:",
+    payWithGopay: "Pembayaran dengan Gopay",
+    payWithQRIS: "Pembayaran dengan QRIS",
+    payWithCard: "Pembayaran dengan Kartu Kredit dan Internasional",
+    optimizingPrompt: "Optimasi Prompt Video",
+    aiOptimizing:
+      "AI sedang mengoptimalkan prompt video Anda untuk hasil terbaik",
+    estimatedTime: "Estimasi Waktu",
+    processEnsures:
+      "💡 Proses ini memastikan video Anda memiliki kualitas optimal",
+    processing: "Memproses...",
+    generateVideo: "Generate Video",
+    payNow: "Bayar Sekarang",
+  },
+  EN: {
+    back: "Back",
+    paymentPage: "Payment Page",
+    aiVideoPayment: "AI Video Payment",
+    choosePayment:
+      "Choose payment method to continue your AI video creation process",
+    completeInfo:
+      "Complete payment information to continue your AI video creation process",
+    fromConsultant: "Video from AI Consultant",
+    scene: "Scene",
+    verifiedAccount: "Verified Account",
+    videoAI: "AI Video",
+    fixedPrice: "Fixed price per video",
+    highQualityHD: "High quality HD video",
+    hdQualityVideo: "High Quality HD Video",
+    hdResolution: "720p or 1080p resolution as per choice",
+    customCharacterBg: "Custom Character & Background",
+    customChoice: "AI character and background choices as desired",
+    directDownload: "Direct Download",
+    downloadAfter: "Download video after process completes",
+    usageDetails: "Usage Details:",
+    videoCount: "Video Count:",
+    productionCost: "Production cost:",
+    minTransaction: "Minimum Transaction:",
+    remaining: "Remaining",
+    convertedToCoins: "converted to coins for next video",
+    paymentInfo: "Payment Information",
+    personalData: "Personal Data",
+    email: "Email",
+    phoneNumber: "Phone Number",
+    verify: "Verify",
+    paymentMethod: "Payment Method",
+    useCoins: "Use Coins",
+    verifyFirst: "Verify OTP first",
+    verifyEmailFirst: "Verify email first",
+    balance: "Balance:",
+    payWithGopay: "Payment with Gopay",
+    payWithQRIS: "Payment with QRIS",
+    payWithCard: "Payment with Credit Card and International",
+    optimizingPrompt: "Video Prompt Optimization",
+    aiOptimizing: "AI is optimizing your video prompt for best results",
+    estimatedTime: "Estimated Time",
+    processEnsures: "💡 This process ensures your video has optimal quality",
+    processing: "Processing...",
+    generateVideo: "Generate Video",
+    payNow: "Pay Now",
+  },
+  ZH: {
+    back: "返回",
+    paymentPage: "付款页面",
+    aiVideoPayment: "AI 视频付款",
+    choosePayment: "选择付款方式继续您的 AI 视频制作过程",
+    completeInfo: "完成付款信息以继续您的 AI 视频制作过程",
+    fromConsultant: "来自 AI 顾问的视频",
+    scene: "场景",
+    verifiedAccount: "已验证账户",
+    videoAI: "AI 视频",
+    fixedPrice: "每个视频固定价格",
+    highQualityHD: "高质量 HD 视频",
+    hdQualityVideo: "高质量 HD 视频",
+    hdResolution: "720p 或 1080p 分辨率可选",
+    customCharacterBg: "自定义角色和背景",
+    customChoice: "根据需要选择 AI 角色和背景",
+    directDownload: "直接下载",
+    downloadAfter: "过程完成后下载视频",
+    usageDetails: "使用详情：",
+    videoCount: "视频数量：",
+    productionCost: "制作费用：",
+    minTransaction: "最低交易：",
+    remaining: "剩余",
+    convertedToCoins: "转换为硬币用于下一个视频",
+    paymentInfo: "付款信息",
+    personalData: "个人数据",
+    email: "电子邮件",
+    phoneNumber: "电话号码",
+    verify: "验证",
+    paymentMethod: "付款方式",
+    useCoins: "使用硬币",
+    verifyFirst: "请先验证 OTP",
+    verifyEmailFirst: "请先验证电子邮件",
+    balance: "余额：",
+    payWithGopay: "使用 Gopay 付款",
+    payWithQRIS: "使用 QRIS 付款",
+    payWithCard: "使用信用卡和国际付款",
+    optimizingPrompt: "视频提示优化",
+    aiOptimizing: "AI 正在优化您的视频提示以获得最佳效果",
+    estimatedTime: "预计时间",
+    processEnsures: "💡 此过程确保您的视频具有最佳质量",
+    processing: "处理中...",
+    generateVideo: "生成视频",
+    payNow: "立即付款",
+  },
+  AR: {
+    back: "رجوع",
+    paymentPage: "صفحة الدفع",
+    aiVideoPayment: "دفع فيديو AI",
+    choosePayment: "اختر طريقة الدفع لمتابعة عملية إنشاء فيديو AI الخاص بك",
+    completeInfo: "أكمل معلومات الدفع لمتابعة عملية إنشاء فيديو AI الخاص بك",
+    fromConsultant: "فيديو من مستشار AI",
+    scene: "مشهد",
+    verifiedAccount: "حساب موثق",
+    videoAI: "فيديو AI",
+    fixedPrice: "سعر ثابت لكل فيديو",
+    highQualityHD: "فيديو عالي الجودة HD",
+    hdQualityVideo: "فيديو عالي الجودة HD",
+    hdResolution: "دقة 720p أو 1080p حسب الاختيار",
+    customCharacterBg: "شخصية وخلفية مخصصة",
+    customChoice: "خيارات شخصية AI والخلفية حسب الرغبة",
+    directDownload: "تنزيل مباشر",
+    downloadAfter: "تنزيل الفيديو بعد اكتمال العملية",
+    usageDetails: "تفاصيل الاستخدام:",
+    videoCount: "عدد الفيديو:",
+    productionCost: "تكلفة الإنتاج:",
+    minTransaction: "الحد الأدنى للمعاملة:",
+    remaining: "المتبقي",
+    convertedToCoins: "تحويل إلى عملات معدنية للفيديو التالي",
+    paymentInfo: "معلومات الدفع",
+    personalData: "البيانات الشخصية",
+    email: "البريد الإلكتروني",
+    phoneNumber: "رقم الهاتف",
+    verify: "تحقق",
+    paymentMethod: "طريقة الدفع",
+    useCoins: "استخدم العملات",
+    verifyFirst: "تحقق من OTP أولاً",
+    verifyEmailFirst: "تحقق من البريد الإلكتروني أولاً",
+    balance: "الرصيد:",
+    payWithGopay: "الدفع بواسطة Gopay",
+    payWithQRIS: "الدفع بواسطة QRIS",
+    payWithCard: "الدفع بالبطاقة الائتمانية والدولية",
+    optimizingPrompt: "تحسين مطالبة الفيديو",
+    aiOptimizing:
+      "يقوم AI بتحسين مطالبة الفيديو الخاصة بك للحصول على أفضل النتائج",
+    estimatedTime: "الوقت المقدر",
+    processEnsures:
+      "💡 تضمن هذه العملية أن يكون الفيديو الخاص بك ذا جودة مثالية",
+    processing: "جارٍ المعالجة...",
+    generateVideo: "إنشاء فيديو",
+    payNow: "ادفع الآن",
+  },
+};
+
 export function PaymentPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -46,6 +238,45 @@ export function PaymentPage() {
   const [existingApiKey, setExistingApiKey] = useState<string | null>(null);
   const [isOptimizingPrompt, setIsOptimizingPrompt] = useState(false);
   const [optimizationProgress, setOptimizationProgress] = useState<any>(null);
+
+  // Language state
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+
+  // Load language from localStorage and listen for changes
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
+      setSelectedLanguage(savedLanguage);
+    }
+
+    // Check localStorage periodically (for same-window changes)
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+
+    // Listen for language changes via custom event
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (
+        newLanguage &&
+        translations[newLanguage as keyof typeof translations]
+      ) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
 
   // Load existing data from localStorage on component mount
   useEffect(() => {
@@ -483,15 +714,18 @@ export function PaymentPage() {
     return new Intl.NumberFormat("id-ID").format(amount);
   };
 
+  // Get current translations
+  const t = translations[selectedLanguage as keyof typeof translations];
+
   // Removed pricingPackages - using dynamic pricing
 
   const paymentMethods = [
     {
       id: "coins",
-      name: "Gunakan Koin",
+      name: t.useCoins,
       description: isOTPVerified
-        ? `Saldo: ${userQuota?.toLocaleString()} Koin`
-        : "Verifikasi OTP terlebih dahulu",
+        ? `${t.balance} ${userQuota?.toLocaleString()} Koin`
+        : t.verifyFirst,
       icon: <Coins className="w-6 h-6" />,
       balance: userQuota ? `${userQuota.toLocaleString()} Koin` : "0 Koin",
       disabled:
@@ -500,27 +734,21 @@ export function PaymentPage() {
     {
       id: "gopay",
       name: "Gopay",
-      description: isOTPVerified
-        ? "Pembayaran dengan Gopay"
-        : "Verifikasi email terlebih dahulu",
+      description: isOTPVerified ? t.payWithGopay : t.verifyEmailFirst,
       icon: <Wallet className="w-6 h-6" />,
       disabled: !isOTPVerified,
     },
     {
       id: "qris",
       name: "QRIS",
-      description: isOTPVerified
-        ? "Pembayaran dengan QRIS"
-        : "Verifikasi email terlebih dahulu",
+      description: isOTPVerified ? t.payWithQRIS : t.verifyEmailFirst,
       icon: <QrCode className="w-6 h-6" />,
       disabled: !isOTPVerified,
     },
     {
       id: "credit-card",
-      name: "Kartu Kredit dan Internasional",
-      description: isOTPVerified
-        ? "Pembayaran dengan Kartu Kredit dan Internasional"
-        : "Verifikasi email terlebih dahulu",
+      name: t.payWithCard,
+      description: isOTPVerified ? t.payWithCard : t.verifyEmailFirst,
       icon: <CreditCard className="w-6 h-6" />,
       disabled: !isOTPVerified,
     },
@@ -543,12 +771,9 @@ export function PaymentPage() {
                   </div>
 
                   <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                    Optimasi Prompt Video
+                    {t.optimizingPrompt}
                   </h3>
-                  <p className="text-gray-400 text-lg mb-6">
-                    AI sedang mengoptimalkan prompt video Anda untuk hasil
-                    terbaik
-                  </p>
+                  <p className="text-gray-400 text-lg mb-6">{t.aiOptimizing}</p>
 
                   {optimizationProgress && (
                     <div className="space-y-4">
@@ -558,16 +783,13 @@ export function PaymentPage() {
                             {optimizationProgress.minutes}
                           </div>
                           <div className="text-sm text-gray-400">
-                            Estimasi Waktu
+                            {t.estimatedTime}
                           </div>
                         </div>
                       </div>
 
                       <div className="text-center text-sm text-gray-500">
-                        <p>
-                          💡 Proses ini memastikan video Anda memiliki kualitas
-                          optimal
-                        </p>
+                        <p>{t.processEnsures}</p>
                       </div>
                     </div>
                   )}
@@ -606,7 +828,7 @@ export function PaymentPage() {
             onClick={() => (window.location.href = "/")}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali
+            {t.back}
           </Button>
 
           <div className="text-center mb-12 relative">
@@ -618,30 +840,28 @@ export function PaymentPage() {
               <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-6">
                 <CreditCard className="w-4 h-4 text-purple-400" />
                 <span className="text-sm font-medium text-purple-300">
-                  Halaman Pembayaran
+                  {t.paymentPage}
                 </span>
               </div>
 
               {/* Main Title with Gradient */}
               <h1 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
                 <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                  Pembayaran Video AI
+                  {t.aiVideoPayment}
                 </span>
               </h1>
 
               {/* Description */}
               <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed mb-4">
-                {hasExistingApiKey
-                  ? "Pilih metode pembayaran untuk melanjutkan proses pembuatan video AI Anda"
-                  : "Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan video AI Anda"}
+                {hasExistingApiKey ? t.choosePayment : t.completeInfo}
               </p>
 
               {isKonsultanMode && (
                 <div className="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl backdrop-blur-sm">
                   <Sparkles className="w-5 h-5 text-purple-400 mr-3" />
                   <span className="text-base font-semibold text-purple-200">
-                    Video dari Konsultan AI ({konsultanData?.list?.length || 0}{" "}
-                    Scene)
+                    {t.fromConsultant} ({konsultanData?.list?.length || 0}{" "}
+                    {t.scene})
                   </span>
                 </div>
               )}
@@ -675,13 +895,13 @@ export function PaymentPage() {
                     <Video className="w-8 h-8 text-white" />
                   </div>
                   <div>
-                    <h2 className="text-3xl font-bold">Video AI</h2>
+                    <h2 className="text-3xl font-bold">{t.videoAI}</h2>
                     <p className="text-white/90 text-lg">
                       {isKonsultanMode
                         ? `${videoCount} Video x Rp ${formatCurrency(
                             productionCost / videoCount
                           )}`
-                        : "Harga tetap per video"}
+                        : t.fixedPrice}
                     </p>
                   </div>
                 </div>
@@ -690,8 +910,8 @@ export function PaymentPage() {
                 </div>
                 <p className="relative z-10 text-white/90 text-lg w-full text-center">
                   {isKonsultanMode
-                    ? `${videoCount} Video HD berkualitas tinggi`
-                    : "1 Video HD berkualitas tinggi"}
+                    ? `${videoCount} ${t.highQualityHD}`
+                    : `1 ${t.highQualityHD}`}
                 </p>
               </div>
 
@@ -704,10 +924,10 @@ export function PaymentPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-white">
-                        Video HD Berkualitas Tinggi
+                        {t.hdQualityVideo}
                       </p>
                       <p className="text-sm text-gray-400 mt-1">
-                        Resolusi 720p atau 1080p sesuai pilihan
+                        {t.hdResolution}
                       </p>
                     </div>
                   </div>
@@ -717,10 +937,10 @@ export function PaymentPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-white">
-                        Karakter & Background Custom
+                        {t.customCharacterBg}
                       </p>
                       <p className="text-sm text-gray-400 mt-1">
-                        Pilihan karakter AI dan background sesuai keinginan
+                        {t.customChoice}
                       </p>
                     </div>
                   </div>
@@ -730,10 +950,10 @@ export function PaymentPage() {
                     </div>
                     <div>
                       <p className="font-semibold text-white">
-                        Download Langsung
+                        {t.directDownload}
                       </p>
                       <p className="text-sm text-gray-400 mt-1">
-                        Unduh video setelah proses selesai
+                        {t.downloadAfter}
                       </p>
                     </div>
                   </div>
@@ -800,7 +1020,7 @@ export function PaymentPage() {
                     <CreditCard className="w-5 h-5 text-purple-400" />
                   </div>
                   <span className="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                    Informasi Pembayaran
+                    {t.paymentInfo}
                   </span>
                 </h3>
               </div>
@@ -814,12 +1034,12 @@ export function PaymentPage() {
                         <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-2 border border-purple-500/30">
                           <User className="w-4 h-4 text-purple-400" />
                         </div>
-                        Data Personal
+                        {t.personalData}
                       </h4>
                       <div className="space-y-4">
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Email <span className="text-red-400">*</span>
+                            {t.email} <span className="text-red-400">*</span>
                           </label>
                           <Input
                             type="email"
@@ -834,7 +1054,7 @@ export function PaymentPage() {
                         </div>
                         <div>
                           <label className="block text-sm font-medium text-gray-300 mb-2">
-                            Nomor Telepon{" "}
+                            {t.phoneNumber}{" "}
                             <span className="text-red-400">*</span>
                           </label>
                           <div className="flex gap-2">
@@ -854,7 +1074,7 @@ export function PaymentPage() {
                               onClick={handleVerificationClick}
                               className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 border-0"
                             >
-                              Verifikasi
+                              {t.verify}
                             </Button>
                           </div>
                         </div>
@@ -869,7 +1089,7 @@ export function PaymentPage() {
                     <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-2 border border-purple-500/30">
                       <Wallet className="w-4 h-4 text-purple-400" />
                     </div>
-                    Metode Pembayaran
+                    {t.paymentMethod}
                   </h4>
                   <div className="grid grid-cols-2 gap-3">
                     {paymentMethods.map((method) => (
@@ -1179,7 +1399,7 @@ export function PaymentPage() {
               onClick={() => (window.location.href = "/")}
             >
               <ArrowLeft className="w-4 h-4 mr-2" />
-              <span>Kembali</span>
+              <span>{t.back}</span>
             </Button>
           </div>
 
@@ -1231,17 +1451,17 @@ export function PaymentPage() {
               {isProcessing ? (
                 <span className="flex items-center space-x-2">
                   <div className="w-4 h-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                  <span>Memproses...</span>
+                  <span>{t.processing}</span>
                 </span>
               ) : selectedPaymentMethod === "coins" ? (
                 <span className="flex items-center space-x-2">
                   <Play className="w-4 h-4" />
-                  <span>Generate Video</span>
+                  <span>{t.generateVideo}</span>
                 </span>
               ) : (
                 <span className="flex items-center space-x-2">
                   <CreditCard className="w-4 h-4" />
-                  <span>Bayar Sekarang</span>
+                  <span>{t.payNow}</span>
                 </span>
               )}
             </Button>

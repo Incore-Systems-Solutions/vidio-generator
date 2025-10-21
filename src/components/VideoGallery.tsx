@@ -3,6 +3,74 @@ import { Button } from "@/components/ui/button";
 import { Loader2, Sparkles, Video, X, Calendar, Play } from "lucide-react";
 import { publicVideoGalleryApi, type PublicVideoItem } from "@/lib/api";
 
+// Translations for VideoGallery
+const translations = {
+  ID: {
+    badge: "Video yang Dibuat AI",
+    title: "Galeri Video",
+    description: "Koleksi video AI terbaik yang dibuat oleh komunitas kami.",
+    loadingTitle: "Memuat video...",
+    loadingDesc: "Mengambil galeri AI terbaru",
+    errorMessage: "Gagal memuat video. Silakan coba lagi nanti.",
+    retryButton: "Coba Lagi",
+    loadMoreButton: "Muat Lebih Banyak Video",
+    loadingButton: "Memuat...",
+    endMessage: "Semua video telah ditampilkan",
+    modalTitle: "Pemutar Video",
+    modalCreatedOn: "Dibuat pada",
+    videoNotAvailable: "Video Tidak Tersedia",
+    videoUnavailableDesc: "Video ini saat ini tidak tersedia",
+  },
+  EN: {
+    badge: "AI Generated Videos",
+    title: "Video Gallery",
+    description: "The best AI video collection created by our community.",
+    loadingTitle: "Loading videos...",
+    loadingDesc: "Fetching latest AI gallery",
+    errorMessage: "Failed to load videos. Please try again later.",
+    retryButton: "Try Again",
+    loadMoreButton: "Load More Videos",
+    loadingButton: "Loading...",
+    endMessage: "All videos have been displayed",
+    modalTitle: "Video Player",
+    modalCreatedOn: "Created on",
+    videoNotAvailable: "Video Not Available",
+    videoUnavailableDesc: "This video is currently unavailable",
+  },
+  ZH: {
+    badge: "AI 生成的视频",
+    title: "视频库",
+    description: "由我们社区创建的最佳 AI 视频集合。",
+    loadingTitle: "加载视频中...",
+    loadingDesc: "获取最新 AI 画廊",
+    errorMessage: "加载视频失败。请稍后再试。",
+    retryButton: "重试",
+    loadMoreButton: "加载更多视频",
+    loadingButton: "加载中...",
+    endMessage: "所有视频已显示",
+    modalTitle: "视频播放器",
+    modalCreatedOn: "创建于",
+    videoNotAvailable: "视频不可用",
+    videoUnavailableDesc: "此视频当前不可用",
+  },
+  AR: {
+    badge: "مقاطع فيديو منشأة بالذكاء الاصطناعي",
+    title: "معرض الفيديو",
+    description: "أفضل مجموعة فيديو AI تم إنشاؤها بواسطة مجتمعنا.",
+    loadingTitle: "جاري تحميل مقاطع الفيديو...",
+    loadingDesc: "جلب أحدث معرض AI",
+    errorMessage: "فشل تحميل مقاطع الفيديو. يرجى المحاولة مرة أخرى لاحقًا.",
+    retryButton: "حاول مرة أخرى",
+    loadMoreButton: "تحميل المزيد من مقاطع الفيديو",
+    loadingButton: "جاري التحميل...",
+    endMessage: "تم عرض جميع مقاطع الفيديو",
+    modalTitle: "مشغل الفيديو",
+    modalCreatedOn: "تم الإنشاء في",
+    videoNotAvailable: "الفيديو غير متوفر",
+    videoUnavailableDesc: "هذا الفيديو غير متوفر حاليًا",
+  },
+};
+
 export function VideoGallery() {
   const [selectedVideo, setSelectedVideo] = useState<PublicVideoItem | null>(
     null
@@ -13,6 +81,43 @@ export function VideoGallery() {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+
+  // Load language from localStorage and listen for changes
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
+      setSelectedLanguage(savedLanguage);
+    }
+
+    // Listen for language changes via custom event
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (
+        newLanguage &&
+        translations[newLanguage as keyof typeof translations]
+      ) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+
+    // Check localStorage periodically (for same-window changes)
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
 
   // Fetch videos from API
   useEffect(() => {
@@ -69,12 +174,23 @@ export function VideoGallery() {
 
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
-    return date.toLocaleDateString("id-ID", {
+    const locale =
+      selectedLanguage === "ID"
+        ? "id-ID"
+        : selectedLanguage === "ZH"
+        ? "zh-CN"
+        : selectedLanguage === "AR"
+        ? "ar-SA"
+        : "en-US";
+    return date.toLocaleDateString(locale, {
       day: "numeric",
       month: "long",
       year: "numeric",
     });
   };
+
+  // Get current translations
+  const t = translations[selectedLanguage as keyof typeof translations];
 
   return (
     <div className="w-full">
@@ -88,20 +204,20 @@ export function VideoGallery() {
           <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-6">
             <Sparkles className="w-4 h-4 text-purple-400" />
             <span className="text-sm font-medium text-purple-300">
-              AI Generated Videos
+              {t.badge}
             </span>
           </div>
 
           {/* Main Title with Gradient */}
           <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
             <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-              Galeri Video
+              {t.title}
             </span>
           </h2>
 
           {/* Description */}
           <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-            Koleksi video AI terbaik yang dibuat oleh komunitas kami.
+            {t.description}
           </p>
         </div>
       </div>
@@ -118,11 +234,9 @@ export function VideoGallery() {
               <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
               <div className="text-center">
                 <p className="text-gray-300 text-sm font-medium">
-                  Loading videos...
+                  {t.loadingTitle}
                 </p>
-                <p className="text-gray-500 text-xs mt-1">
-                  Mengambil galeri AI terbaru
-                </p>
+                <p className="text-gray-500 text-xs mt-1">{t.loadingDesc}</p>
               </div>
             </div>
           </div>
@@ -136,12 +250,12 @@ export function VideoGallery() {
             <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full flex items-center justify-center">
               <Video className="w-8 h-8 text-red-400" />
             </div>
-            <p className="text-gray-300 mb-6 text-sm">{error}</p>
+            <p className="text-gray-300 mb-6 text-sm">{t.errorMessage}</p>
             <Button
               onClick={handleRefresh}
               className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-purple-500/20"
             >
-              Coba Lagi
+              {t.retryButton}
             </Button>
           </div>
         </div>
@@ -226,12 +340,12 @@ export function VideoGallery() {
               {loadingMore ? (
                 <>
                   <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  Loading...
+                  {t.loadingButton}
                 </>
               ) : (
                 <>
                   <Sparkles className="w-5 h-5 mr-2" />
-                  Load More Videos
+                  {t.loadMoreButton}
                 </>
               )}
             </Button>
@@ -244,9 +358,7 @@ export function VideoGallery() {
         <div className="text-center mt-16">
           <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-6 py-3">
             <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse" />
-            <p className="text-gray-400 text-sm font-medium">
-              Semua video telah ditampilkan
-            </p>
+            <p className="text-gray-400 text-sm font-medium">{t.endMessage}</p>
           </div>
         </div>
       )}
@@ -257,6 +369,7 @@ export function VideoGallery() {
           video={selectedVideo}
           onClose={() => setSelectedVideo(null)}
           formatDate={formatDate}
+          translations={t}
         />
       )}
 
@@ -278,9 +391,20 @@ interface VideoModalProps {
   video: PublicVideoItem;
   onClose: () => void;
   formatDate: (dateString: string) => string;
+  translations: {
+    modalTitle: string;
+    modalCreatedOn: string;
+    videoNotAvailable: string;
+    videoUnavailableDesc: string;
+  };
 }
 
-function VideoModal({ video, onClose, formatDate }: VideoModalProps) {
+function VideoModal({
+  video,
+  onClose,
+  formatDate,
+  translations,
+}: VideoModalProps) {
   const displayVideo = video.final_url_merge_video;
 
   return (
@@ -302,7 +426,7 @@ function VideoModal({ video, onClose, formatDate }: VideoModalProps) {
             <div className="flex items-center space-x-3">
               <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse" />
               <h2 className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                Video Player
+                {translations.modalTitle}
               </h2>
             </div>
             <button
@@ -334,10 +458,10 @@ function VideoModal({ video, onClose, formatDate }: VideoModalProps) {
                 <div className="text-center">
                   <Video className="w-24 h-24 mx-auto mb-6 text-purple-500/30" />
                   <div className="text-2xl font-bold text-gray-300 mb-4">
-                    Video Not Available
+                    {translations.videoNotAvailable}
                   </div>
                   <p className="text-gray-500">
-                    This video is currently unavailable
+                    {translations.videoUnavailableDesc}
                   </p>
                 </div>
               </div>
@@ -349,7 +473,7 @@ function VideoModal({ video, onClose, formatDate }: VideoModalProps) {
             <div className="flex items-center justify-center space-x-2 text-gray-400">
               <Calendar className="w-4 h-4 text-purple-400" />
               <span className="text-sm font-medium">
-                Dibuat pada {formatDate(video.created_at)}
+                {translations.modalCreatedOn} {formatDate(video.created_at)}
               </span>
             </div>
           </div>

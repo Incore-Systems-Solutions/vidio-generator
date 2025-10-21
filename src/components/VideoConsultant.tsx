@@ -32,6 +32,147 @@ import {
   type SubSceneDetail,
 } from "@/lib/api";
 
+// Translations for VideoConsultant
+const translations = {
+  ID: {
+    back: "Kembali",
+    emailTitle: "Masuk untuk berbicara dengan AI Video Consultant Anda",
+    otpTitle: "Masukkan kode verifikasi untuk mengakses ruang konsultasi AI",
+    aiConsultant: "AI Video Consultant",
+    onlineReady: "Online & Ready",
+    clearChat: "Clear Chat",
+    logout: "Logout",
+    aiAccessPortal: "AI Access Portal",
+    enterEmail: "Masukkan email untuk mengakses sistem AI",
+    emailAddress: "Email Address",
+    emailPlaceholder: "your.email@example.com",
+    accessPortal: "Akses Portal AI",
+    sendingOTP: "Mengirim OTP...",
+    verificationCodeSent: "Kode verifikasi akan dikirim ke email Anda",
+    securityVerification: "Security Verification",
+    otpSentTo: "Kode OTP telah dikirim ke:",
+    enter6Digit: "Masukkan 6 Digit Kode Verifikasi",
+    resendIn: "Kirim ulang dalam",
+    verifying: "Memverifikasi...",
+    verifyEnter: "Verifikasi & Masuk",
+    backToEmail: "Kembali ke Email",
+    notReceived: "Tidak menerima kode?",
+    resend: "Kirim ulang",
+    initializingAI: "Menginisialisasi AI Consultant...",
+    aiThinking: "AI sedang berpikir...",
+    dataCollected:
+      "Data telah dikumpulkan! Siap untuk melanjutkan ke pembayaran.",
+    continuePayment: "Lanjutkan ke Pembayaran",
+    allBatchesDone: "Semua batch scene selesai! Total",
+    scenesCreated: "scene telah dibuat.",
+    pleaseWait: "Mohon menunggu, AI sedang memproses scene video...",
+    typePlaceholder: "Ketik pertanyaan Anda di sini...",
+    justNow: "Baru saja",
+  },
+  EN: {
+    back: "Back",
+    emailTitle: "Sign in to talk with your AI Video Consultant",
+    otpTitle: "Enter verification code to access AI consultation room",
+    aiConsultant: "AI Video Consultant",
+    onlineReady: "Online & Ready",
+    clearChat: "Clear Chat",
+    logout: "Logout",
+    aiAccessPortal: "AI Access Portal",
+    enterEmail: "Enter email to access AI system",
+    emailAddress: "Email Address",
+    emailPlaceholder: "your.email@example.com",
+    accessPortal: "Access AI Portal",
+    sendingOTP: "Sending OTP...",
+    verificationCodeSent: "Verification code will be sent to your email",
+    securityVerification: "Security Verification",
+    otpSentTo: "OTP code has been sent to:",
+    enter6Digit: "Enter 6 Digit Verification Code",
+    resendIn: "Resend in",
+    verifying: "Verifying...",
+    verifyEnter: "Verify & Enter",
+    backToEmail: "Back to Email",
+    notReceived: "Didn't receive code?",
+    resend: "Resend",
+    initializingAI: "Initializing AI Consultant...",
+    aiThinking: "AI is thinking...",
+    dataCollected: "Data collected! Ready to proceed to payment.",
+    continuePayment: "Continue to Payment",
+    allBatchesDone: "All batch scenes completed! Total",
+    scenesCreated: "scenes created.",
+    pleaseWait: "Please wait, AI is processing video scenes...",
+    typePlaceholder: "Type your question here...",
+    justNow: "Just now",
+  },
+  ZH: {
+    back: "返回",
+    emailTitle: "登录与您的 AI 视频顾问交谈",
+    otpTitle: "输入验证码以访问 AI 咨询室",
+    aiConsultant: "AI 视频顾问",
+    onlineReady: "在线并准备就绪",
+    clearChat: "清除聊天",
+    logout: "登出",
+    aiAccessPortal: "AI 访问门户",
+    enterEmail: "输入电子邮件以访问 AI 系统",
+    emailAddress: "电子邮件地址",
+    emailPlaceholder: "your.email@example.com",
+    accessPortal: "访问 AI 门户",
+    sendingOTP: "发送 OTP...",
+    verificationCodeSent: "验证码将发送到您的电子邮件",
+    securityVerification: "安全验证",
+    otpSentTo: "OTP 代码已发送至：",
+    enter6Digit: "输入 6 位验证码",
+    resendIn: "重新发送",
+    verifying: "验证中...",
+    verifyEnter: "验证并进入",
+    backToEmail: "返回电子邮件",
+    notReceived: "没收到代码？",
+    resend: "重新发送",
+    initializingAI: "初始化 AI 顾问...",
+    aiThinking: "AI 正在思考...",
+    dataCollected: "数据已收集！准备进行付款。",
+    continuePayment: "继续付款",
+    allBatchesDone: "所有批次场景已完成！总计",
+    scenesCreated: "个场景已创建。",
+    pleaseWait: "请稍候，AI 正在处理视频场景...",
+    typePlaceholder: "在此输入您的问题...",
+    justNow: "刚刚",
+  },
+  AR: {
+    back: "رجوع",
+    emailTitle: "قم بتسجيل الدخول للتحدث مع مستشار الفيديو AI الخاص بك",
+    otpTitle: "أدخل رمز التحقق للوصول إلى غرفة استشارة AI",
+    aiConsultant: "مستشار فيديو AI",
+    onlineReady: "متصل وجاهز",
+    clearChat: "مسح الدردشة",
+    logout: "تسجيل الخروج",
+    aiAccessPortal: "بوابة الوصول إلى AI",
+    enterEmail: "أدخل البريد الإلكتروني للوصول إلى نظام AI",
+    emailAddress: "عنوان البريد الإلكتروني",
+    emailPlaceholder: "your.email@example.com",
+    accessPortal: "الوصول إلى بوابة AI",
+    sendingOTP: "إرسال OTP...",
+    verificationCodeSent: "سيتم إرسال رمز التحقق إلى بريدك الإلكتروني",
+    securityVerification: "التحقق الأمني",
+    otpSentTo: "تم إرسال رمز OTP إلى:",
+    enter6Digit: "أدخل رمز التحقق المكون من 6 أرقام",
+    resendIn: "إعادة الإرسال في",
+    verifying: "جارٍ التحقق...",
+    verifyEnter: "تحقق وادخل",
+    backToEmail: "العودة إلى البريد الإلكتروني",
+    notReceived: "لم تتلق الرمز؟",
+    resend: "إعادة الإرسال",
+    initializingAI: "جارٍ تهيئة مستشار AI...",
+    aiThinking: "AI يفكر...",
+    dataCollected: "تم جمع البيانات! جاهز للمتابعة إلى الدفع.",
+    continuePayment: "متابعة الدفع",
+    allBatchesDone: "اكتملت جميع مشاهد الدفعة! الإجمالي",
+    scenesCreated: "تم إنشاء مشاهد.",
+    pleaseWait: "يرجى الانتظار، AI يعالج مشاهد الفيديو...",
+    typePlaceholder: "اكتب سؤالك هنا...",
+    justNow: "الآن",
+  },
+};
+
 interface Message {
   id: string;
   role: "user" | "assistant";
@@ -117,6 +258,45 @@ export function VideoConsultant() {
   const [hasEdited, setHasEdited] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
+
+  // Language state
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+
+  // Load language from localStorage and listen for changes
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
+      setSelectedLanguage(savedLanguage);
+    }
+
+    // Check localStorage periodically (for same-window changes)
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+
+    // Listen for language changes via custom event
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (
+        newLanguage &&
+        translations[newLanguage as keyof typeof translations]
+      ) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -612,6 +792,9 @@ export function VideoConsultant() {
     }
   };
 
+  // Get current translations
+  const t = translations[selectedLanguage as keyof typeof translations];
+
   return (
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
       {/* Futuristic Background Effects */}
@@ -637,7 +820,7 @@ export function VideoConsultant() {
             onClick={() => (window.location.href = "/")}
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Kembali
+            {t.back}
           </Button>
 
           {step !== "chat" && (
@@ -653,15 +836,13 @@ export function VideoConsultant() {
               {/* Title */}
               <h1 className="text-4xl md:text-5xl font-bold mb-4">
                 <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                  AI Video Consultant
+                  {t.aiConsultant}
                 </span>
               </h1>
 
               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                {step === "email" &&
-                  "Masuk untuk berbicara dengan AI Video Consultant Anda"}
-                {step === "otp" &&
-                  "Masukkan kode verifikasi untuk mengakses ruang konsultasi AI"}
+                {step === "email" && t.emailTitle}
+                {step === "otp" && t.otpTitle}
               </p>
             </div>
           )}
@@ -677,11 +858,11 @@ export function VideoConsultant() {
                 </div>
                 <div>
                   <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                    AI Video Consultant
+                    {t.aiConsultant}
                   </h1>
                   <div className="flex items-center space-x-2">
                     <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <p className="text-sm text-gray-400">Online & Ready</p>
+                    <p className="text-sm text-gray-400">{t.onlineReady}</p>
                   </div>
                 </div>
               </div>
@@ -694,7 +875,7 @@ export function VideoConsultant() {
                   disabled={isInitializing}
                 >
                   <Trash2 className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Clear Chat</span>
+                  <span className="hidden sm:inline">{t.clearChat}</span>
                 </Button>
                 <Button
                   variant="ghost"
@@ -703,7 +884,7 @@ export function VideoConsultant() {
                   className="text-orange-300 hover:text-orange-200 hover:bg-orange-500/10 border border-orange-500/20"
                 >
                   <LogOut className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">Logout</span>
+                  <span className="hidden sm:inline">{t.logout}</span>
                 </Button>
               </div>
             </div>
@@ -725,18 +906,16 @@ export function VideoConsultant() {
                     <Mail className="w-7 h-7 text-purple-300" />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">
-                    AI Access Portal
+                    {t.aiAccessPortal}
                   </h2>
-                  <p className="text-gray-400 text-sm">
-                    Masukkan email untuk mengakses sistem AI
-                  </p>
+                  <p className="text-gray-400 text-sm">{t.enterEmail}</p>
                 </div>
 
                 <div className="space-y-5">
                   {/* Email Input with Futuristic Style */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
-                      Email Address
+                      {t.emailAddress}
                     </label>
                     <div className="relative group">
                       {/* Input Glow on Focus */}
@@ -746,7 +925,7 @@ export function VideoConsultant() {
                         <Mail className="absolute left-3 w-5 h-5 text-gray-400" />
                         <input
                           type="email"
-                          placeholder="your.email@example.com"
+                          placeholder={t.emailPlaceholder}
                           value={email}
                           onChange={(e) => setEmail(e.target.value)}
                           onKeyPress={(e) =>
@@ -778,12 +957,12 @@ export function VideoConsultant() {
                       {authLoading ? (
                         <>
                           <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>Mengirim OTP...</span>
+                          <span>{t.sendingOTP}</span>
                         </>
                       ) : (
                         <>
                           <Sparkles className="w-5 h-5" />
-                          <span>Akses Portal AI</span>
+                          <span>{t.accessPortal}</span>
                         </>
                       )}
                     </button>
@@ -792,7 +971,7 @@ export function VideoConsultant() {
 
                 {/* Footer Note */}
                 <p className="text-center text-xs text-gray-500 mt-6">
-                  Kode verifikasi akan dikirim ke email Anda
+                  {t.verificationCodeSent}
                 </p>
               </div>
             </div>
@@ -814,11 +993,9 @@ export function VideoConsultant() {
                     <Settings className="w-7 h-7 text-purple-300 animate-spin-slow" />
                   </div>
                   <h2 className="text-2xl font-bold text-white mb-2">
-                    Security Verification
+                    {t.securityVerification}
                   </h2>
-                  <p className="text-gray-400 text-sm mb-1">
-                    Kode OTP telah dikirim ke:
-                  </p>
+                  <p className="text-gray-400 text-sm mb-1">{t.otpSentTo}</p>
                   <p className="font-semibold text-purple-300">{email}</p>
                 </div>
 
@@ -826,7 +1003,7 @@ export function VideoConsultant() {
                   {/* OTP Input with Futuristic Style */}
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
-                      Masukkan 6 Digit Kode Verifikasi
+                      {t.enter6Digit}
                     </label>
                     <div className="relative group">
                       {/* Input Glow on Focus */}
@@ -853,7 +1030,7 @@ export function VideoConsultant() {
                     <div className="flex items-center justify-center space-x-2 text-sm">
                       <Clock className="w-4 h-4 text-blue-400" />
                       <span className="text-gray-400">
-                        Kirim ulang dalam{" "}
+                        {t.resendIn}{" "}
                         <span className="text-blue-400 font-semibold">
                           {countdown}s
                         </span>
@@ -881,12 +1058,12 @@ export function VideoConsultant() {
                       {authLoading ? (
                         <>
                           <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>Memverifikasi...</span>
+                          <span>{t.verifying}</span>
                         </>
                       ) : (
                         <>
                           <CheckCircle className="w-5 h-5" />
-                          <span>Verifikasi & Masuk</span>
+                          <span>{t.verifyEnter}</span>
                         </>
                       )}
                     </button>
@@ -898,20 +1075,20 @@ export function VideoConsultant() {
                     className="w-full py-3 bg-slate-900/50 hover:bg-slate-800/50 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
                   >
                     <ArrowLeft className="w-4 h-4" />
-                    <span>Kembali ke Email</span>
+                    <span>{t.backToEmail}</span>
                   </button>
                 </div>
 
                 {/* Footer Note */}
                 <div className="mt-6 text-center">
                   <p className="text-xs text-gray-500">
-                    Tidak menerima kode?{" "}
+                    {t.notReceived}{" "}
                     {countdown === 0 && (
                       <button
                         onClick={handleRequestOTP}
                         className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
                       >
-                        Kirim ulang
+                        {t.resend}
                       </button>
                     )}
                   </p>
@@ -949,7 +1126,7 @@ export function VideoConsultant() {
                             <Loader2 className="relative w-12 h-12 animate-spin text-purple-400" />
                           </div>
                           <span className="text-gray-400 font-medium">
-                            Menginisialisasi AI Consultant...
+                            {t.initializingAI}
                           </span>
                         </div>
                       </div>
@@ -1042,7 +1219,7 @@ export function VideoConsultant() {
                                     ></div>
                                   </div>
                                   <span className="text-sm text-gray-400 font-medium">
-                                    AI sedang berpikir...
+                                    {t.aiThinking}
                                   </span>
                                 </div>
                               </div>
@@ -1065,8 +1242,7 @@ export function VideoConsultant() {
                         <div className="flex items-center justify-center space-x-2 py-3 bg-green-500/10 rounded-xl border border-green-500/30">
                           <CheckCircle className="w-5 h-5 text-green-400" />
                           <p className="text-sm font-medium text-green-300">
-                            Data telah dikumpulkan! Siap untuk melanjutkan ke
-                            pembayaran.
+                            {t.dataCollected}
                           </p>
                         </div>
                         <div className="relative">
@@ -1076,7 +1252,7 @@ export function VideoConsultant() {
                             className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30"
                           >
                             <CreditCard className="w-5 h-5" />
-                            <span>Lanjutkan ke Pembayaran</span>
+                            <span>{t.continuePayment}</span>
                           </button>
                         </div>
                       </div>
@@ -1086,8 +1262,8 @@ export function VideoConsultant() {
                         <div className="flex items-center justify-center space-x-2 py-3 bg-green-500/10 rounded-xl border border-green-500/30">
                           <CheckCircle className="w-5 h-5 text-green-400" />
                           <p className="text-sm font-medium text-green-300">
-                            Semua batch scene selesai! Total{" "}
-                            {editedScenes.length} scene telah dibuat.
+                            {t.allBatchesDone} {editedScenes.length}{" "}
+                            {t.scenesCreated}
                           </p>
                         </div>
                         <div className="relative">
@@ -1097,7 +1273,7 @@ export function VideoConsultant() {
                             className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30"
                           >
                             <CreditCard className="w-5 h-5" />
-                            <span>Lanjutkan ke Pembayaran</span>
+                            <span>{t.continuePayment}</span>
                           </button>
                         </div>
                       </div>
@@ -1107,7 +1283,7 @@ export function VideoConsultant() {
                         <div className="flex items-center justify-center space-x-2 py-3 bg-blue-500/10 rounded-xl border border-blue-500/30">
                           <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
                           <p className="text-sm font-medium text-blue-300">
-                            Mohon menunggu, AI sedang memproses scene video...
+                            {t.pleaseWait}
                           </p>
                         </div>
                       </div>
@@ -1117,7 +1293,7 @@ export function VideoConsultant() {
                           <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-20 blur transition-opacity duration-300"></div>
                           <textarea
                             ref={inputRef}
-                            placeholder="Ketik pertanyaan Anda di sini..."
+                            placeholder={t.typePlaceholder}
                             value={inputMessage}
                             onChange={(e) => setInputMessage(e.target.value)}
                             onKeyPress={handleKeyPress}

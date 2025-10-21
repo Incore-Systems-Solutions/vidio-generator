@@ -3,10 +3,113 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sparkles, MessageCircle, X, Send, Bot } from "lucide-react";
 
+// Translations for AIAssistantBubble
+const translations = {
+  ID: {
+    welcomeMessage:
+      "👋 Halo! Anda bisa membuat video realistic tanpa harus mengetik prompt lengkap. Apakah ada yang bisa saya bantu?",
+    startConsultation: "Mulai Konsultasi",
+    aiAssistant: "AI Assistant",
+    readyToHelp: "Siap membantu Anda",
+    greetingBold: "Halo!",
+    greetingMessage:
+      "Saya adalah AI Assistant yang siap membantu Anda membuat video realistic tanpa harus mengetik prompt lengkap!",
+    canIHelp: "Apakah ada yang bisa saya bantu?",
+    tellMe:
+      "Ceritakan saja apa yang ingin Anda buat, dan saya akan membantu mewujudkannya.",
+    justNow: "Baru saja",
+    placeholder: "Ketik pesan Anda di sini...",
+    pressEnter: "Tekan Enter untuk mengirim pesan",
+  },
+  EN: {
+    welcomeMessage:
+      "👋 Hello! You can create realistic videos without typing full prompts. Can I help you with something?",
+    startConsultation: "Start Consultation",
+    aiAssistant: "AI Assistant",
+    readyToHelp: "Ready to help you",
+    greetingBold: "Hello!",
+    greetingMessage:
+      "I am an AI Assistant ready to help you create realistic videos without typing full prompts!",
+    canIHelp: "Can I help you with something?",
+    tellMe:
+      "Just tell me what you want to create, and I'll help make it happen.",
+    justNow: "Just now",
+    placeholder: "Type your message here...",
+    pressEnter: "Press Enter to send message",
+  },
+  ZH: {
+    welcomeMessage:
+      "👋 你好！您可以在不输入完整提示的情况下创建逼真的视频。我能帮您什么吗？",
+    startConsultation: "开始咨询",
+    aiAssistant: "AI 助手",
+    readyToHelp: "随时为您服务",
+    greetingBold: "你好！",
+    greetingMessage:
+      "我是 AI 助手，可以帮助您在不输入完整提示的情况下创建逼真的视频！",
+    canIHelp: "我能帮您什么吗？",
+    tellMe: "只需告诉我您想创建什么，我会帮助实现它。",
+    justNow: "刚刚",
+    placeholder: "在此输入您的消息...",
+    pressEnter: "按 Enter 发送消息",
+  },
+  AR: {
+    welcomeMessage:
+      "👋 مرحبًا! يمكنك إنشاء مقاطع فيديو واقعية دون كتابة مطالبات كاملة. هل يمكنني مساعدتك في شيء؟",
+    startConsultation: "بدء الاستشارة",
+    aiAssistant: "مساعد الذكاء الاصطناعي",
+    readyToHelp: "جاهز لمساعدتك",
+    greetingBold: "مرحبًا!",
+    greetingMessage:
+      "أنا مساعد الذكاء الاصطناعي جاهز لمساعدتك في إنشاء مقاطع فيديو واقعية دون كتابة مطالبات كاملة!",
+    canIHelp: "هل يمكنني مساعدتك في شيء؟",
+    tellMe: "فقط أخبرني بما تريد إنشاءه، وسأساعد في تحقيقه.",
+    justNow: "الآن",
+    placeholder: "اكتب رسالتك هنا...",
+    pressEnter: "اضغط Enter لإرسال الرسالة",
+  },
+};
+
 export function AIAssistantBubble() {
   const [isOpen, setIsOpen] = useState(false);
   const [message, setMessage] = useState("");
   const [showWelcome, setShowWelcome] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+
+  // Load language from localStorage and listen for changes
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (
+      savedLanguage &&
+      translations[savedLanguage as keyof typeof translations]
+    ) {
+      setSelectedLanguage(savedLanguage);
+    }
+
+    // Check localStorage periodically (for same-window changes)
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+
+    // Listen for language changes via custom event
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (
+        newLanguage &&
+        translations[newLanguage as keyof typeof translations]
+      ) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
 
   useEffect(() => {
     // Show welcome message after 2 seconds
@@ -33,6 +136,9 @@ export function AIAssistantBubble() {
     }
   };
 
+  // Get current translations
+  const t = translations[selectedLanguage as keyof typeof translations];
+
   return (
     <>
       {/* Welcome Bubble - Show when closed */}
@@ -53,8 +159,7 @@ export function AIAssistantBubble() {
                 </div>
                 <div className="flex-1">
                   <p className="text-white text-sm leading-relaxed mb-3">
-                    👋 Halo! Anda bisa membuat video realistic tanpa harus
-                    mengetik prompt lengkap. Apakah ada yang bisa saya bantu?
+                    {t.welcomeMessage}
                   </p>
                   <Button
                     size="sm"
@@ -62,7 +167,7 @@ export function AIAssistantBubble() {
                     className="w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg"
                   >
                     <Sparkles className="w-4 h-4 mr-2" />
-                    Mulai Konsultasi
+                    {t.startConsultation}
                   </Button>
                 </div>
                 <Button
@@ -123,12 +228,10 @@ export function AIAssistantBubble() {
                     </div>
                     <div>
                       <h3 className="text-white font-semibold flex items-center">
-                        AI Assistant
+                        {t.aiAssistant}
                         <div className="ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse" />
                       </h3>
-                      <p className="text-xs text-gray-400">
-                        Siap membantu Anda
-                      </p>
+                      <p className="text-xs text-gray-400">{t.readyToHelp}</p>
                     </div>
                   </div>
                   <Button
@@ -155,21 +258,18 @@ export function AIAssistantBubble() {
                   <div className="flex-1">
                     <div className="bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl rounded-tl-none p-4">
                       <p className="text-white text-sm leading-relaxed">
-                        👋 <strong>Halo!</strong>
+                        👋 <strong>{t.greetingBold}</strong>
                         <br />
                         <br />
-                        Saya adalah AI Assistant yang siap membantu Anda membuat
-                        video realistic tanpa harus mengetik prompt lengkap!
+                        {t.greetingMessage}
                         <br />
-                        <br />✨{" "}
-                        <strong>Apakah ada yang bisa saya bantu?</strong>
+                        <br />✨ <strong>{t.canIHelp}</strong>
                         <br />
                         <br />
-                        Ceritakan saja apa yang ingin Anda buat, dan saya akan
-                        membantu mewujudkannya.
+                        {t.tellMe}
                       </p>
                     </div>
-                    <p className="text-xs text-gray-500 mt-2">Baru saja</p>
+                    <p className="text-xs text-gray-500 mt-2">{t.justNow}</p>
                   </div>
                 </div>
               </div>
@@ -182,7 +282,7 @@ export function AIAssistantBubble() {
                       value={message}
                       onChange={(e) => setMessage(e.target.value)}
                       onKeyPress={handleKeyPress}
-                      placeholder="Ketik pesan Anda di sini..."
+                      placeholder={t.placeholder}
                       className="bg-slate-900/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 rounded-xl"
                       autoFocus
                     />
@@ -196,7 +296,7 @@ export function AIAssistantBubble() {
                   </Button>
                 </div>
                 <p className="text-xs text-gray-500 mt-2 text-center">
-                  Tekan Enter untuk mengirim pesan
+                  {t.pressEnter}
                 </p>
               </div>
             </div>
