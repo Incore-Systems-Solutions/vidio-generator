@@ -703,7 +703,7 @@ function VideoModal({
                   </div>
 
                   {/* Fullscreen Instructions */}
-                  {!isFullscreen && (
+                  {/* {!isFullscreen && (
                     <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
                       <div className="bg-black/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20">
                         <div className="flex items-center space-x-2 text-white text-sm">
@@ -712,7 +712,7 @@ function VideoModal({
                         </div>
                       </div>
                     </div>
-                  )}
+                  )} */}
 
                   {/* Creator Info - Bottom Left */}
                   <div
