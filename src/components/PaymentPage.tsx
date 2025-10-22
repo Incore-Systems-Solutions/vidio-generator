@@ -537,6 +537,8 @@ export function PaymentPage() {
           metode: null,
           email: email,
           affiliate_by: konsultanData.affiliate_by || "",
+          gaya_visual: konsultanData.gaya_visual || "",
+          aspek_rasio: konsultanData.aspek_rasio || "",
         };
 
         console.log(
@@ -631,6 +633,8 @@ export function PaymentPage() {
           email: email,
           no_wa: phoneNumber || null,
           affiliate_by: konsultanData.affiliate_by || "",
+          gaya_visual: konsultanData.gaya_visual || "",
+          aspek_rasio: konsultanData.aspek_rasio || "",
         };
 
         console.log("Sending konsultan payload to store-multiple:", payload);

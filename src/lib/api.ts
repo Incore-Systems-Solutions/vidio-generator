@@ -250,6 +250,8 @@ export const videoStoreApi = {
       invoice: string;
       "x-api-key": string;
       uuid_konsultan: string;
+      aspek_rasio: string;
+      gaya_visual: string;
     };
   }> {
     try {

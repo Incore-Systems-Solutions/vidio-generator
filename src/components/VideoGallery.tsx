@@ -587,7 +587,7 @@ function VideoModal({
   currentVideoUser,
 }: VideoModalProps) {
   const displayVideo = video.final_url_merge_video;
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [orientation, setOrientation] = useState(0);

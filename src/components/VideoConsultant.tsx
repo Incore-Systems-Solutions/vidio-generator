@@ -23,6 +23,7 @@ import {
   Film,
   Calendar,
   Video,
+  Check,
 } from "lucide-react";
 import {
   chatAIApi,
@@ -68,6 +69,9 @@ const translations = {
     pleaseWait: "Mohon menunggu, AI sedang memproses scene video...",
     typePlaceholder: "Ketik pertanyaan Anda di sini...",
     justNow: "Baru saja",
+    selectVisualStyle: "Pilih Gaya Visual",
+    selectAspectRatio: "Pilih Aspek Ratio",
+    selectVisualAndAspect: "Pilih Gaya Visual dan Aspek Ratio terlebih dahulu",
   },
   EN: {
     back: "Back",
@@ -102,6 +106,9 @@ const translations = {
     pleaseWait: "Please wait, AI is processing video scenes...",
     typePlaceholder: "Type your question here...",
     justNow: "Just now",
+    selectVisualStyle: "Select Visual Style",
+    selectAspectRatio: "Select Aspect Ratio",
+    selectVisualAndAspect: "Please select Visual Style and Aspect Ratio first",
   },
   ZH: {
     back: "返回",
@@ -136,6 +143,9 @@ const translations = {
     pleaseWait: "请稍候，AI 正在处理视频场景...",
     typePlaceholder: "在此输入您的问题...",
     justNow: "刚刚",
+    selectVisualStyle: "选择视觉风格",
+    selectAspectRatio: "选择宽高比",
+    selectVisualAndAspect: "请先选择视觉风格和宽高比",
   },
   AR: {
     back: "رجوع",
@@ -170,6 +180,10 @@ const translations = {
     pleaseWait: "يرجى الانتظار، AI يعالج مشاهد الفيديو...",
     typePlaceholder: "اكتب سؤالك هنا...",
     justNow: "الآن",
+    selectVisualStyle: "اختر النمط البصري",
+    selectAspectRatio: "اختر نسبة العرض إلى الارتفاع",
+    selectVisualAndAspect:
+      "يرجى اختيار النمط البصري ونسبة العرض إلى الارتفاع أولاً",
   },
 };
 
@@ -256,6 +270,8 @@ export function VideoConsultant() {
     useState<CollectingDataResponse | null>(null);
   const [editedScenes, setEditedScenes] = useState<SceneData[]>([]);
   const [hasEdited, setHasEdited] = useState(false);
+  const [selectedVisualStyle, setSelectedVisualStyle] = useState<string>("");
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState<string>("");
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
@@ -757,7 +773,11 @@ export function VideoConsultant() {
       "editedScenes:",
       editedScenes.length,
       "collectingData:",
-      collectingData
+      collectingData,
+      "selectedVisualStyle:",
+      selectedVisualStyle,
+      "selectedAspectRatio:",
+      selectedAspectRatio
     );
 
     // Check if data collection is completed (isDone must be true)
@@ -765,6 +785,12 @@ export function VideoConsultant() {
       setError(
         "Silakan selesaikan pengumpulan data terlebih dahulu sebelum melanjutkan ke pembayaran"
       );
+      return;
+    }
+
+    // Check if visual style and aspect ratio are selected
+    if (!selectedVisualStyle || !selectedAspectRatio) {
+      setError("Silakan pilih Gaya Visual dan Aspek Ratio terlebih dahulu");
       return;
     }
 
@@ -778,6 +804,8 @@ export function VideoConsultant() {
       is_share: "y",
       affiliate_by: "",
       collectingData: collectingData, // Include collecting data
+      gaya_visual: selectedVisualStyle, // Add visual style
+      aspek_rasio: selectedAspectRatio, // Add aspect ratio
     };
 
     console.log("Saving konsultan data to localStorage:", konsultanData);
@@ -803,6 +831,122 @@ export function VideoConsultant() {
       handleSendMessage();
     }
   };
+
+  // Visual style options with multilingual support
+  const visualStyleOptions = [
+    {
+      value: "Ultra Realistic",
+      label: {
+        ID: "Ultra Realistic",
+        EN: "Ultra Realistic",
+        ZH: "超现实主义",
+        AR: "واقعية فائقة",
+      },
+      description: {
+        ID: "Realisme sinematik 8K ASMR ultra-realistis",
+        EN: "Ultra-realistic 8K ASMR cinematic realism",
+        ZH: "超现实8K ASMR电影现实主义",
+        AR: "واقعية سينمائية 8K ASMR فائقة الواقعية",
+      },
+    },
+    {
+      value: "Realistic / Live Action",
+      label: {
+        ID: "Realistic / Live Action",
+        EN: "Realistic / Live Action",
+        ZH: "现实主义/真人动作",
+        AR: "واقعي / حركة حية",
+      },
+      description: {
+        ID: "Realisme sinematik 8K ASMR realistis",
+        EN: "Realistic 8K ASMR cinematic realism",
+        ZH: "现实主义8K ASMR电影现实主义",
+        AR: "واقعية سينمائية 8K ASMR واقعية",
+      },
+    },
+    {
+      value: "Cinematic 3D",
+      label: {
+        ID: "Cinematic 3D",
+        EN: "Cinematic 3D",
+        ZH: "电影3D",
+        AR: "سينمائي ثلاثي الأبعاد",
+      },
+      description: {
+        ID: "Realisme sinematik 3D 8K ASMR",
+        EN: "Cinematic 3D 8K ASMR cinematic realism",
+        ZH: "电影3D 8K ASMR电影现实主义",
+        AR: "واقعية سينمائية ثلاثية الأبعاد 8K ASMR",
+      },
+    },
+    {
+      value: "Cartoon / 2D Animation",
+      label: {
+        ID: "Cartoon / 2D Animation",
+        EN: "Cartoon / 2D Animation",
+        ZH: "卡通/2D动画",
+        AR: "كرتون / رسوم متحركة ثنائية الأبعاد",
+      },
+      description: {
+        ID: "Realisme animasi kartun 8K sinematik",
+        EN: "Cartoon 8K cinematic animation realism",
+        ZH: "卡通8K电影动画现实主义",
+        AR: "واقعية رسوم متحركة كرتونية 8K سينمائية",
+      },
+    },
+    {
+      value: "Anime Style",
+      label: {
+        ID: "Anime Style",
+        EN: "Anime Style",
+        ZH: "动漫风格",
+        AR: "أسلوب الأنمي",
+      },
+      description: {
+        ID: "Realisme ilustrasi sinematik anime 8K",
+        EN: "Anime 8K cinematic illustration realism",
+        ZH: "动漫8K电影插画现实主义",
+        AR: "واقعية رسوم توضيحية سينمائية أنمي 8K",
+      },
+    },
+    {
+      value: "Motion Graphics / Explainer",
+      label: {
+        ID: "Motion Graphics / Explainer",
+        EN: "Motion Graphics / Explainer",
+        ZH: "动态图形/解释器",
+        AR: "رسوم متحركة / توضيحية",
+      },
+      description: {
+        ID: "Realisme sinematik Motion Graphics 8K",
+        EN: "Motion Graphics 8K cinematic realism",
+        ZH: "动态图形8K电影现实主义",
+        AR: "واقعية سينمائية رسوم متحركة 8K",
+      },
+    },
+  ];
+
+  // Aspect ratio options with multilingual support
+  const aspectRatioOptions = [
+    {
+      value: "16:9",
+      label: {
+        ID: "16:9 (Landscape)",
+        EN: "16:9 (Landscape)",
+        ZH: "16:9 (横向)",
+        AR: "16:9 (أفقي)",
+      },
+    },
+    {
+      value: "9:16",
+      label: {
+        ID: "9:16 (Portrait)",
+        EN: "9:16 (Portrait)",
+        ZH: "9:16 (纵向)",
+        AR: "9:16 (عمودي)",
+      },
+    },
+  ];
 
   // Get current translations
   const t = translations[selectedLanguage as keyof typeof translations];
@@ -1249,22 +1393,121 @@ export function VideoConsultant() {
                   {/* Futuristic Input Area */}
                   <div className="border-t border-white/10 p-4 bg-gradient-to-b from-slate-900/50 to-slate-950/80 backdrop-blur-sm">
                     {collectingData && isDone ? (
-                      // When collecting_data received and is_done true, show payment button
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-center space-x-2 py-3 bg-green-500/10 rounded-xl border border-green-500/30">
-                          <CheckCircle className="w-5 h-5 text-green-400" />
-                          <p className="text-sm font-medium text-green-300">
-                            {t.dataCollected}
-                          </p>
+                      // When collecting_data received and is_done true, show visual style and aspect ratio selection
+                      <div className="space-y-6">
+                        {/* Visual Style Selection */}
+                        <div className="space-y-3">
+                          <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30">
+                              <Sparkles className="w-4 h-4 text-purple-400" />
+                            </div>
+                            {t.selectVisualStyle}
+                          </h4>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {visualStyleOptions.map((option) => (
+                              <div
+                                key={option.value}
+                                className={`relative group p-4 rounded-2xl cursor-pointer transition-all ${
+                                  selectedVisualStyle === option.value
+                                    ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/50 shadow-lg shadow-purple-500/20"
+                                    : "bg-slate-800/50 border border-white/10 hover:border-purple-500/30 hover:bg-slate-800/70"
+                                }`}
+                                onClick={() =>
+                                  setSelectedVisualStyle(option.value)
+                                }
+                              >
+                                {selectedVisualStyle === option.value && (
+                                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-lg -z-10"></div>
+                                )}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <h5 className="font-semibold text-white mb-1">
+                                      {
+                                        option.label[
+                                          selectedLanguage as keyof typeof option.label
+                                        ]
+                                      }
+                                    </h5>
+                                    <p className="text-sm text-gray-400">
+                                      {
+                                        option.description[
+                                          selectedLanguage as keyof typeof option.description
+                                        ]
+                                      }
+                                    </p>
+                                  </div>
+                                  {selectedVisualStyle === option.value && (
+                                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30">
+                                      <Check className="w-3 h-3 text-white" />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
                         </div>
+
+                        {/* Aspect Ratio Selection */}
+                        <div className="space-y-3">
+                          <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
+                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30">
+                              <Video className="w-4 h-4 text-purple-400" />
+                            </div>
+                            {t.selectAspectRatio}
+                          </h4>
+                          <div className="grid grid-cols-2 gap-3">
+                            {aspectRatioOptions.map((option) => (
+                              <div
+                                key={option.value}
+                                className={`relative group p-4 rounded-2xl cursor-pointer transition-all ${
+                                  selectedAspectRatio === option.value
+                                    ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/50 shadow-lg shadow-purple-500/20"
+                                    : "bg-slate-800/50 border border-white/10 hover:border-purple-500/30 hover:bg-slate-800/70"
+                                }`}
+                                onClick={() =>
+                                  setSelectedAspectRatio(option.value)
+                                }
+                              >
+                                {selectedAspectRatio === option.value && (
+                                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-lg -z-10"></div>
+                                )}
+                                <div className="flex items-center justify-between">
+                                  <div className="flex-1">
+                                    <h5 className="font-semibold text-white">
+                                      {
+                                        option.label[
+                                          selectedLanguage as keyof typeof option.label
+                                        ]
+                                      }
+                                    </h5>
+                                  </div>
+                                  {selectedAspectRatio === option.value && (
+                                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30">
+                                      <Check className="w-3 h-3 text-white" />
+                                    </div>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+
+                        {/* Continue to Payment Button */}
                         <div className="relative">
                           <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
                           <button
                             onClick={handleGoToPayment}
-                            className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30"
+                            disabled={
+                              !selectedVisualStyle || !selectedAspectRatio
+                            }
+                            className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
                           >
                             <CreditCard className="w-5 h-5" />
-                            <span>{t.continuePayment}</span>
+                            <span>
+                              {!selectedVisualStyle || !selectedAspectRatio
+                                ? t.selectVisualAndAspect
+                                : t.continuePayment}
+                            </span>
                           </button>
                         </div>
                       </div>
@@ -1338,65 +1581,6 @@ export function VideoConsultant() {
                 </div>
               </div>
             </div>
-
-            {/* Scenes Summary Display */}
-
-            {/* Info Cards */}
-            {/* <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              <Card className="border-purple-200 dark:border-purple-800 bg-purple-50 dark:bg-purple-950/20">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-10 h-10 rounded-lg bg-purple-600 flex items-center justify-center flex-shrink-0">
-                      <Sparkles className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1 text-sm">
-                        Bantuan 24/7
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        AI siap membantu kapan saja untuk pertanyaan Anda
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-950/20">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center flex-shrink-0">
-                      <MessageCircle className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1 text-sm">
-                        Respons Cepat
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Dapatkan jawaban instan untuk semua pertanyaan Anda
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-
-              <Card className="border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-950/20">
-                <CardContent className="p-4">
-                  <div className="flex items-start space-x-3">
-                    <div className="w-10 h-10 rounded-lg bg-green-600 flex items-center justify-center flex-shrink-0">
-                      <Bot className="w-5 h-5 text-white" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-foreground mb-1 text-sm">
-                        Tips & Trik
-                      </h3>
-                      <p className="text-xs text-muted-foreground">
-                        Pelajari cara membuat video yang sempurna
-                      </p>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </div> */}
           </>
         )}
       </div>
