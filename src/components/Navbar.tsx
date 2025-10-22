@@ -20,6 +20,7 @@ import {
 // Translations for navbar
 const translations = {
   ID: {
+    brandName: "Instant!!",
     tagline: "Pembuatan Video AI",
     videoGallery: "Galeri Video",
     consultant: "Konsultan Pembuatan Video",
@@ -27,6 +28,7 @@ const translations = {
     language: "Bahasa",
   },
   EN: {
+    brandName: "Instant!!",
     tagline: "AI Video Generation",
     videoGallery: "Video Gallery",
     consultant: "Video Making Consultant",
@@ -34,6 +36,7 @@ const translations = {
     language: "Language",
   },
   ZH: {
+    brandName: "即时!!",
     tagline: "AI 视频生成",
     videoGallery: "视频库",
     consultant: "视频制作顾问",
@@ -41,6 +44,7 @@ const translations = {
     language: "语言",
   },
   AR: {
+    brandName: "فوري!!",
     tagline: "إنشاء فيديو بالذكاء الاصطناعي",
     videoGallery: "معرض الفيديو",
     consultant: "مستشار صناعة الفيديو",
@@ -130,7 +134,7 @@ export function Navbar() {
                 {/* Brand Name with Gradient */}
                 <div className="hidden sm:block">
                   <h1 className="text-lg md:text-xl font-bold bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent animate-gradient bg-[length:200%_auto]">
-                    InstanVideo
+                    {t.brandName}
                   </h1>
                   <p className="text-[10px] text-gray-400 font-light tracking-wider">
                     {t.tagline}
