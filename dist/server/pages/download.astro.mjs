@@ -1,12 +1,13 @@
-import { e as createComponent, f as createAstro, l as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_DLHOh8jC.mjs';
+import { e as createComponent, f as createAstro, k as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BY5bc-G0.mjs';
 import 'kleur/colors';
-import { $ as $$Main } from '../chunks/main_D71SOSeP.mjs';
+import { $ as $$Main } from '../chunks/main_DBzESP1K.mjs';
 import { jsxs, jsx } from 'react/jsx-runtime';
 import { useState } from 'react';
-import { B as Button, C as Card, a as CardHeader, b as CardTitle, c as CardContent, d as Badge } from '../chunks/card_D8elN7z5.mjs';
-import { v as videoGenerationApi } from '../chunks/api_Zi8Etrro.mjs';
+import { B as Button, a as Badge } from '../chunks/badge_DSQWoPdL.mjs';
+import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/input_DEe1eFb5.mjs';
+import { v as videoGenerationApi } from '../chunks/api_yL4KI-YJ.mjs';
 import { ArrowLeft, CheckCircle, Video, Settings, Maximize2, Download, Share2, ArrowRight, Music, Camera, Play, MessageCircle } from 'lucide-react';
-import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DF7YqAOL.mjs';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_BRrC7jRw.mjs';
 export { renderers } from '../renderers.mjs';
 
 function VideoDownload({

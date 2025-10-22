@@ -1,1003 +1,124 @@
-import { e as createComponent, f as createAstro, h as addAttribute, k as renderHead, l as renderComponent, o as renderScript, r as renderTemplate } from '../chunks/astro/server_DLHOh8jC.mjs';
+import { e as createComponent, f as createAstro, h as addAttribute, l as renderHead, k as renderComponent, o as renderScript, r as renderTemplate } from '../chunks/astro/server_BY5bc-G0.mjs';
 import 'kleur/colors';
-import { N as NavbarWithModal } from '../chunks/NavbarWithModal_DF7YqAOL.mjs';
-import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
-import { createContext, useState, useEffect, useContext } from 'react';
-import { C as Card, B as Button, d as Badge, a as CardHeader, b as CardTitle, c as CardContent$1, e as cn } from '../chunks/card_D8elN7z5.mjs';
-import { UserCheck, User, Upload, Wand2, Image, ChevronUp, ChevronDown, FileText, Volume2, Briefcase, Smile, GraduationCap, BarChart3, BookOpen, Newspaper, Mic, Star, Lightbulb, Loader2, Play } from 'lucide-react';
-import { b as backgroundsApi, u as uploadApi, c as charactersApi, p as publicVideoGalleryApi } from '../chunks/api_Zi8Etrro.mjs';
-import { I as Input } from '../chunks/input_BNBZJNyb.mjs';
-import { S as Select, a as SelectTrigger, b as SelectValue, c as SelectContent, d as SelectItem, T as Textarea } from '../chunks/select_8smLBtfp.mjs';
-import { v as videoSetupStorage } from '../chunks/videoSetupStorage_DUxbdP36.mjs';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_BRrC7jRw.mjs';
+import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
+import { useState, useEffect, useRef } from 'react';
+import { B as Button } from '../chunks/badge_DSQWoPdL.mjs';
+import { Sparkles, Loader2, Video, Play, Calendar, X, Pause, VolumeX, Volume2, Bot, MessageCircle, Send } from 'lucide-react';
+import { p as publicVideoGalleryApi } from '../chunks/api_yL4KI-YJ.mjs';
+import { I as Input } from '../chunks/input_DEe1eFb5.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
 
-const VideoSetupContext = createContext(
-  void 0
-);
-const initialData = {
-  selectedCharacter: null,
-  selectedBackground: null,
-  characterImage: null,
-  backgroundImage: null,
-  prompt: "",
-  aspekRasio: "",
-  judulVideo: "",
-  bahasa: "",
-  gayaSuara: "",
-  voiceOver: "",
-  tone: "",
-  backgroundMusic: "",
-  resolusiVideo: "",
-  isShare: "n"
-};
-function VideoSetupProvider({ children }) {
-  const [data, setData] = useState(initialData);
-  useEffect(() => {
-    const savedData = localStorage.getItem("videoSetupData");
-    if (savedData) {
-      try {
-        const parsedData = JSON.parse(savedData);
-        setData((prev) => ({
-          ...prev,
-          prompt: parsedData.prompt || "",
-          characterImage: parsedData.karakter_image || null,
-          backgroundImage: parsedData.background_image || null,
-          aspekRasio: parsedData.aspek_rasio || "",
-          judulVideo: parsedData.judul_video || "",
-          bahasa: parsedData.bahasa || "",
-          gayaSuara: parsedData.gaya_suara || "",
-          voiceOver: parsedData.voice_over || "",
-          tone: parsedData.tone || "",
-          backgroundMusic: parsedData.background_music || "",
-          resolusiVideo: parsedData.resolusi_video || "",
-          isShare: parsedData.is_share || "n"
-        }));
-        localStorage.removeItem("videoSetupData");
-      } catch (error) {
-        console.error("Error parsing videoSetupData from localStorage:", error);
-      }
-    }
-  }, []);
-  const updateCharacter = (characterId, imageUrl) => {
-    setData((prev) => ({
-      ...prev,
-      selectedCharacter: characterId,
-      characterImage: imageUrl
-    }));
-  };
-  const updateBackground = (backgroundId, imageUrl) => {
-    setData((prev) => ({
-      ...prev,
-      selectedBackground: backgroundId,
-      backgroundImage: imageUrl
-    }));
-  };
-  const updatePrompt = (prompt) => {
-    setData((prev) => ({
-      ...prev,
-      prompt
-    }));
-  };
-  const updateAspectRatio = (ratio) => {
-    setData((prev) => ({
-      ...prev,
-      aspekRasio: ratio
-    }));
-  };
-  const updateJudulVideo = (judul) => {
-    setData((prev) => ({
-      ...prev,
-      judulVideo: judul
-    }));
-  };
-  const updateBahasa = (bahasa) => {
-    setData((prev) => ({
-      ...prev,
-      bahasa
-    }));
-  };
-  const updateGayaSuara = (gaya) => {
-    setData((prev) => ({
-      ...prev,
-      gayaSuara: gaya
-    }));
-  };
-  const updateVoiceOver = (voice) => {
-    setData((prev) => ({
-      ...prev,
-      voiceOver: voice
-    }));
-  };
-  const updateTone = (tone) => {
-    setData((prev) => ({
-      ...prev,
-      tone
-    }));
-  };
-  const updateBackgroundMusic = (music) => {
-    setData((prev) => ({
-      ...prev,
-      backgroundMusic: music
-    }));
-  };
-  const updateResolusiVideo = (resolusi) => {
-    setData((prev) => ({
-      ...prev,
-      resolusiVideo: resolusi
-    }));
-  };
-  const updateIsShare = (isShare) => {
-    setData((prev) => ({
-      ...prev,
-      isShare
-    }));
-  };
-  const resetData = () => {
-    setData(initialData);
-  };
-  return /* @__PURE__ */ jsx(
-    VideoSetupContext.Provider,
-    {
-      value: {
-        data,
-        updateCharacter,
-        updateBackground,
-        updatePrompt,
-        updateAspectRatio,
-        updateJudulVideo,
-        updateBahasa,
-        updateGayaSuara,
-        updateVoiceOver,
-        updateTone,
-        updateBackgroundMusic,
-        updateResolusiVideo,
-        updateIsShare,
-        resetData
-      },
-      children
-    }
-  );
-}
-function useVideoSetup() {
-  const context = useContext(VideoSetupContext);
-  if (context === void 0) {
-    throw new Error("useVideoSetup must be used within a VideoSetupProvider");
+const translations$1 = {
+  ID: {
+    badge: "Video yang Dibuat AI",
+    title: "Galeri Video",
+    description: "Koleksi video AI terbaik yang dibuat oleh pengguna kami.",
+    loadingTitle: "Memuat video...",
+    loadingDesc: "Mengambil galeri AI terbaru",
+    errorMessage: "Gagal memuat video. Silakan coba lagi nanti.",
+    retryButton: "Coba Lagi",
+    loadMoreButton: "Muat Lebih Banyak Video",
+    loadingButton: "Memuat...",
+    endMessage: "Semua video telah ditampilkan",
+    modalTitle: "Pemutar Video",
+    modalCreatedOn: "Dibuat pada",
+    videoNotAvailable: "Video Tidak Tersedia",
+    videoUnavailableDesc: "Video ini saat ini tidak tersedia",
+    createdBy: "Dibuat oleh",
+    videoDescription: "Deskripsi"
+  },
+  EN: {
+    badge: "AI Generated Videos",
+    title: "Video Gallery",
+    description: "The best AI video collection created by our users.",
+    loadingTitle: "Loading videos...",
+    loadingDesc: "Fetching latest AI gallery",
+    errorMessage: "Failed to load videos. Please try again later.",
+    retryButton: "Try Again",
+    loadMoreButton: "Load More Videos",
+    loadingButton: "Loading...",
+    endMessage: "All videos have been displayed",
+    modalTitle: "Video Player",
+    modalCreatedOn: "Created on",
+    videoNotAvailable: "Video Not Available",
+    videoUnavailableDesc: "This video is currently unavailable",
+    createdBy: "Created by",
+    videoDescription: "Description"
+  },
+  ZH: {
+    badge: "AI 生成的视频",
+    title: "视频库",
+    description: "由我们用户创建的最佳 AI 视频集合。",
+    loadingTitle: "加载视频中...",
+    loadingDesc: "获取最新 AI 画廊",
+    errorMessage: "加载视频失败。请稍后再试。",
+    retryButton: "重试",
+    loadMoreButton: "加载更多视频",
+    loadingButton: "加载中...",
+    endMessage: "所有视频已显示",
+    modalTitle: "视频播放器",
+    modalCreatedOn: "创建于",
+    videoNotAvailable: "视频不可用",
+    videoUnavailableDesc: "此视频当前不可用",
+    createdBy: "创建者",
+    videoDescription: "描述"
+  },
+  AR: {
+    badge: "مقاطع فيديو منشأة بالذكاء الاصطناعي",
+    title: "معرض الفيديو",
+    description: "أفضل مجموعة فيديو AI تم إنشاؤها بواسطة مستخدمينا.",
+    loadingTitle: "جاري تحميل مقاطع الفيديو...",
+    loadingDesc: "جلب أحدث معرض AI",
+    errorMessage: "فشل تحميل مقاطع الفيديو. يرجى المحاولة مرة أخرى لاحقًا.",
+    retryButton: "حاول مرة أخرى",
+    loadMoreButton: "تحميل المزيد من مقاطع الفيديو",
+    loadingButton: "جاري التحميل...",
+    endMessage: "تم عرض جميع مقاطع الفيديو",
+    modalTitle: "مشغل الفيديو",
+    modalCreatedOn: "تم الإنشاء في",
+    videoNotAvailable: "الفيديو غير متوفر",
+    videoUnavailableDesc: "هذا الفيديو غير متوفر حاليًا",
+    createdBy: "تم إنشاؤه بواسطة",
+    videoDescription: "الوصف"
   }
-  return context;
-}
-
-function CharacterCard({
-  type,
-  title,
-  description,
-  image,
-  tags = [],
-  isSelected = false,
-  onClick
-}) {
-  const handleClick = () => {
-    if (type === "custom") {
-      window.location.href = "/buat-karakter-kustom";
-    } else if (onClick) {
-      onClick();
-    }
-  };
-  const getIcon = () => {
-    switch (type) {
-      case "custom":
-        return /* @__PURE__ */ jsx(Wand2, { className: "w-full h-full text-purple-600" });
-      case "upload":
-        return /* @__PURE__ */ jsx(Upload, { className: "w-full h-full text-gray-600" });
-      case "character":
-        return /* @__PURE__ */ jsx(User, { className: "w-full h-full text-gray-600" });
-      default:
-        return /* @__PURE__ */ jsx(UserCheck, { className: "w-full h-full text-gray-600" });
-    }
-  };
-  const getCardStyle = () => {
-    if (type === "custom") {
-      return "border-2 border-dashed border-purple-300 hover:border-purple-400 cursor-pointer transition-colors";
-    }
-    if (isSelected) {
-      return "border-2 border-purple-500 shadow-lg cursor-pointer transition-all";
-    }
-    return "border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors";
-  };
-  return /* @__PURE__ */ jsxs(
-    Card,
-    {
-      className: `p-3 sm:p-4 md:p-6 h-full flex flex-col ${getCardStyle()}`,
-      onClick: handleClick,
-      children: [
-        (type === "character" || type === "upload") && image ? /* @__PURE__ */ jsx("div", { className: "mb-3 sm:mb-4", children: /* @__PURE__ */ jsx("div", { className: "w-full h-32 sm:h-40 md:h-48 bg-gray-100 rounded-lg overflow-hidden mb-3 sm:mb-4", children: /* @__PURE__ */ jsx(
-          "img",
-          {
-            src: image,
-            alt: title,
-            className: "w-full h-full object-cover"
-          }
-        ) }) }) : /* @__PURE__ */ jsx("div", { className: "flex justify-center mb-3 sm:mb-4", children: /* @__PURE__ */ jsx("div", { className: "w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12", children: getIcon() }) }),
-        /* @__PURE__ */ jsxs("div", { className: "flex-1 flex flex-col", children: [
-          /* @__PURE__ */ jsx("h3", { className: "text-sm sm:text-base md:text-lg font-semibold mb-2 text-center leading-tight", children: type === "custom" ? /* @__PURE__ */ jsx("span", { className: "text-purple-600", children: "Buat dengan AI" }) : title }),
-          type === "custom" && /* @__PURE__ */ jsx("p", { className: "text-xs sm:text-sm text-gray-500 text-center mb-3 sm:mb-4 leading-tight", children: title }),
-          description && /* @__PURE__ */ jsx("p", { className: "text-xs sm:text-sm text-gray-500 text-center mb-3 sm:mb-4 leading-tight hidden sm:block", children: description }),
-          type === "upload" && /* @__PURE__ */ jsx("div", { className: "space-y-1 sm:space-y-2", children: /* @__PURE__ */ jsx(
-            Button,
-            {
-              variant: "outline",
-              size: "sm",
-              className: "w-full text-xs sm:text-sm py-1 sm:py-2",
-              children: "Pilih File"
-            }
-          ) }),
-          tags.length > 0 && /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap gap-1 justify-center mt-auto", children: [
-            tags.map((tag, index) => /* @__PURE__ */ jsx(
-              Badge,
-              {
-                variant: "secondary",
-                className: "text-xs px-1 py-0 hidden sm:inline-block",
-                children: tag
-              },
-              index
-            )),
-            tags.slice(0, 2).map((tag, index) => /* @__PURE__ */ jsx(
-              Badge,
-              {
-                variant: "secondary",
-                className: "text-xs px-1 py-0 sm:hidden",
-                children: tag
-              },
-              `mobile-${index}`
-            ))
-          ] })
-        ] })
-      ]
-    }
-  );
-}
-
-function BackgroundCard({
-  type,
-  title,
-  description,
-  image,
-  tags = [],
-  isSelected = false,
-  onClick
-}) {
-  const getIcon = () => {
-    switch (type) {
-      case "custom":
-        return /* @__PURE__ */ jsx(Wand2, { className: "w-8 h-8 text-purple-600" });
-      case "upload":
-        return /* @__PURE__ */ jsx(Upload, { className: "w-8 h-8 text-gray-600" });
-      default:
-        return null;
-    }
-  };
-  const getCardStyle = () => {
-    if (type === "custom") {
-      return "border-2 border-dashed border-purple-300 hover:border-purple-400 cursor-pointer transition-colors";
-    }
-    if (isSelected) {
-      return "border-2 border-purple-500 shadow-lg cursor-pointer transition-all";
-    }
-    return "border border-gray-200 hover:border-gray-300 cursor-pointer transition-colors";
-  };
-  return /* @__PURE__ */ jsxs(
-    Card,
-    {
-      className: `p-2 sm:p-3 md:p-4 h-full flex flex-col ${getCardStyle()}`,
-      onClick,
-      children: [
-        (type === "background" || type === "upload") && image ? /* @__PURE__ */ jsx("div", { className: "mb-2 sm:mb-3 md:mb-4", children: /* @__PURE__ */ jsx("div", { className: "w-full h-20 sm:h-24 md:h-32 bg-gray-100 rounded-lg overflow-hidden mb-2 sm:mb-3", children: /* @__PURE__ */ jsx(
-          "img",
-          {
-            src: image,
-            alt: title,
-            className: "w-full h-full object-cover"
-          }
-        ) }) }) : /* @__PURE__ */ jsx("div", { className: "flex justify-center mb-2 sm:mb-3 md:mb-4", children: /* @__PURE__ */ jsx("div", { className: "w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8", children: getIcon() }) }),
-        /* @__PURE__ */ jsxs("div", { className: "flex-1 flex flex-col", children: [
-          /* @__PURE__ */ jsx("h3", { className: "text-xs sm:text-sm font-semibold mb-1 sm:mb-2 text-center leading-tight", children: type === "custom" ? /* @__PURE__ */ jsx("span", { className: "text-purple-600", children: "Buat dengan AI" }) : title }),
-          type === "custom" && /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 text-center mb-1 sm:mb-2 leading-tight", children: title }),
-          description && /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 text-center mb-2 sm:mb-3 leading-tight hidden sm:block", children: description }),
-          type === "upload" && /* @__PURE__ */ jsx("div", { className: "space-y-1 sm:space-y-2", children: /* @__PURE__ */ jsx(
-            Button,
-            {
-              variant: "outline",
-              size: "sm",
-              className: "w-full text-xs py-1 sm:py-2",
-              children: "Pilih File"
-            }
-          ) }),
-          tags.length > 0 && /* @__PURE__ */ jsxs("div", { className: "flex flex-wrap gap-1 justify-center mt-auto", children: [
-            tags.map((tag, index) => /* @__PURE__ */ jsx(
-              Badge,
-              {
-                variant: "secondary",
-                className: "text-xs px-1 py-0 hidden sm:inline-block",
-                children: tag
-              },
-              index
-            )),
-            tags.slice(0, 2).map((tag, index) => /* @__PURE__ */ jsx(
-              Badge,
-              {
-                variant: "secondary",
-                className: "text-xs px-1 py-0 sm:hidden",
-                children: tag
-              },
-              `mobile-${index}`
-            ))
-          ] })
-        ] })
-      ]
-    }
-  );
-}
-
-function BackgroundGallery() {
-  const { data, updateBackground } = useVideoSetup();
-  const [backgrounds, setBackgrounds] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [isOpen, setIsOpen] = useState(false);
-  useEffect(() => {
-    const fetchBackgrounds = async () => {
-      try {
-        setLoading(true);
-        const data2 = await backgroundsApi.getBackgrounds();
-        setBackgrounds(data2);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch backgrounds"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchBackgrounds();
-  }, []);
-  useEffect(() => {
-    if (data.backgroundImage && !data.selectedBackground && backgrounds.length > 0) {
-      const matchingBackground = backgrounds.find(
-        (bg) => bg.image === data.backgroundImage
-      );
-      if (matchingBackground) {
-        updateBackground(matchingBackground.id, data.backgroundImage);
-      } else {
-        updateBackground("upload", data.backgroundImage);
-      }
-    }
-  }, [
-    data.backgroundImage,
-    backgrounds,
-    data.selectedBackground,
-    updateBackground
-  ]);
-  const handleBackgroundSelect = async (backgroundId) => {
-    if (backgroundId === "upload") {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = async (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-          try {
-            setUploading(true);
-            setError(null);
-            const base64 = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.readAsDataURL(file);
-            });
-            const result = await uploadApi.uploadImage(base64);
-            setBackgrounds(
-              (prev) => prev.map(
-                (bg) => bg.id === "upload" ? {
-                  ...bg,
-                  image: result.url,
-                  description: "Background yang diupload"
-                } : bg
-              )
-            );
-            updateBackground(backgroundId, result.url);
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Upload failed");
-          } finally {
-            setUploading(false);
-          }
-        }
-      };
-      input.click();
-    } else {
-      const background = backgrounds.find((bg) => bg.id === backgroundId);
-      updateBackground(backgroundId, background?.image || null);
-    }
-  };
-  return /* @__PURE__ */ jsx("div", { className: "w-full", children: /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700", children: [
-    /* @__PURE__ */ jsx(
-      "button",
-      {
-        onClick: () => setIsOpen(!isOpen),
-        className: "w-full px-4 py-4 sm:px-6 sm:py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-lg",
-        children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3 flex-1 justify-center", children: [
-            /* @__PURE__ */ jsx("div", { className: "p-2 bg-blue-100 dark:bg-blue-900 rounded-lg", children: /* @__PURE__ */ jsx(Image, { className: "w-5 h-5 text-blue-600 dark:text-blue-400" }) }),
-            /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
-              /* @__PURE__ */ jsx("h2", { className: "text-lg sm:text-xl font-semibold text-foreground", children: "Pilih Latar Belakang - Opsional" }),
-              /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: data.selectedBackground ? `Background dipilih: ${backgrounds.find(
-                (bg) => bg.id === data.selectedBackground
-              )?.title || "Custom"}` : "Pilih latar belakang yang sesuai dengan kebutuhan video Anda (Opsional)" })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
-            data.selectedBackground && /* @__PURE__ */ jsx("div", { className: "px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full", children: "Dipilih" }),
-            isOpen ? /* @__PURE__ */ jsx(ChevronUp, { className: "w-5 h-5 text-gray-500" }) : /* @__PURE__ */ jsx(ChevronDown, { className: "w-5 h-5 text-gray-500" })
-          ] })
-        ] })
-      }
-    ),
-    isOpen && /* @__PURE__ */ jsx("div", { className: "px-4 pb-4 sm:px-6 sm:pb-6", children: /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-7xl", children: loading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Loading backgrounds..." }) }) : uploading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Uploading image..." }) }) : error ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsxs("div", { className: "text-sm sm:text-base text-red-500", children: [
-      "Error: ",
-      error
-    ] }) }) : /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6", children: backgrounds.map((background) => /* @__PURE__ */ jsx(
-      BackgroundCard,
-      {
-        type: background.type,
-        title: background.title,
-        description: background.description || void 0,
-        image: background.image || void 0,
-        tags: background.tags || void 0,
-        isSelected: data.selectedBackground === background.id,
-        onClick: () => handleBackgroundSelect(background.id)
-      },
-      background.id
-    )) }) }) }) })
-  ] }) });
-}
-
-function VideoDetailSection() {
-  const {
-    data,
-    updatePrompt,
-    updateAspectRatio,
-    updateJudulVideo,
-    updateBahasa,
-    updateGayaSuara,
-    updateVoiceOver,
-    updateTone,
-    updateBackgroundMusic,
-    updateResolusiVideo,
-    updateIsShare
-  } = useVideoSetup();
-  const [script, setScript] = useState(data.prompt || "");
-  useEffect(() => {
-    setScript(data.prompt || "");
-  }, [data.prompt]);
-  const toneOptions = [
-    { id: "professional", label: "Professional", icon: Briefcase },
-    { id: "friendly", label: "Friendly", icon: Smile },
-    { id: "educational", label: "Educational", icon: GraduationCap },
-    { id: "marketing", label: "Marketing", icon: BarChart3 },
-    { id: "storytelling", label: "Storytelling", icon: BookOpen },
-    { id: "news", label: "News", icon: Newspaper }
-  ];
-  const wordCount = script.split(/\s+/).filter((word) => word.length > 0).length;
-  return /* @__PURE__ */ jsxs("div", { className: "w-full", children: [
-    /* @__PURE__ */ jsxs("div", { className: "text-center mb-6 sm:mb-8", children: [
-      /* @__PURE__ */ jsx("h2", { className: "text-xl sm:text-2xl font-bold text-foreground mb-2", children: "Detail Video & Script" }),
-      /* @__PURE__ */ jsxs("p", { className: "text-sm sm:text-base text-muted-foreground px-4", children: [
-        /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" }),
-        " Field wajib diisi |",
-        /* @__PURE__ */ jsx("span", { className: "text-gray-500 ml-2", children: "(Opsional)" }),
-        " Field tidak wajib diisi"
-      ] })
-    ] }),
-    /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsxs("div", { className: "w-full max-w-7xl", children: [
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-3 gap-6", children: [
-        /* @__PURE__ */ jsxs(Card, { children: [
-          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-            /* @__PURE__ */ jsx(FileText, { className: "w-5 h-5" }),
-            /* @__PURE__ */ jsx("span", { children: "Informasi Dasar" })
-          ] }) }),
-          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Judul Video ",
-                /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
-              ] }),
-              /* @__PURE__ */ jsx(
-                Input,
-                {
-                  placeholder: "Masukkan judul video anda...",
-                  value: data.judulVideo,
-                  onChange: (e) => updateJudulVideo(e.target.value)
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Aspek Rasio ",
-                /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
-              ] }),
-              /* @__PURE__ */ jsxs(
-                Select,
-                {
-                  value: data.aspekRasio,
-                  onValueChange: updateAspectRatio,
-                  children: [
-                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih rasio video anda" }) }),
-                    /* @__PURE__ */ jsxs(SelectContent, { children: [
-                      /* @__PURE__ */ jsx(SelectItem, { value: "16:9", children: "16:9 (Widescreen)" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "9:16", children: "9:16 (Vertical)" })
-                    ] })
-                  ]
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Script/Naskah Video ",
-                /* @__PURE__ */ jsx("span", { className: "text-red-500", children: "*" })
-              ] }),
-              /* @__PURE__ */ jsx(
-                Textarea,
-                {
-                  placeholder: "Masukkan script video anda...",
-                  value: script,
-                  onChange: (e) => {
-                    setScript(e.target.value);
-                    updatePrompt(e.target.value);
-                  },
-                  className: "min-h-32"
-                }
-              ),
-              /* @__PURE__ */ jsxs("p", { className: "text-sm text-muted-foreground mt-2", children: [
-                wordCount,
-                " kata"
-              ] })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxs(Card, { children: [
-          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-            /* @__PURE__ */ jsx(Volume2, { className: "w-5 h-5" }),
-            /* @__PURE__ */ jsx("span", { children: "Pengaturan Suara & Bahasa" })
-          ] }) }),
-          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Bahasa ",
-                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-              ] }),
-              /* @__PURE__ */ jsxs(Select, { value: data.bahasa, onValueChange: updateBahasa, children: [
-                /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih bahasa untuk video anda" }) }),
-                /* @__PURE__ */ jsxs(SelectContent, { children: [
-                  /* @__PURE__ */ jsx(SelectItem, { value: "id", children: "Bahasa Indonesia" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "en", children: "English" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "es", children: "Español" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "fr", children: "Français" })
-                ] })
-              ] })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Gaya Suara ",
-                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-              ] }),
-              /* @__PURE__ */ jsxs(
-                Select,
-                {
-                  value: data.gayaSuara,
-                  onValueChange: updateGayaSuara,
-                  children: [
-                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih gaya suara untuk video anda" }) }),
-                    /* @__PURE__ */ jsxs(SelectContent, { children: [
-                      /* @__PURE__ */ jsx(SelectItem, { value: "natural", children: "Natural" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "energetic", children: "Energetic" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "calm", children: "Calm" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "professional", children: "Professional" })
-                    ] })
-                  ]
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Voice Over ",
-                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-              ] }),
-              /* @__PURE__ */ jsxs(
-                Select,
-                {
-                  value: data.voiceOver,
-                  onValueChange: updateVoiceOver,
-                  children: [
-                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih voice over untuk video anda" }) }),
-                    /* @__PURE__ */ jsxs(SelectContent, { children: [
-                      /* @__PURE__ */ jsx(SelectItem, { value: "male", children: "Male Voice" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "female", children: "Female Voice" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "child", children: "Child Voice" })
-                    ] })
-                  ]
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Tone/Nada Video",
-                " ",
-                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-              ] }),
-              /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-2", children: toneOptions.map((tone) => {
-                const Icon = tone.icon;
-                return /* @__PURE__ */ jsxs(
-                  Button,
-                  {
-                    variant: data.tone === tone.id ? "default" : "outline",
-                    size: "sm",
-                    onClick: () => updateTone(tone.id),
-                    className: `flex items-center space-x-2 ${data.tone === tone.id ? "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700" : ""}`,
-                    children: [
-                      /* @__PURE__ */ jsx(Icon, { className: "w-4 h-4" }),
-                      /* @__PURE__ */ jsx("span", { children: tone.label })
-                    ]
-                  },
-                  tone.id
-                );
-              }) })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxs(Card, { children: [
-          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-            /* @__PURE__ */ jsx(Mic, { className: "w-5 h-5" }),
-            /* @__PURE__ */ jsx("span", { children: "Pengaturan Lanjutan" })
-          ] }) }),
-          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-4", children: [
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Background Music",
-                " ",
-                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-              ] }),
-              /* @__PURE__ */ jsxs(
-                Select,
-                {
-                  value: data.backgroundMusic,
-                  onValueChange: updateBackgroundMusic,
-                  children: [
-                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih background music" }) }),
-                    /* @__PURE__ */ jsxs(SelectContent, { children: [
-                      /* @__PURE__ */ jsx(SelectItem, { value: "upbeat", children: "Upbeat" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "calm", children: "Calm" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "dramatic", children: "Dramatic" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "corporate", children: "Corporate" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "ambient", children: "Ambient" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "none", children: "Tidak ada musik" })
-                    ] })
-                  ]
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Resolusi Video",
-                " ",
-                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-              ] }),
-              /* @__PURE__ */ jsxs(
-                Select,
-                {
-                  value: data.resolusiVideo,
-                  onValueChange: updateResolusiVideo,
-                  children: [
-                    /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih resolusi video" }) }),
-                    /* @__PURE__ */ jsxs(SelectContent, { children: [
-                      /* @__PURE__ */ jsx(SelectItem, { value: "1080p", children: "1080p (Full HD)" }),
-                      /* @__PURE__ */ jsx(SelectItem, { value: "720p", children: "720p (HD)" })
-                    ] })
-                  ]
-                }
-              )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsxs("label", { className: "text-sm font-medium mb-2 block", children: [
-                "Share Video Public",
-                " ",
-                /* @__PURE__ */ jsx("span", { className: "text-gray-500", children: "(Opsional)" })
-              ] }),
-              /* @__PURE__ */ jsxs(Select, { value: data.isShare, onValueChange: updateIsShare, children: [
-                /* @__PURE__ */ jsx(SelectTrigger, { className: "w-full", children: /* @__PURE__ */ jsx(SelectValue, { placeholder: "Pilih visibility video" }) }),
-                /* @__PURE__ */ jsxs(SelectContent, { children: [
-                  /* @__PURE__ */ jsx(SelectItem, { value: "y", children: "Share Public" }),
-                  /* @__PURE__ */ jsx(SelectItem, { value: "n", children: "Private" })
-                ] })
-              ] })
-            ] })
-          ] })
-        ] })
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6", children: [
-        /* @__PURE__ */ jsxs(Card, { children: [
-          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-            /* @__PURE__ */ jsx(Star, { className: "w-5 h-5" }),
-            /* @__PURE__ */ jsx("span", { children: "Preview" })
-          ] }) }),
-          /* @__PURE__ */ jsxs(CardContent$1, { className: "space-y-3", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Bahasa:" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.bahasa || "Belum dipilih" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Gaya Suara:" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.gayaSuara || "Belum dipilih" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Tone:" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.tone || "Belum dipilih" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Background Musik:" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.backgroundMusic || "Belum dipilih" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Resolusi:" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.resolusiVideo || "Belum dipilih" })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex justify-between", children: [
-              /* @__PURE__ */ jsx("span", { className: "text-sm text-muted-foreground", children: "Voice Over:" }),
-              /* @__PURE__ */ jsx(Badge, { variant: "secondary", children: data.voiceOver || "Belum dipilih" })
-            ] })
-          ] })
-        ] }),
-        /* @__PURE__ */ jsxs(Card, { children: [
-          /* @__PURE__ */ jsx(CardHeader, { children: /* @__PURE__ */ jsxs(CardTitle, { className: "flex items-center space-x-2", children: [
-            /* @__PURE__ */ jsx(Lightbulb, { className: "w-5 h-5" }),
-            /* @__PURE__ */ jsx("span", { children: "Tips" })
-          ] }) }),
-          /* @__PURE__ */ jsx(CardContent$1, { children: /* @__PURE__ */ jsxs("ul", { className: "space-y-2 text-sm text-muted-foreground", children: [
-            /* @__PURE__ */ jsx("li", { children: "• Gunakan kalimat yang jelas dan tidak terlalu panjang" }),
-            /* @__PURE__ */ jsx("li", { children: "• Tambahkan jeda dengan tanda koma atau titik" }),
-            /* @__PURE__ */ jsx("li", { children: "• Hindari singkatan yang sulit diucapkan" }),
-            /* @__PURE__ */ jsx("li", { children: "• Jelaskan script dengan detail agar menghasilkan video yang diinginkan" })
-          ] }) })
-        ] })
-      ] })
-    ] }) })
-  ] });
-}
-
-function SetupSection() {
-  const { data, updateCharacter } = useVideoSetup();
-  const [characterType, setCharacterType] = useState("all");
-  const [characterStyle, setCharacterStyle] = useState("all");
-  const [characters, setCharacters] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [uploading, setUploading] = useState(false);
-  const [isCharacterSectionOpen, setIsCharacterSectionOpen] = useState(false);
-  const [isBackgroundSectionOpen, setIsBackgroundSectionOpen] = useState(false);
-  const [isVideoDetailSectionOpen, setIsVideoDetailSectionOpen] = useState(false);
-  useEffect(() => {
-    const fetchCharacters = async () => {
-      try {
-        setLoading(true);
-        const data2 = await charactersApi.getCharacters();
-        setCharacters(data2);
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : "Failed to fetch characters"
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchCharacters();
-  }, []);
-  useEffect(() => {
-    if (data.characterImage && !data.selectedCharacter && characters.length > 0) {
-      const matchingCharacter = characters.find(
-        (char) => char.image === data.characterImage
-      );
-      if (matchingCharacter) {
-        updateCharacter(matchingCharacter.id, data.characterImage);
-      } else {
-        updateCharacter("upload", data.characterImage);
-      }
-    }
-  }, [
-    data.characterImage,
-    characters,
-    data.selectedCharacter,
-    updateCharacter
-  ]);
-  const isFormValid = () => {
-    return data.judulVideo.trim() !== "" && data.prompt.trim() !== "" && data.aspekRasio !== "";
-  };
-  const handleContinueToPayment = () => {
-    videoSetupStorage.save({
-      prompt: data.prompt,
-      karakter_image: data.characterImage || "",
-      background_image: data.backgroundImage || "",
-      aspek_rasio: data.aspekRasio,
-      judul_video: data.judulVideo,
-      bahasa: data.bahasa,
-      gaya_suara: data.gayaSuara,
-      voice_over: data.voiceOver,
-      tone: data.tone,
-      background_music: data.backgroundMusic,
-      resolusi_video: data.resolusiVideo,
-      is_share: data.isShare
-    });
-    window.location.href = "/pembayaran";
-  };
-  const handleCharacterSelect = async (characterId) => {
-    if (characterId === "upload") {
-      const input = document.createElement("input");
-      input.type = "file";
-      input.accept = "image/*";
-      input.onchange = async (e) => {
-        const file = e.target.files?.[0];
-        if (file) {
-          try {
-            setUploading(true);
-            setError(null);
-            const base64 = await new Promise((resolve) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.readAsDataURL(file);
-            });
-            const result = await uploadApi.uploadImage(base64);
-            setCharacters(
-              (prev) => prev.map(
-                (char) => char.id === "upload" ? {
-                  ...char,
-                  image: result.url,
-                  description: "Foto yang diupload"
-                } : char
-              )
-            );
-            updateCharacter(characterId, result.url);
-          } catch (err) {
-            setError(err instanceof Error ? err.message : "Upload failed");
-          } finally {
-            setUploading(false);
-          }
-        }
-      };
-      input.click();
-    } else {
-      const character = characters.find((char) => char.id === characterId);
-      updateCharacter(characterId, character?.image || null);
-    }
-  };
-  return /* @__PURE__ */ jsxs("div", { className: "w-full px-4 sm:px-6 lg:px-8", children: [
-    /* @__PURE__ */ jsxs("div", { className: "text-center mb-8 sm:mb-12", children: [
-      /* @__PURE__ */ jsx("h1", { className: "text-2xl sm:text-3xl lg:text-4xl font-bold text-foreground mb-3 sm:mb-4", children: "Setup Video AI Anda" }),
-      /* @__PURE__ */ jsx("p", { className: "text-sm sm:text-base lg:text-lg text-muted-foreground max-w-3xl mx-auto px-4", children: "Lengkapi semua pengaturan untuk video AI Anda dalam satu langkah. Pilih karakter, tulis script, dan tentukan environment untuk hasil terbaik." })
-    ] }),
-    /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsxs("div", { className: "bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700", children: [
-      /* @__PURE__ */ jsx(
-        "button",
-        {
-          onClick: () => setIsCharacterSectionOpen(!isCharacterSectionOpen),
-          className: "w-full px-4 py-4 sm:px-6 sm:py-5 text-left hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors rounded-lg",
-          children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3 flex-1 justify-center", children: [
-              /* @__PURE__ */ jsx("div", { className: "p-2 bg-purple-100 dark:bg-purple-900 rounded-lg", children: /* @__PURE__ */ jsx(User, { className: "w-5 h-5 text-purple-600 dark:text-purple-400" }) }),
-              /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
-                /* @__PURE__ */ jsx("h2", { className: "text-lg sm:text-xl font-semibold text-foreground", children: "Pilih Avatar / Karakter AI - Opsional" }),
-                /* @__PURE__ */ jsx("p", { className: "text-sm text-muted-foreground", children: data.selectedCharacter ? `Karakter dipilih: ${characters.find(
-                  (c) => c.id === data.selectedCharacter
-                )?.title || "Custom"}` : "Pilih karakter yang sesuai dengan kebutuhan video Anda (Opsional)" })
-              ] })
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
-              data.selectedCharacter && /* @__PURE__ */ jsx("div", { className: "px-2 py-1 bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 text-xs rounded-full", children: "Dipilih" }),
-              isCharacterSectionOpen ? /* @__PURE__ */ jsx(ChevronUp, { className: "w-5 h-5 text-gray-500" }) : /* @__PURE__ */ jsx(ChevronDown, { className: "w-5 h-5 text-gray-500" })
-            ] })
-          ] })
-        }
-      ),
-      isCharacterSectionOpen && /* @__PURE__ */ jsx("div", { className: "px-4 pb-4 sm:px-6 sm:pb-6", children: /* @__PURE__ */ jsx("div", { className: "flex justify-center", children: /* @__PURE__ */ jsx("div", { className: "w-full max-w-7xl", children: loading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Loading characters..." }) }) : uploading ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsx("div", { className: "text-sm sm:text-base text-muted-foreground", children: "Uploading image..." }) }) : error ? /* @__PURE__ */ jsx("div", { className: "text-center py-6 sm:py-8", children: /* @__PURE__ */ jsxs("div", { className: "text-sm sm:text-base text-red-500", children: [
-        "Error: ",
-        error
-      ] }) }) : /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-3 sm:gap-4 md:gap-6", children: characters.map((character) => /* @__PURE__ */ jsx(
-        CharacterCard,
-        {
-          type: character.type,
-          title: character.title,
-          description: character.description || void 0,
-          image: character.image || void 0,
-          tags: character.tags || void 0,
-          isSelected: data.selectedCharacter === character.id,
-          onClick: () => handleCharacterSelect(character.id)
-        },
-        character.id
-      )) }) }) }) })
-    ] }) }),
-    /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsx(BackgroundGallery, {}) }),
-    /* @__PURE__ */ jsx("div", { className: "mb-6 sm:mb-8", children: /* @__PURE__ */ jsx(VideoDetailSection, {}) }),
-    /* @__PURE__ */ jsxs("div", { className: "flex flex-col items-center px-4", children: [
-      !isFormValid() && !uploading && /* @__PURE__ */ jsx("p", { className: "text-sm text-red-500 mb-3 text-center", children: "Lengkapi field yang wajib diisi: Judul Video, Aspek Rasio, dan Script" }),
-      /* @__PURE__ */ jsx(
-        Button,
-        {
-          size: "lg",
-          className: "w-full sm:w-auto bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-sm sm:text-base",
-          disabled: uploading || !isFormValid(),
-          onClick: handleContinueToPayment,
-          children: uploading ? "Uploading..." : "Lanjutkan ke Pembayaran"
-        }
-      )
-    ] })
-  ] });
-}
-
-function SetupPage() {
-  return /* @__PURE__ */ jsx(VideoSetupProvider, { children: /* @__PURE__ */ jsx(SetupSection, {}) });
-}
-
-function Card2({ className, ...props }) {
-  return /* @__PURE__ */ jsx(
-    "div",
-    {
-      "data-slot": "card2",
-      className: cn(
-        "bg-card text-card-foreground flex flex-col gap-6 rounded-xl border shadow-sm transition-all duration-200",
-        className
-      ),
-      ...props
-    }
-  );
-}
-function CardContent({ className, ...props }) {
-  return /* @__PURE__ */ jsx(
-    "div",
-    {
-      "data-slot": "card-content",
-      className: cn("px-6", className),
-      ...props
-    }
-  );
-}
-
-const convertApiDataToVideoItem = (apiItem) => {
-  const tags = apiItem.prompt.split(" ").filter((word) => word.length > 3).slice(0, 3).map((word) => word.replace(/[.,!?]/g, ""));
-  const duration = Math.floor(apiItem.prompt.length / 50) + 1;
-  const minutes = Math.floor(duration / 60);
-  const seconds = duration % 60;
-  const durationStr = `${minutes}:${seconds.toString().padStart(2, "0")}`;
-  return {
-    id: apiItem.id.toString(),
-    title: apiItem.prompt.length > 50 ? apiItem.prompt.substring(0, 50) + "..." : apiItem.prompt,
-    creator: apiItem.user.name,
-    likes: Math.floor(Math.random() * 500) + 10,
-    // Random likes for demo
-    thumbnail: apiItem.url_video,
-    // Use video URL as thumbnail
-    duration: durationStr,
-    tags,
-    isVideo: true,
-    url_video: apiItem.url_video,
-    prompt: apiItem.prompt
-  };
 };
-function VideoGallery({ onVideoClick }) {
-  const [selectedVideo, setSelectedVideo] = useState(null);
-  const [videoDetail, setVideoDetail] = useState(null);
-  const [loadingDetail, setLoadingDetail] = useState(false);
+function VideoGallery() {
+  const [selectedVideo, setSelectedVideo] = useState(
+    null
+  );
   const [videos, setVideos] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+  const [userEmails, setUserEmails] = useState({});
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (savedLanguage && translations$1[savedLanguage]) {
+      setSelectedLanguage(savedLanguage);
+    }
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (newLanguage && translations$1[newLanguage]) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
   useEffect(() => {
     const fetchVideos = async () => {
       try {
@@ -1009,15 +130,21 @@ function VideoGallery({ onVideoClick }) {
         setError(null);
         const response = await publicVideoGalleryApi.getPublicVideos(
           currentPage,
-          10
+          12
         );
-        const convertedVideos = response.data.map(convertApiDataToVideoItem);
         if (currentPage === 1) {
-          setVideos(convertedVideos);
+          setVideos(response.data);
         } else {
-          setVideos((prevVideos) => [...prevVideos, ...convertedVideos]);
+          setVideos((prevVideos) => [...prevVideos, ...response.data]);
         }
         setTotalPages(response.last_page);
+        const emailMap = {};
+        response.data.forEach((video) => {
+          if (video.user && video.user.email) {
+            emailMap[video.user_id] = video.user.email;
+          }
+        });
+        setUserEmails((prev) => ({ ...prev, ...emailMap }));
       } catch (err) {
         console.error("Error fetching videos:", err);
         setError("Failed to load videos. Please try again later.");
@@ -1028,19 +155,8 @@ function VideoGallery({ onVideoClick }) {
     };
     fetchVideos();
   }, [currentPage]);
-  const handleVideoClick = async (video) => {
+  const handleVideoClick = (video) => {
     setSelectedVideo(video);
-    setLoadingDetail(true);
-    setVideoDetail(null);
-    try {
-      const response = await publicVideoGalleryApi.getVideoDetail(video.id);
-      setVideoDetail(response.data);
-    } catch (error2) {
-      console.error("Error fetching video detail:", error2);
-    } finally {
-      setLoadingDetail(false);
-    }
-    onVideoClick?.(video);
   };
   const handleLoadMore = () => {
     if (currentPage < totalPages && !loading && !loadingMore) {
@@ -1052,267 +168,543 @@ function VideoGallery({ onVideoClick }) {
     setVideos([]);
     setError(null);
   };
+  const formatDate = (dateString) => {
+    const date = new Date(dateString);
+    const locale = selectedLanguage === "ID" ? "id-ID" : selectedLanguage === "ZH" ? "zh-CN" : selectedLanguage === "AR" ? "ar-SA" : "en-US";
+    return date.toLocaleDateString(locale, {
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    });
+  };
+  const censorEmail = (email) => {
+    if (!email) return "";
+    const [username, domain] = email.split("@");
+    if (username.length <= 4) {
+      return `${username[0]}${"*".repeat(username.length - 1)}@${domain}`;
+    }
+    const visibleStart = Math.floor(username.length / 3);
+    const visibleEnd = Math.floor(username.length * 2 / 3);
+    const censored = username.substring(0, visibleStart) + "*".repeat(visibleEnd - visibleStart) + username.substring(visibleEnd);
+    return `${censored}@${domain}`;
+  };
+  const getVideoDescription = (video) => {
+    if (video.prompt && typeof video.prompt === "string") {
+      const promptText = video.prompt;
+      const descriptionMatch = promptText.match(
+        /Deskripsi[:\s]*(.*?)(?=\n\n|\nSub Scene|$)/s
+      );
+      if (descriptionMatch && descriptionMatch[1]) {
+        return descriptionMatch[1].trim();
+      }
+      return promptText.length > 200 ? promptText.substring(0, 200) + "..." : promptText;
+    }
+    return "No description available";
+  };
+  const t = translations$1[selectedLanguage];
   return /* @__PURE__ */ jsxs("div", { className: "w-full", children: [
-    /* @__PURE__ */ jsxs("div", { className: "text-center mb-12", children: [
-      /* @__PURE__ */ jsx("h2", { className: "text-4xl font-light text-foreground mb-6 tracking-tight", children: "Galeri Video" }),
-      /* @__PURE__ */ jsx("p", { className: "text-muted-foreground max-w-2xl mx-auto text-lg leading-relaxed", children: "Klik Video untuk Lihat Detail Video dan Promptnya." })
+    /* @__PURE__ */ jsxs("div", { className: "text-center mb-16 relative", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" }),
+      /* @__PURE__ */ jsxs("div", { className: "relative z-10", children: [
+        /* @__PURE__ */ jsxs("div", { className: "inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-6", children: [
+          /* @__PURE__ */ jsx(Sparkles, { className: "w-4 h-4 text-purple-400" }),
+          /* @__PURE__ */ jsx("span", { className: "text-sm font-medium text-purple-300", children: t.badge })
+        ] }),
+        /* @__PURE__ */ jsx("h2", { className: "text-5xl md:text-6xl font-bold mb-6 tracking-tight", children: /* @__PURE__ */ jsx("span", { className: "bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient", children: t.title }) }),
+        /* @__PURE__ */ jsx("p", { className: "text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed", children: t.description })
+      ] })
     ] }),
-    loading && /* @__PURE__ */ jsx("div", { className: "flex justify-center items-center py-16", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
-      /* @__PURE__ */ jsx(Loader2, { className: "w-6 h-6 animate-spin text-gray-400" }),
-      /* @__PURE__ */ jsx("span", { className: "text-muted-foreground text-sm", children: "Loading videos..." })
+    loading && /* @__PURE__ */ jsx("div", { className: "flex justify-center items-center py-24", children: /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-20 animate-pulse" }),
+      /* @__PURE__ */ jsxs("div", { className: "relative flex flex-col items-center space-y-4 bg-slate-900/50 border border-purple-500/20 rounded-2xl px-12 py-8 backdrop-blur-sm", children: [
+        /* @__PURE__ */ jsx(Loader2, { className: "w-8 h-8 animate-spin text-purple-400" }),
+        /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx("p", { className: "text-gray-300 text-sm font-medium", children: t.loadingTitle }),
+          /* @__PURE__ */ jsx("p", { className: "text-gray-500 text-xs mt-1", children: t.loadingDesc })
+        ] })
+      ] })
     ] }) }),
-    error && /* @__PURE__ */ jsxs("div", { className: "text-center py-16", children: [
-      /* @__PURE__ */ jsx("p", { className: "text-gray-600 mb-6 text-sm", children: error }),
+    error && /* @__PURE__ */ jsx("div", { className: "text-center py-24", children: /* @__PURE__ */ jsxs("div", { className: "max-w-md mx-auto bg-gradient-to-br from-red-500/5 to-orange-500/5 border border-red-500/20 rounded-2xl p-8", children: [
+      /* @__PURE__ */ jsx("div", { className: "w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx(Video, { className: "w-8 h-8 text-red-400" }) }),
+      /* @__PURE__ */ jsx("p", { className: "text-gray-300 mb-6 text-sm", children: t.errorMessage }),
       /* @__PURE__ */ jsx(
         Button,
         {
           onClick: handleRefresh,
-          variant: "outline",
-          className: "border-gray-200 hover:border-gray-300 hover:bg-gray-50",
-          children: "Try Again"
+          className: "bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-purple-500/20",
+          children: t.retryButton
         }
       )
-    ] }),
-    !loading && !error && /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6", children: videos.map((video) => /* @__PURE__ */ jsx(
-      Card2,
-      {
-        className: "group cursor-pointer transition-all duration-300 hover:shadow-2xl border-0 bg-white overflow-hidden rounded-xl aspect-video",
-        onClick: () => handleVideoClick(video),
-        children: /* @__PURE__ */ jsx(CardContent, { className: "p-0 relative h-full", children: /* @__PURE__ */ jsxs("div", { className: "relative w-full h-full overflow-hidden", children: [
-          video.url_video ? /* @__PURE__ */ jsx(
-            "video",
-            {
-              className: "w-full h-full object-cover transition-transform duration-500 group-hover:scale-105",
-              muted: true,
-              loop: true,
-              playsInline: true,
-              preload: "metadata",
-              onMouseEnter: (e) => {
-                e.currentTarget.play();
-              },
-              onMouseLeave: (e) => {
-                e.currentTarget.pause();
-                e.currentTarget.currentTime = 0;
-              },
-              children: /* @__PURE__ */ jsx("source", { src: video.url_video, type: "video/mp4" })
-            }
-          ) : /* @__PURE__ */ jsx("div", { className: "w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center", children: /* @__PURE__ */ jsxs("div", { className: "text-gray-500 text-center px-4", children: [
-            /* @__PURE__ */ jsx("div", { className: "text-lg font-medium mb-1", children: video.title.split(" ").slice(0, 2).join(" ") }),
-            /* @__PURE__ */ jsx("div", { className: "text-sm opacity-70", children: video.title.split(" ").slice(2).join(" ") })
-          ] }) }),
-          /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-black/70 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" }),
-          /* @__PURE__ */ jsxs("div", { className: "absolute inset-0 flex flex-col justify-end p-5 opacity-0 group-hover:opacity-100 transition-opacity duration-300", children: [
-            /* @__PURE__ */ jsx("div", { className: "text-white mb-4", children: /* @__PURE__ */ jsx("p", { className: "text-sm leading-relaxed line-clamp-3 font-medium", children: video.prompt || video.title }) }),
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center text-white/90 text-xs", children: [
-              /* @__PURE__ */ jsx(User, { className: "w-3 h-3 mr-2" }),
-              /* @__PURE__ */ jsx("span", { className: "truncate font-medium", children: video.creator })
-            ] })
-          ] }),
-          !video.url_video && video.isVideo && /* @__PURE__ */ jsx("div", { className: "absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300", children: /* @__PURE__ */ jsx("div", { className: "bg-white/95 rounded-full p-4 shadow-lg", children: /* @__PURE__ */ jsx(Play, { className: "w-6 h-6 text-gray-700 fill-current" }) }) })
-        ] }) })
-      },
-      video.id
-    )) }),
-    !loading && !error && currentPage < totalPages && /* @__PURE__ */ jsx("div", { className: "text-center mt-12", children: /* @__PURE__ */ jsx(
-      Button,
-      {
-        onClick: handleLoadMore,
-        variant: "outline",
-        size: "lg",
-        disabled: loadingMore,
-        className: "px-8 py-3 border-gray-200 hover:border-gray-300 hover:bg-gray-50 transition-colors duration-200",
-        children: loadingMore ? /* @__PURE__ */ jsxs(Fragment, { children: [
-          /* @__PURE__ */ jsx(Loader2, { className: "w-4 h-4 mr-2 animate-spin" }),
-          "Loading..."
-        ] }) : `Load More Videos (${videos.length} of ${totalPages * 10})`
-      }
-    ) }),
-    !loading && !error && currentPage >= totalPages && videos.length > 0 && /* @__PURE__ */ jsx("div", { className: "text-center mt-12", children: /* @__PURE__ */ jsxs("p", { className: "text-muted-foreground text-sm", children: [
-      "You've reached the end! (",
-      videos.length,
-      " videos loaded)"
+    ] }) }),
+    !loading && !error && /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6", children: videos.map((videoGroup, index) => {
+      const displayVideo = videoGroup.final_url_merge_video;
+      if (!displayVideo) return null;
+      return /* @__PURE__ */ jsxs(
+        "div",
+        {
+          className: "group cursor-pointer relative",
+          onClick: () => handleVideoClick(videoGroup),
+          children: [
+            /* @__PURE__ */ jsx("div", { className: "absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-0 group-hover:opacity-30 blur-xl transition-all duration-500 group-hover:duration-200" }),
+            /* @__PURE__ */ jsx("div", { className: "relative overflow-hidden rounded-2xl border border-slate-800/50 bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-sm aspect-video transition-all duration-300 group-hover:border-purple-500/50 group-hover:shadow-2xl group-hover:shadow-purple-500/20 group-hover:scale-[1.02]", children: /* @__PURE__ */ jsxs("div", { className: "relative w-full h-full", children: [
+              /* @__PURE__ */ jsx(
+                "video",
+                {
+                  className: "w-full h-full object-cover transition-all duration-700 group-hover:scale-110",
+                  muted: true,
+                  loop: true,
+                  playsInline: true,
+                  preload: "metadata",
+                  onMouseEnter: (e) => {
+                    e.currentTarget.play();
+                  },
+                  onMouseLeave: (e) => {
+                    e.currentTarget.pause();
+                    e.currentTarget.currentTime = 0;
+                  },
+                  children: /* @__PURE__ */ jsx("source", { src: displayVideo, type: "video/mp4" })
+                }
+              ),
+              /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" }),
+              /* @__PURE__ */ jsx("div", { className: "absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100", children: /* @__PURE__ */ jsx("div", { className: "bg-gradient-to-r from-purple-500 to-blue-500 rounded-full p-6 shadow-2xl shadow-purple-500/50", children: /* @__PURE__ */ jsx(Play, { className: "w-8 h-8 text-white fill-current" }) }) }),
+              /* @__PURE__ */ jsxs("div", { className: "absolute bottom-4 left-4 flex items-center space-x-2 bg-slate-900/80 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0", children: [
+                /* @__PURE__ */ jsx(Calendar, { className: "w-3 h-3 text-purple-400" }),
+                /* @__PURE__ */ jsx("span", { className: "text-xs text-gray-300 font-medium", children: formatDate(videoGroup.created_at) })
+              ] })
+            ] }) })
+          ]
+        },
+        `${videoGroup.id}-${index}`
+      );
+    }) }),
+    !loading && !error && currentPage < totalPages && /* @__PURE__ */ jsx("div", { className: "text-center mt-16", children: /* @__PURE__ */ jsxs("div", { className: "relative inline-block", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-20" }),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          onClick: handleLoadMore,
+          size: "lg",
+          disabled: loadingMore,
+          className: "relative bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-xl shadow-purple-500/30 px-8 py-6 text-base font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100",
+          children: loadingMore ? /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx(Loader2, { className: "w-5 h-5 mr-2 animate-spin" }),
+            t.loadingButton
+          ] }) : /* @__PURE__ */ jsxs(Fragment, { children: [
+            /* @__PURE__ */ jsx(Sparkles, { className: "w-5 h-5 mr-2" }),
+            t.loadMoreButton
+          ] })
+        }
+      )
+    ] }) }),
+    !loading && !error && currentPage >= totalPages && videos.length > 0 && /* @__PURE__ */ jsx("div", { className: "text-center mt-16", children: /* @__PURE__ */ jsxs("div", { className: "inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-6 py-3", children: [
+      /* @__PURE__ */ jsx("div", { className: "w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse" }),
+      /* @__PURE__ */ jsx("p", { className: "text-gray-400 text-sm font-medium", children: t.endMessage })
     ] }) }),
     selectedVideo && /* @__PURE__ */ jsx(
       VideoModal,
       {
         video: selectedVideo,
-        videoDetail,
-        loadingDetail,
-        onClose: () => {
-          setSelectedVideo(null);
-          setVideoDetail(null);
-        }
+        onClose: () => setSelectedVideo(null),
+        formatDate,
+        translations: t,
+        userEmails,
+        censorEmail,
+        getVideoDescription
       }
-    )
+    ),
+    /* @__PURE__ */ jsx("style", { children: `
+        @keyframes gradient {
+          0%, 100% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+        }
+        .animate-gradient {
+          animation: gradient 6s ease infinite;
+        }
+      ` })
   ] });
 }
 function VideoModal({
   video,
-  videoDetail,
-  loadingDetail,
-  onClose
+  onClose,
+  formatDate,
+  translations: translations2,
+  userEmails,
+  censorEmail,
+  getVideoDescription
 }) {
-  return /* @__PURE__ */ jsxs("div", { className: "fixed inset-0 z-50 flex items-center justify-center", children: [
+  const displayVideo = video.final_url_merge_video;
+  const [isMuted, setIsMuted] = useState(true);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const videoRef = useRef(null);
+  const toggleMute = () => {
+    if (videoRef.current) {
+      videoRef.current.muted = !videoRef.current.muted;
+      setIsMuted(videoRef.current.muted);
+    }
+  };
+  const togglePlayPause = () => {
+    if (videoRef.current) {
+      if (videoRef.current.paused) {
+        videoRef.current.play();
+        setIsPlaying(true);
+      } else {
+        videoRef.current.pause();
+        setIsPlaying(false);
+      }
+    }
+  };
+  return /* @__PURE__ */ jsxs("div", { className: "fixed inset-0 z-[9999] flex items-center justify-center p-4", children: [
     /* @__PURE__ */ jsx(
       "div",
       {
-        className: "absolute inset-0 bg-background/80 backdrop-blur-sm",
+        className: "absolute inset-0 bg-slate-950/95 backdrop-blur-xl",
         onClick: onClose
       }
     ),
-    /* @__PURE__ */ jsxs("div", { className: "relative bg-background border shadow-2xl w-full h-full max-w-none max-h-none overflow-hidden", children: [
-      /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between p-6 border-b bg-background/95 backdrop-blur-sm", children: [
-        /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-4", children: [
-          /* @__PURE__ */ jsx(
-            Button,
+    /* @__PURE__ */ jsxs("div", { className: "relative w-full max-w-4xl mx-auto", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-30 blur-2xl" }),
+      /* @__PURE__ */ jsxs("div", { className: "relative bg-black rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20", children: [
+        /* @__PURE__ */ jsx(
+          "button",
+          {
+            onClick: onClose,
+            className: "absolute top-4 right-4 z-20 text-white hover:text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm",
+            children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
+          }
+        ),
+        /* @__PURE__ */ jsx("div", { className: "relative aspect-video bg-black", children: displayVideo ? /* @__PURE__ */ jsxs("div", { className: "relative w-full h-full", children: [
+          /* @__PURE__ */ jsx("div", { className: "absolute -inset-2 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 blur-2xl" }),
+          /* @__PURE__ */ jsxs(
+            "video",
             {
-              variant: "ghost",
-              size: "sm",
-              onClick: onClose,
-              className: "text-foreground hover:bg-muted",
-              children: "←"
+              ref: videoRef,
+              controls: false,
+              autoPlay: true,
+              loop: true,
+              muted: isMuted,
+              playsInline: true,
+              className: "relative w-full h-full object-cover",
+              onPlay: () => setIsPlaying(true),
+              onPause: () => setIsPlaying(false),
+              children: [
+                /* @__PURE__ */ jsx("source", { src: displayVideo, type: "video/mp4" }),
+                "Your browser does not support the video tag."
+              ]
             }
           ),
-          /* @__PURE__ */ jsx("div", { children: /* @__PURE__ */ jsx("h2", { className: "text-xl font-semibold text-foreground", children: video.title }) })
+          /* @__PURE__ */ jsxs("div", { className: "absolute inset-0 pointer-events-none", children: [
+            /* @__PURE__ */ jsx("div", { className: "absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent" }),
+            /* @__PURE__ */ jsxs("div", { className: "absolute top-4 left-4 flex items-center space-x-2 pointer-events-auto", children: [
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  onClick: togglePlayPause,
+                  className: "bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110",
+                  children: isPlaying ? /* @__PURE__ */ jsx(Pause, { className: "w-4 h-4 text-white" }) : /* @__PURE__ */ jsx(Play, { className: "w-4 h-4 text-white" })
+                }
+              ),
+              /* @__PURE__ */ jsx(
+                "button",
+                {
+                  onClick: toggleMute,
+                  className: "bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110",
+                  children: isMuted ? /* @__PURE__ */ jsx(VolumeX, { className: "w-4 h-4 text-white" }) : /* @__PURE__ */ jsx(Volume2, { className: "w-4 h-4 text-white" })
+                }
+              )
+            ] }),
+            /* @__PURE__ */ jsxs("div", { className: "absolute bottom-4 left-4 right-4 space-y-3 max-w-md", children: [
+              /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
+                /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx("span", { className: "text-white text-sm font-bold", children: userEmails[video.user_id] ? userEmails[video.user_id].charAt(0).toUpperCase() : "?" }) }),
+                /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+                  /* @__PURE__ */ jsx("p", { className: "text-white font-semibold text-sm truncate", children: userEmails[video.user_id] ? censorEmail(userEmails[video.user_id]) : "Loading..." }),
+                  /* @__PURE__ */ jsx("p", { className: "text-gray-300 text-xs", children: formatDate(video.created_at) })
+                ] })
+              ] }),
+              /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsx("p", { className: "text-white text-sm leading-relaxed line-clamp-3", children: getVideoDescription(video) }) })
+            ] }),
+            /* @__PURE__ */ jsx("div", { className: "absolute top-4 right-4", children: /* @__PURE__ */ jsx("div", { className: "bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/20", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
+              /* @__PURE__ */ jsx(Calendar, { className: "w-3 h-3 text-purple-400" }),
+              /* @__PURE__ */ jsx("span", { className: "text-white text-xs font-medium", children: formatDate(video.created_at) })
+            ] }) }) })
+          ] })
+        ] }) : /* @__PURE__ */ jsx("div", { className: "aspect-video bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center", children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+          /* @__PURE__ */ jsx(Video, { className: "w-24 h-24 mx-auto mb-6 text-purple-500/30" }),
+          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-gray-300 mb-4", children: translations2.videoNotAvailable }),
+          /* @__PURE__ */ jsx("p", { className: "text-gray-500", children: translations2.videoUnavailableDesc })
+        ] }) }) })
+      ] })
+    ] }),
+    /* @__PURE__ */ jsx("style", { children: `
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      ` })
+  ] });
+}
+
+const translations = {
+  ID: {
+    welcomeMessage: "👋 Halo! Anda bisa membuat video realistic tanpa harus mengetik prompt lengkap. Apakah ada yang bisa saya bantu?",
+    startConsultation: "Mulai Konsultasi",
+    aiAssistant: "AI Assistant",
+    readyToHelp: "Siap membantu Anda",
+    greetingBold: "Halo!",
+    greetingMessage: "Saya adalah AI Assistant yang siap membantu Anda membuat video realistic tanpa harus mengetik prompt lengkap!",
+    canIHelp: "Apakah ada yang bisa saya bantu?",
+    tellMe: "Ceritakan saja apa yang ingin Anda buat, dan saya akan membantu mewujudkannya.",
+    justNow: "Baru saja",
+    placeholder: "Ketik pesan Anda di sini...",
+    pressEnter: "Tekan Enter untuk mengirim pesan"
+  },
+  EN: {
+    welcomeMessage: "👋 Hello! You can create realistic videos without typing full prompts. Can I help you with something?",
+    startConsultation: "Start Consultation",
+    aiAssistant: "AI Assistant",
+    readyToHelp: "Ready to help you",
+    greetingBold: "Hello!",
+    greetingMessage: "I am an AI Assistant ready to help you create realistic videos without typing full prompts!",
+    canIHelp: "Can I help you with something?",
+    tellMe: "Just tell me what you want to create, and I'll help make it happen.",
+    justNow: "Just now",
+    placeholder: "Type your message here...",
+    pressEnter: "Press Enter to send message"
+  },
+  ZH: {
+    welcomeMessage: "👋 你好！您可以在不输入完整提示的情况下创建逼真的视频。我能帮您什么吗？",
+    startConsultation: "开始咨询",
+    aiAssistant: "AI 助手",
+    readyToHelp: "随时为您服务",
+    greetingBold: "你好！",
+    greetingMessage: "我是 AI 助手，可以帮助您在不输入完整提示的情况下创建逼真的视频！",
+    canIHelp: "我能帮您什么吗？",
+    tellMe: "只需告诉我您想创建什么，我会帮助实现它。",
+    justNow: "刚刚",
+    placeholder: "在此输入您的消息...",
+    pressEnter: "按 Enter 发送消息"
+  },
+  AR: {
+    welcomeMessage: "👋 مرحبًا! يمكنك إنشاء مقاطع فيديو واقعية دون كتابة مطالبات كاملة. هل يمكنني مساعدتك في شيء؟",
+    startConsultation: "بدء الاستشارة",
+    aiAssistant: "مساعد الذكاء الاصطناعي",
+    readyToHelp: "جاهز لمساعدتك",
+    greetingBold: "مرحبًا!",
+    greetingMessage: "أنا مساعد الذكاء الاصطناعي جاهز لمساعدتك في إنشاء مقاطع فيديو واقعية دون كتابة مطالبات كاملة!",
+    canIHelp: "هل يمكنني مساعدتك في شيء؟",
+    tellMe: "فقط أخبرني بما تريد إنشاءه، وسأساعد في تحقيقه.",
+    justNow: "الآن",
+    placeholder: "اكتب رسالتك هنا...",
+    pressEnter: "اضغط Enter لإرسال الرسالة"
+  }
+};
+function AIAssistantBubble() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [message, setMessage] = useState("");
+  const [showWelcome, setShowWelcome] = useState(false);
+  const [selectedLanguage, setSelectedLanguage] = useState("ID");
+  useEffect(() => {
+    const savedLanguage = localStorage.getItem("preferredLanguage");
+    if (savedLanguage && translations[savedLanguage]) {
+      setSelectedLanguage(savedLanguage);
+    }
+    const interval = setInterval(() => {
+      const currentLanguage = localStorage.getItem("preferredLanguage");
+      if (currentLanguage && currentLanguage !== selectedLanguage) {
+        setSelectedLanguage(currentLanguage);
+      }
+    }, 500);
+    const handleLanguageChange = () => {
+      const newLanguage = localStorage.getItem("preferredLanguage");
+      if (newLanguage && translations[newLanguage]) {
+        setSelectedLanguage(newLanguage);
+      }
+    };
+    window.addEventListener("languageChanged", handleLanguageChange);
+    return () => {
+      window.removeEventListener("languageChanged", handleLanguageChange);
+      clearInterval(interval);
+    };
+  }, [selectedLanguage]);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowWelcome(true);
+    }, 2e3);
+    return () => clearTimeout(timer);
+  }, []);
+  const handleSendMessage = () => {
+    if (message.trim()) {
+      localStorage.setItem("user-initial-message", message.trim());
+      window.location.href = "/konsultan-video";
+    }
+  };
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      handleSendMessage();
+    }
+  };
+  const t = translations[selectedLanguage];
+  return /* @__PURE__ */ jsxs(Fragment, { children: [
+    showWelcome && !isOpen && /* @__PURE__ */ jsx("div", { className: "fixed bottom-24 right-6 z-[9999] animate-in slide-in-from-right duration-500", children: /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute -inset-1 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl blur-lg opacity-30 animate-pulse" }),
+      /* @__PURE__ */ jsx("div", { className: "relative bg-gradient-to-br from-slate-900/95 to-slate-950/95 backdrop-blur-xl border border-purple-500/30 rounded-2xl shadow-2xl p-4 max-w-xs", children: /* @__PURE__ */ jsxs("div", { className: "flex items-start space-x-3", children: [
+        /* @__PURE__ */ jsxs("div", { className: "relative flex-shrink-0", children: [
+          /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-md opacity-40 animate-pulse" }),
+          /* @__PURE__ */ jsx("div", { className: "relative w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx(Bot, { className: "w-5 h-5 text-white" }) })
+        ] }),
+        /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
+          /* @__PURE__ */ jsx("p", { className: "text-white text-sm leading-relaxed mb-3", children: t.welcomeMessage }),
+          /* @__PURE__ */ jsxs(
+            Button,
+            {
+              size: "sm",
+              onClick: () => setIsOpen(true),
+              className: "w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white border-0 shadow-lg",
+              children: [
+                /* @__PURE__ */ jsx(Sparkles, { className: "w-4 h-4 mr-2" }),
+                t.startConsultation
+              ]
+            }
+          )
         ] }),
         /* @__PURE__ */ jsx(
           Button,
           {
             variant: "ghost",
             size: "sm",
-            onClick: onClose,
-            className: "text-foreground hover:bg-muted",
-            children: "✕"
+            onClick: () => setShowWelcome(false),
+            className: "text-gray-400 hover:text-white hover:bg-white/10 p-1 h-auto",
+            children: /* @__PURE__ */ jsx(X, { className: "w-4 h-4" })
           }
         )
-      ] }),
-      /* @__PURE__ */ jsxs("div", { className: "flex h-[calc(100vh-80px)]", children: [
-        /* @__PURE__ */ jsx("div", { className: "flex-1 bg-muted/50 relative", children: video.url_video ? /* @__PURE__ */ jsx("div", { className: "w-full h-full relative", children: /* @__PURE__ */ jsxs(
-          "video",
-          {
-            controls: true,
-            className: "w-full h-full object-cover",
-            poster: video.thumbnail,
-            children: [
-              /* @__PURE__ */ jsx("source", { src: video.url_video, type: "video/mp4" }),
-              "Your browser does not support the video tag."
-            ]
-          }
-        ) }) : /* @__PURE__ */ jsx("div", { className: "w-full h-full bg-gradient-to-br from-muted to-muted/80 flex items-center justify-center", children: /* @__PURE__ */ jsxs("div", { className: "text-foreground text-center", children: [
-          /* @__PURE__ */ jsx("div", { className: "text-4xl font-bold mb-4", children: video.title.split(" ").slice(0, 2).join(" ") }),
-          /* @__PURE__ */ jsx("div", { className: "text-lg opacity-80", children: video.title.split(" ").slice(2).join(" ") })
-        ] }) }) }),
-        /* @__PURE__ */ jsx("div", { className: "w-80 bg-background border-l overflow-y-auto", children: /* @__PURE__ */ jsxs("div", { className: "p-6 space-y-6", children: [
+      ] }) })
+    ] }) }),
+    /* @__PURE__ */ jsx("div", { className: "fixed bottom-6 right-6 z-50", children: !isOpen ? /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute -inset-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-lg opacity-30 animate-pulse" }),
+      showWelcome && /* @__PURE__ */ jsx("div", { className: "absolute -top-1 -right-1 z-10", children: /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+        /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-red-500 rounded-full blur-sm animate-pulse" }),
+        /* @__PURE__ */ jsx("div", { className: "relative w-3 h-3 bg-red-500 rounded-full border-2 border-white" })
+      ] }) }),
+      /* @__PURE__ */ jsx(
+        Button,
+        {
+          onClick: () => setIsOpen(true),
+          size: "lg",
+          className: "relative w-16 h-16 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-2xl shadow-purple-500/50 border-0 transition-all duration-300 hover:scale-110",
+          children: /* @__PURE__ */ jsx(MessageCircle, { className: "w-7 h-7 text-white" })
+        }
+      )
+    ] }) : /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+      /* @__PURE__ */ jsx("div", { className: "absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl" }),
+      /* @__PURE__ */ jsxs("div", { className: "relative bg-gradient-to-br from-slate-900/95 to-slate-950/95 backdrop-blur-xl border border-purple-500/30 rounded-3xl shadow-2xl w-96 overflow-hidden", children: [
+        /* @__PURE__ */ jsx("div", { className: "bg-gradient-to-r from-purple-600/20 to-blue-600/20 border-b border-white/10 p-4", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
           /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
-            /* @__PURE__ */ jsx("div", { className: "w-10 h-10 bg-muted rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx(User, { className: "w-5 h-5 text-muted-foreground" }) }),
-            /* @__PURE__ */ jsxs("div", { children: [
-              /* @__PURE__ */ jsx("p", { className: "text-foreground font-medium", children: video.creator }),
-              /* @__PURE__ */ jsxs("p", { className: "text-muted-foreground text-sm", children: [
-                "@",
-                video.creator.toLowerCase().replace(/\s+/g, "_")
-              ] })
-            ] })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("h3", { className: "text-foreground font-semibold mb-3", children: "Details" }),
-            /* @__PURE__ */ jsx("div", { className: "space-y-2", children: videoDetail && /* @__PURE__ */ jsxs(Fragment, { children: [
-              /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
-                /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Model:" }),
-                /* @__PURE__ */ jsx("span", { className: "text-foreground", children: videoDetail.model_ai })
-              ] }),
-              /* @__PURE__ */ jsxs("div", { className: "flex justify-between text-sm", children: [
-                /* @__PURE__ */ jsx("span", { className: "text-muted-foreground", children: "Aspect Ratio:" }),
-                /* @__PURE__ */ jsx("span", { className: "text-foreground", children: videoDetail.aspect_ratio })
-              ] })
-            ] }) })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsx("h3", { className: "text-foreground font-semibold mb-3", children: "Start" }),
-            /* @__PURE__ */ jsx("div", { className: "w-20 h-20 bg-muted rounded-lg flex items-center justify-center", children: video.url_video ? /* @__PURE__ */ jsx(
-              "video",
-              {
-                className: "w-full h-full object-cover rounded-lg",
-                muted: true,
-                children: /* @__PURE__ */ jsx("source", { src: video.url_video, type: "video/mp4" })
-              }
-            ) : /* @__PURE__ */ jsx(Play, { className: "w-6 h-6 text-muted-foreground" }) })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { children: [
-            /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between mb-3", children: [
-              /* @__PURE__ */ jsx("h3", { className: "text-foreground font-semibold", children: "Prompt" }),
-              /* @__PURE__ */ jsx(
-                Button,
-                {
-                  variant: "ghost",
-                  size: "sm",
-                  className: "text-muted-foreground hover:text-foreground",
-                  onClick: () => {
-                    if (videoDetail?.prompt) {
-                      navigator.clipboard.writeText(videoDetail.prompt);
-                    }
-                  },
-                  children: /* @__PURE__ */ jsx(
-                    "svg",
-                    {
-                      className: "w-4 h-4",
-                      fill: "none",
-                      stroke: "currentColor",
-                      viewBox: "0 0 24 24",
-                      children: /* @__PURE__ */ jsx(
-                        "path",
-                        {
-                          strokeLinecap: "round",
-                          strokeLinejoin: "round",
-                          strokeWidth: 2,
-                          d: "M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"
-                        }
-                      )
-                    }
-                  )
-                }
-              )
+            /* @__PURE__ */ jsxs("div", { className: "relative", children: [
+              /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-md opacity-40 animate-pulse" }),
+              /* @__PURE__ */ jsx("div", { className: "relative w-10 h-10 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx(Bot, { className: "w-5 h-5 text-white" }) })
             ] }),
-            loadingDetail ? /* @__PURE__ */ jsx("div", { className: "flex items-center justify-center py-8", children: /* @__PURE__ */ jsx(Loader2, { className: "w-6 h-6 animate-spin text-muted-foreground" }) }) : /* @__PURE__ */ jsx("div", { className: "bg-muted rounded-lg p-4", children: /* @__PURE__ */ jsx("p", { className: "text-foreground text-sm leading-relaxed", children: videoDetail?.prompt || video.prompt || "No prompt available" }) })
-          ] }),
-          /* @__PURE__ */ jsxs("div", { className: "flex space-x-2", children: [
-            /* @__PURE__ */ jsx(Button, { variant: "outline", size: "sm", className: "flex-1", children: "Video 2.1" }),
-            /* @__PURE__ */ jsx(Button, { variant: "outline", size: "sm", className: "flex-1", children: "Professional Mode" })
+            /* @__PURE__ */ jsxs("div", { children: [
+              /* @__PURE__ */ jsxs("h3", { className: "text-white font-semibold flex items-center", children: [
+                t.aiAssistant,
+                /* @__PURE__ */ jsx("div", { className: "ml-2 w-2 h-2 bg-green-500 rounded-full animate-pulse" })
+              ] }),
+              /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-400", children: t.readyToHelp })
+            ] })
           ] }),
           /* @__PURE__ */ jsx(
             Button,
             {
-              className: "w-full",
-              size: "lg",
-              onClick: () => {
-                if (videoDetail) {
-                  const videoSetupData = {
-                    prompt: videoDetail.prompt || "",
-                    karakter_image: videoDetail.karakter_image || "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=400&fit=crop&crop=face",
-                    background_image: videoDetail.background_image || "https://images.unsplash.com/photo-1497366216548-37526070297c?w=400&h=300&fit=crop",
-                    aspek_rasio: videoDetail.aspect_ratio || "16:9",
-                    judul_video: videoDetail.prompt?.substring(0, 50) || "Recreated Video",
-                    bahasa: videoDetail.bahasa || "id",
-                    gaya_suara: videoDetail.gaya_suara || "natural",
-                    voice_over: videoDetail.voice_over || "male",
-                    tone: videoDetail.tone || "professional",
-                    background_music: videoDetail.background_music || "upbeat",
-                    resolusi_video: videoDetail.resolusi_video || "1080p",
-                    is_share: videoDetail.share_url || "y"
-                  };
-                  localStorage.setItem(
-                    "videoSetupData",
-                    JSON.stringify(videoSetupData)
-                  );
-                  onClose();
-                  window.location.href = "/";
-                }
-              },
-              children: "Recreate"
+              variant: "ghost",
+              size: "sm",
+              onClick: () => setIsOpen(false),
+              className: "text-gray-400 hover:text-white hover:bg-white/10",
+              children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
             }
           )
-        ] }) })
+        ] }) }),
+        /* @__PURE__ */ jsx("div", { className: "p-6 space-y-4 h-80 overflow-y-auto", children: /* @__PURE__ */ jsxs("div", { className: "flex items-start space-x-3 animate-in slide-in-from-left duration-500", children: [
+          /* @__PURE__ */ jsxs("div", { className: "relative flex-shrink-0", children: [
+            /* @__PURE__ */ jsx("div", { className: "absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-sm opacity-40" }),
+            /* @__PURE__ */ jsx("div", { className: "relative w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx(Bot, { className: "w-4 h-4 text-white" }) })
+          ] }),
+          /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
+            /* @__PURE__ */ jsx("div", { className: "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl rounded-tl-none p-4", children: /* @__PURE__ */ jsxs("p", { className: "text-white text-sm leading-relaxed", children: [
+              "👋 ",
+              /* @__PURE__ */ jsx("strong", { children: t.greetingBold }),
+              /* @__PURE__ */ jsx("br", {}),
+              /* @__PURE__ */ jsx("br", {}),
+              t.greetingMessage,
+              /* @__PURE__ */ jsx("br", {}),
+              /* @__PURE__ */ jsx("br", {}),
+              "✨ ",
+              /* @__PURE__ */ jsx("strong", { children: t.canIHelp }),
+              /* @__PURE__ */ jsx("br", {}),
+              /* @__PURE__ */ jsx("br", {}),
+              t.tellMe
+            ] }) }),
+            /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-2", children: t.justNow })
+          ] })
+        ] }) }),
+        /* @__PURE__ */ jsxs("div", { className: "border-t border-white/10 p-4 bg-slate-950/50", children: [
+          /* @__PURE__ */ jsxs("div", { className: "flex items-end space-x-2", children: [
+            /* @__PURE__ */ jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsx(
+              Input,
+              {
+                value: message,
+                onChange: (e) => setMessage(e.target.value),
+                onKeyPress: handleKeyPress,
+                placeholder: t.placeholder,
+                className: "bg-slate-900/50 border-white/10 text-white placeholder-gray-500 focus:border-purple-500/50 focus:ring-2 focus:ring-purple-500/20 rounded-xl",
+                autoFocus: true
+              }
+            ) }),
+            /* @__PURE__ */ jsx(
+              Button,
+              {
+                onClick: handleSendMessage,
+                disabled: !message.trim(),
+                className: "bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg disabled:opacity-50 disabled:cursor-not-allowed rounded-xl",
+                children: /* @__PURE__ */ jsx(Send, { className: "w-4 h-4" })
+              }
+            )
+          ] }),
+          /* @__PURE__ */ jsx("p", { className: "text-xs text-gray-500 mt-2 text-center", children: t.pressEnter })
+        ] })
       ] })
-    ] })
+    ] }) }),
+    /* @__PURE__ */ jsx("style", { children: `
+        @keyframes slide-in-from-right {
+          from {
+            transform: translateX(100%);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        @keyframes slide-in-from-left {
+          from {
+            transform: translateX(-20px);
+            opacity: 0;
+          }
+          to {
+            transform: translateX(0);
+            opacity: 1;
+          }
+        }
+        .animate-in {
+          animation-fill-mode: both;
+        }
+        .slide-in-from-right {
+          animation-name: slide-in-from-right;
+        }
+        .slide-in-from-left {
+          animation-name: slide-in-from-left;
+        }
+      ` })
   ] });
 }
 
@@ -1320,7 +712,11 @@ const $$Astro = createAstro();
 const $$Index = createComponent(($$result, $$props, $$slots) => {
   const Astro2 = $$result.createAstro($$Astro, $$props, $$slots);
   Astro2.self = $$Index;
-  return renderTemplate`<html lang="en" class="scroll-smooth"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator"${addAttribute(Astro2.generator, "content")}><title>Video Generator - Create Amazing Videos</title><meta name="description" content="Create professional videos with our easy-to-use video generator. Follow simple steps to generate, customize, and download your videos.">${renderHead()}</head> <body class="min-h-screen bg-background antialiased"> <!-- Navigation with Integrated Stepper --> ${renderComponent($$result, "NavbarWithModal", NavbarWithModal, { "client:load": true, "currentStep": 1, "totalSteps": 4, "client:component-hydration": "load", "client:component-path": "@/components/NavbarWithModal", "client:component-export": "NavbarWithModal" })} <!-- Main Content --> <main class="flex-1"> <div class="container mx-auto px-8 py-12"> ${renderComponent($$result, "SetupPage", SetupPage, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/SetupPage", "client:component-export": "SetupPage" })} </div> <!-- Video Gallery Section --> <section class="bg-muted/30 py-16"> <div class="container mx-auto px-8"> ${renderComponent($$result, "VideoGallery", VideoGallery, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/VideoGallery", "client:component-export": "VideoGallery" })} </div> </section> </main> <!-- Footer --> <footer class="border-t py-12 mt-24"> <div class="container mx-auto px-4"> <div class="text-center text-muted-foreground"> <p>&copy; 2024 Video Generator. All rights reserved.</p> </div> </div> </footer> ${renderScript($$result, "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/index.astro?astro&type=script&index=0&lang.ts")} </body> </html>`;
+  return renderTemplate`<html lang="en" class="scroll-smooth"> <head><meta charset="utf-8"><meta name="viewport" content="width=device-width"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><meta name="generator"${addAttribute(Astro2.generator, "content")}><title>Video Generator - Create Amazing Videos</title><meta name="description" content="Create professional videos with our easy-to-use video generator. Follow simple steps to generate, customize, and download your videos.">${renderHead()}</head> <body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden"> <!-- Animated Background Effects --> <div class="fixed inset-0 overflow-hidden pointer-events-none"> <!-- Gradient Orbs --> <div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div> <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div> <div class="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 4s;"></div> </div> <!-- Navigation with Integrated Stepper --> <div class="relative z-[100]"> ${renderComponent($$result, "NavbarWithModal", NavbarWithModal, { "client:load": true, "currentStep": 1, "totalSteps": 4, "client:component-hydration": "load", "client:component-path": "@/components/NavbarWithModal.tsx", "client:component-export": "NavbarWithModal" })} </div> <!-- Main Content --> <main class="flex-1 relative"> <!-- Video Gallery Section --> <section class="py-16"> <div class="container mx-auto px-4 sm:px-6 lg:px-8"> ${renderComponent($$result, "VideoGallery", VideoGallery, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/VideoGallery", "client:component-export": "VideoGallery" })} </div> </section> </main> <!-- Futuristic Footer --> <footer class="relative z-10 border-t border-white/10 py-12 mt-24 bg-slate-950/50 backdrop-blur-sm"> <div class="container mx-auto px-4"> <div class="text-center"> <p class="text-gray-400 text-sm mb-2">
+&copy; 2025<span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-semibold">InstanVideoApp</span>. All rights reserved.
+</p> <p class="text-gray-500 text-xs">
+Powered by AI Video Generation Technology
+</p> </div> </div> </footer> <!-- AI Assistant Bubble --> ${renderComponent($$result, "AIAssistantBubble", AIAssistantBubble, { "client:load": true, "client:component-hydration": "load", "client:component-path": "@/components/AIAssistantBubble", "client:component-export": "AIAssistantBubble" })} ${renderScript($$result, "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/index.astro?astro&type=script&index=0&lang.ts")} </body> </html>`;
 }, "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/index.astro", void 0);
 
 const $$file = "C:/Users/Mrian07/Documents/BACKUP-E/KERJA/vidio-generator/src/pages/index.astro";

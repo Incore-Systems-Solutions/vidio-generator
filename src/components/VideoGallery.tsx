@@ -10,6 +10,9 @@ import {
   Pause,
   Volume2,
   VolumeX,
+  Maximize,
+  Minimize,
+  RotateCcw,
 } from "lucide-react";
 import { publicVideoGalleryApi, type PublicVideoItem } from "@/lib/api";
 
@@ -483,7 +486,10 @@ function VideoModal({
   const displayVideo = video.final_url_merge_video;
   const [isMuted, setIsMuted] = useState(true);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [orientation, setOrientation] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -504,20 +510,79 @@ function VideoModal({
     }
   };
 
+  const toggleFullscreen = async () => {
+    if (!document.fullscreenElement) {
+      try {
+        if (modalRef.current?.requestFullscreen) {
+          await modalRef.current.requestFullscreen();
+          setIsFullscreen(true);
+        }
+      } catch (error) {
+        console.error("Error attempting to enable fullscreen:", error);
+      }
+    } else {
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch (error) {
+        console.error("Error attempting to exit fullscreen:", error);
+      }
+    }
+  };
+
+  // Handle orientation change
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      setOrientation(window.orientation || 0);
+
+      // Auto fullscreen on landscape rotation
+      if (Math.abs(window.orientation || 0) === 90) {
+        if (!isFullscreen) {
+          toggleFullscreen();
+        }
+      }
+    };
+
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+
+    window.addEventListener("orientationchange", handleOrientationChange);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+
+    return () => {
+      window.removeEventListener("orientationchange", handleOrientationChange);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [isFullscreen]);
+
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+    <div
+      ref={modalRef}
+      className={`fixed inset-0 z-[9999] flex items-center justify-center ${
+        isFullscreen ? "p-0" : "p-4"
+      }`}
+    >
       {/* Enhanced Backdrop with Blur */}
       <div
         className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl"
         onClick={onClose}
       />
 
-      {/* Modal Content - TikTok/YouTube Shorts Style */}
-      <div className="relative w-full max-w-md mx-auto">
+      {/* Modal Content - 16:9 Video Style */}
+      <div
+        className={`relative w-full mx-auto ${
+          isFullscreen ? "h-full max-w-none" : "max-w-4xl"
+        }`}
+      >
         {/* Outer Glow */}
         <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-30 blur-2xl" />
 
-        <div className="relative bg-black rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20">
+        <div
+          className={`relative bg-black overflow-hidden shadow-2xl shadow-purple-500/20 ${
+            isFullscreen ? "h-full rounded-none" : "rounded-2xl"
+          }`}
+        >
           {/* Close Button - Top Right */}
           <button
             onClick={onClose}
@@ -526,8 +591,24 @@ function VideoModal({
             <X className="w-5 h-5" />
           </button>
 
+          {/* Fullscreen Toggle Button */}
+          <button
+            onClick={toggleFullscreen}
+            className="absolute top-4 right-16 z-20 text-white hover:text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm"
+          >
+            {isFullscreen ? (
+              <Minimize className="w-5 h-5" />
+            ) : (
+              <Maximize className="w-5 h-5" />
+            )}
+          </button>
+
           {/* Video Player Container */}
-          <div className="relative aspect-[9/16] bg-black">
+          <div
+            className={`relative bg-black ${
+              isFullscreen ? "h-full" : "aspect-video"
+            }`}
+          >
             {displayVideo ? (
               <div className="relative w-full h-full">
                 {/* Glow Effect around video */}
@@ -540,21 +621,62 @@ function VideoModal({
                   loop
                   muted={isMuted}
                   playsInline
-                  className="relative w-full h-full object-cover"
+                  className={`relative w-full h-full ${
+                    isFullscreen ? "object-contain" : "object-cover"
+                  }`}
                   onPlay={() => setIsPlaying(true)}
                   onPause={() => setIsPlaying(false)}
+                  onDoubleClick={toggleFullscreen}
                 >
                   <source src={displayVideo} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
 
                 {/* TikTok/YouTube Style Overlay */}
-                <div className="absolute inset-0 pointer-events-none">
+                <div
+                  className="absolute inset-0 pointer-events-none"
+                  onTouchStart={(e) => {
+                    const touch = e.touches[0];
+                    const startY = touch.clientY;
+                    const startTime = Date.now();
+
+                    const handleTouchEnd = (endEvent: TouchEvent) => {
+                      const endTouch = endEvent.changedTouches[0];
+                      const endY = endTouch.clientY;
+                      const endTime = Date.now();
+                      const deltaY = startY - endY;
+                      const deltaTime = endTime - startTime;
+
+                      // Swipe up gesture for fullscreen
+                      if (deltaY > 50 && deltaTime < 300) {
+                        if (!isFullscreen) {
+                          toggleFullscreen();
+                        }
+                      }
+                      // Swipe down gesture to exit fullscreen
+                      else if (deltaY < -50 && deltaTime < 300) {
+                        if (isFullscreen) {
+                          toggleFullscreen();
+                        }
+                      }
+
+                      document.removeEventListener("touchend", handleTouchEnd);
+                    };
+
+                    document.addEventListener("touchend", handleTouchEnd);
+                  }}
+                >
                   {/* Gradient Overlay for Text Readability */}
                   <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-                  {/* Custom Video Controls - Top Right */}
-                  <div className="absolute top-4 left-4 flex items-center space-x-2 pointer-events-auto">
+                  {/* Custom Video Controls - Top Left */}
+                  <div
+                    className={`absolute top-4 left-4 flex items-center space-x-2 pointer-events-auto ${
+                      isFullscreen
+                        ? "opacity-0 hover:opacity-100 transition-opacity duration-300"
+                        : ""
+                    }`}
+                  >
                     {/* Play/Pause Button */}
                     <button
                       onClick={togglePlayPause}
@@ -580,8 +702,26 @@ function VideoModal({
                     </button>
                   </div>
 
+                  {/* Fullscreen Instructions */}
+                  {!isFullscreen && (
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 pointer-events-none">
+                      <div className="bg-black/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-white/20">
+                        <div className="flex items-center space-x-2 text-white text-sm">
+                          <RotateCcw className="w-4 h-4" />
+                          <span>Rotate untuk fullscreen</span>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Creator Info - Bottom Left */}
-                  <div className="absolute bottom-4 left-4 right-4 space-y-3">
+                  <div
+                    className={`absolute bottom-4 left-4 right-4 space-y-3 max-w-md ${
+                      isFullscreen
+                        ? "opacity-0 hover:opacity-100 transition-opacity duration-300"
+                        : ""
+                    }`}
+                  >
                     {/* Creator Name */}
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
@@ -612,7 +752,7 @@ function VideoModal({
                   </div>
 
                   {/* Top Info - Date Badge */}
-                  <div className="absolute top-4 right-16">
+                  {/* <div className="absolute top-4 right-4">
                     <div className="bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/20">
                       <div className="flex items-center space-x-2">
                         <Calendar className="w-3 h-3 text-purple-400" />
@@ -621,11 +761,11 @@ function VideoModal({
                         </span>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
               </div>
             ) : (
-              <div className="aspect-[9/16] bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
+              <div className="aspect-video bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
                 <div className="text-center">
                   <Video className="w-24 h-24 mx-auto mb-6 text-purple-500/30" />
                   <div className="text-2xl font-bold text-gray-300 mb-4">
