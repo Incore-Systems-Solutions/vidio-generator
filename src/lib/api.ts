@@ -594,6 +594,55 @@ export const publicVideoGalleryApi = {
     }
   },
 
+  async getVideoDetail(
+    id: number,
+    language: string = "id"
+  ): Promise<{
+    status: boolean;
+    message: string;
+    data: {
+      id: number;
+      user_video_id: number;
+      uuid_flag: string;
+      final_url_merge_video: string | null;
+      list_merge_video: string | null;
+      created_at: string;
+      updated_at: string;
+      prompt: string;
+      prompt_en?: string | null;
+      prompt_zh?: string | null;
+      prompt_ar?: string | null;
+      user: {
+        whatsapp_number: string | null;
+        email: string;
+      };
+      list_video: PublicVideoListItem[];
+    };
+  }> {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/gallery/public/show/${id}?lang=${language}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch video detail");
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error fetching video detail:", error);
+      throw error;
+    }
+  },
+
   async getVideoDetail_OLD(id: string): Promise<{
     status: boolean;
     message: string;

@@ -104,6 +104,12 @@ export function VideoGallery() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
   const [userEmails, setUserEmails] = useState<{ [key: string]: string }>({});
+  const [videoDetail, setVideoDetail] = useState<any>(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [currentVideoUser, setCurrentVideoUser] = useState<{
+    email: string;
+    whatsapp_number: string | null;
+  } | null>(null);
 
   // Load language from localStorage and listen for changes
   useEffect(() => {
@@ -187,8 +193,17 @@ export function VideoGallery() {
     fetchVideos();
   }, [currentPage]);
 
+  // Fetch video detail when language changes and video is selected
+  useEffect(() => {
+    if (selectedVideo) {
+      fetchVideoDetail(selectedVideo.id, selectedLanguage);
+    }
+  }, [selectedLanguage, selectedVideo]);
+
   const handleVideoClick = (video: PublicVideoItem) => {
     setSelectedVideo(video);
+    // Fetch video detail with current language
+    fetchVideoDetail(video.id, selectedLanguage);
   };
 
   const handleLoadMore = () => {
@@ -235,7 +250,82 @@ export function VideoGallery() {
     return `${censored}@${domain}`;
   };
 
+  // Language mapping for API
+  const getLanguageCode = (language: string) => {
+    const languageMap: { [key: string]: string } = {
+      ID: "id",
+      EN: "en",
+      ZH: "zh",
+      AR: "ar",
+    };
+    return languageMap[language] || "id";
+  };
+
+  // Fetch video detail with language
+  const fetchVideoDetail = async (videoId: number, language: string) => {
+    try {
+      setLoadingDetail(true);
+      const languageCode = getLanguageCode(language);
+      const response = await publicVideoGalleryApi.getVideoDetail(
+        videoId,
+        languageCode
+      );
+      setVideoDetail(response.data);
+      // Store user data from API detail
+      if (response.data.user) {
+        setCurrentVideoUser(response.data.user);
+      }
+    } catch (error) {
+      console.error("Error fetching video detail:", error);
+      setVideoDetail(null);
+      setCurrentVideoUser(null);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
+
   const getVideoDescription = (video: PublicVideoItem) => {
+    // If we have video detail with translated prompt, use it
+    if (videoDetail) {
+      let promptToUse = videoDetail.prompt; // Default to original prompt
+
+      // Get translated prompt based on current language
+      switch (selectedLanguage) {
+        case "EN":
+          if (videoDetail.prompt_en) {
+            promptToUse = videoDetail.prompt_en;
+          }
+          break;
+        case "ZH":
+          if (videoDetail.prompt_zh) {
+            promptToUse = videoDetail.prompt_zh;
+          }
+          break;
+        case "AR":
+          if (videoDetail.prompt_ar) {
+            promptToUse = videoDetail.prompt_ar;
+          }
+          break;
+        default:
+          // Use original prompt for Indonesian
+          break;
+      }
+
+      // Extract description from prompt text
+      const descriptionMatch = promptToUse.match(
+        /(?:Visual Description|Deskripsi Visual|视觉描述|الوصف البصري)[:\s]*(.*?)(?=\n\n|\nSub Scene|\nSub Scene|$)/s
+      );
+      if (descriptionMatch && descriptionMatch[1]) {
+        return descriptionMatch[1].trim();
+      }
+
+      // If no description found, return first part of prompt (first 200 characters)
+      return promptToUse.length > 200
+        ? promptToUse.substring(0, 200) + "..."
+        : promptToUse;
+    }
+
+    // Fallback to original prompt processing
     if (video.prompt && typeof video.prompt === "string") {
       // Extract description from prompt text
       const promptText = video.prompt;
@@ -434,12 +524,19 @@ export function VideoGallery() {
       {selectedVideo && (
         <VideoModal
           video={selectedVideo}
-          onClose={() => setSelectedVideo(null)}
+          onClose={() => {
+            setSelectedVideo(null);
+            setVideoDetail(null);
+            setCurrentVideoUser(null);
+          }}
           formatDate={formatDate}
           translations={t}
           userEmails={userEmails}
           censorEmail={censorEmail}
           getVideoDescription={getVideoDescription}
+          videoDetail={videoDetail}
+          loadingDetail={loadingDetail}
+          currentVideoUser={currentVideoUser}
         />
       )}
 
@@ -472,6 +569,9 @@ interface VideoModalProps {
   userEmails: { [key: string]: string };
   censorEmail: (email: string) => string;
   getVideoDescription: (video: PublicVideoItem) => string;
+  videoDetail: any;
+  loadingDetail: boolean;
+  currentVideoUser: { email: string; whatsapp_number: string | null } | null;
 }
 
 function VideoModal({
@@ -482,6 +582,9 @@ function VideoModal({
   userEmails,
   censorEmail,
   getVideoDescription,
+  videoDetail,
+  loadingDetail,
+  currentVideoUser,
 }: VideoModalProps) {
   const displayVideo = video.final_url_merge_video;
   const [isMuted, setIsMuted] = useState(true);
@@ -726,14 +829,18 @@ function VideoModal({
                     <div className="flex items-center space-x-3">
                       <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
                         <span className="text-white text-sm font-bold">
-                          {userEmails[video.user_id]
+                          {currentVideoUser?.email
+                            ? currentVideoUser.email.charAt(0).toUpperCase()
+                            : userEmails[video.user_id]
                             ? userEmails[video.user_id].charAt(0).toUpperCase()
                             : "?"}
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
                         <p className="text-white font-semibold text-sm truncate">
-                          {userEmails[video.user_id]
+                          {currentVideoUser?.email
+                            ? censorEmail(currentVideoUser.email)
+                            : userEmails[video.user_id]
                             ? censorEmail(userEmails[video.user_id])
                             : "Loading..."}
                         </p>
@@ -745,9 +852,18 @@ function VideoModal({
 
                     {/* Video Description */}
                     <div className="space-y-2">
-                      <p className="text-white text-sm leading-relaxed line-clamp-3">
-                        {getVideoDescription(video)}
-                      </p>
+                      {loadingDetail ? (
+                        <div className="flex items-center space-x-2">
+                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <span className="text-white/70 text-sm">
+                            Loading description...
+                          </span>
+                        </div>
+                      ) : (
+                        <p className="text-white text-sm leading-relaxed line-clamp-3">
+                          {getVideoDescription(video)}
+                        </p>
+                      )}
                     </div>
                   </div>
 
