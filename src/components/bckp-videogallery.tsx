@@ -1,16 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
-import {
-  Loader2,
-  Sparkles,
-  Video,
-  X,
-  Calendar,
-  Play,
-  Pause,
-  Volume2,
-  VolumeX,
-} from "lucide-react";
+import { Loader2, Sparkles, Video, X, Calendar, Play } from "lucide-react";
 import { publicVideoGalleryApi, type PublicVideoItem } from "@/lib/api";
 
 // Translations for VideoGallery
@@ -328,14 +318,14 @@ export function VideoGallery() {
       {/* Video Grid */}
       {!loading && !error && (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {videos.map((videoGroup, index) => {
+          {videos.map((videoGroup) => {
             const displayVideo = videoGroup.final_url_merge_video;
 
             if (!displayVideo) return null;
 
             return (
               <div
-                key={`${videoGroup.id}-${index}`}
+                key={videoGroup.id}
                 className="group cursor-pointer relative"
                 onClick={() => handleVideoClick(videoGroup)}
               >
@@ -481,28 +471,6 @@ function VideoModal({
   getVideoDescription,
 }: VideoModalProps) {
   const displayVideo = video.final_url_merge_video;
-  const [isMuted, setIsMuted] = useState(true);
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
-
-  const toggleMute = () => {
-    if (videoRef.current) {
-      videoRef.current.muted = !videoRef.current.muted;
-      setIsMuted(videoRef.current.muted);
-    }
-  };
-
-  const togglePlayPause = () => {
-    if (videoRef.current) {
-      if (videoRef.current.paused) {
-        videoRef.current.play();
-        setIsPlaying(true);
-      } else {
-        videoRef.current.pause();
-        setIsPlaying(false);
-      }
-    }
-  };
 
   return (
     <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
@@ -512,120 +480,46 @@ function VideoModal({
         onClick={onClose}
       />
 
-      {/* Modal Content - TikTok/YouTube Shorts Style */}
-      <div className="relative w-full max-w-md mx-auto">
+      {/* Modal Content - Centered & Responsive */}
+      <div className="relative w-full max-w-6xl">
         {/* Outer Glow */}
-        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-30 blur-2xl" />
+        <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-30 blur-2xl" />
 
-        <div className="relative bg-black rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20">
-          {/* Close Button - Top Right */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 z-20 text-white hover:text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm"
-          >
-            <X className="w-5 h-5" />
-          </button>
+        <div className="relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-purple-500/30 shadow-2xl shadow-purple-500/20 rounded-3xl overflow-hidden">
+          {/* Header */}
+          <div className="flex items-center justify-between p-6 border-b border-white/10 bg-gradient-to-r from-slate-950/90 via-indigo-950/50 to-slate-950/90 backdrop-blur-xl">
+            <div className="flex items-center space-x-3">
+              <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse" />
+              <h2 className="text-xl font-semibold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
+                {translations.modalTitle}
+              </h2>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white hover:bg-red-500/10 border border-red-500/20 rounded-xl p-2 transition-all duration-300 hover:scale-110"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
           {/* Video Player Container */}
-          <div className="relative aspect-[9/16] bg-black">
+          <div className="relative bg-black">
             {displayVideo ? (
-              <div className="relative w-full h-full">
+              <div className="relative aspect-video">
                 {/* Glow Effect around video */}
-                <div className="absolute -inset-2 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 blur-2xl" />
+                <div className="absolute -inset-4 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 blur-3xl" />
 
                 <video
-                  ref={videoRef}
-                  controls={false}
+                  controls
                   autoPlay
-                  loop
-                  muted={isMuted}
-                  playsInline
-                  className="relative w-full h-full object-cover"
-                  onPlay={() => setIsPlaying(true)}
-                  onPause={() => setIsPlaying(false)}
+                  className="relative w-full h-full object-contain"
                 >
                   <source src={displayVideo} type="video/mp4" />
                   Your browser does not support the video tag.
                 </video>
-
-                {/* TikTok/YouTube Style Overlay */}
-                <div className="absolute inset-0 pointer-events-none">
-                  {/* Gradient Overlay for Text Readability */}
-                  <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
-
-                  {/* Custom Video Controls - Top Right */}
-                  <div className="absolute top-4 left-4 flex items-center space-x-2 pointer-events-auto">
-                    {/* Play/Pause Button */}
-                    <button
-                      onClick={togglePlayPause}
-                      className="bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110"
-                    >
-                      {isPlaying ? (
-                        <Pause className="w-4 h-4 text-white" />
-                      ) : (
-                        <Play className="w-4 h-4 text-white" />
-                      )}
-                    </button>
-
-                    {/* Mute/Unmute Button */}
-                    <button
-                      onClick={toggleMute}
-                      className="bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110"
-                    >
-                      {isMuted ? (
-                        <VolumeX className="w-4 h-4 text-white" />
-                      ) : (
-                        <Volume2 className="w-4 h-4 text-white" />
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Creator Info - Bottom Left */}
-                  <div className="absolute bottom-4 left-4 right-4 space-y-3">
-                    {/* Creator Name */}
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">
-                          {userEmails[video.user_id]
-                            ? userEmails[video.user_id].charAt(0).toUpperCase()
-                            : "?"}
-                        </span>
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="text-white font-semibold text-sm truncate">
-                          {userEmails[video.user_id]
-                            ? censorEmail(userEmails[video.user_id])
-                            : "Loading..."}
-                        </p>
-                        <p className="text-gray-300 text-xs">
-                          {formatDate(video.created_at)}
-                        </p>
-                      </div>
-                    </div>
-
-                    {/* Video Description */}
-                    <div className="space-y-2">
-                      <p className="text-white text-sm leading-relaxed line-clamp-3">
-                        {getVideoDescription(video)}
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* Top Info - Date Badge */}
-                  <div className="absolute top-4 right-16">
-                    <div className="bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/20">
-                      <div className="flex items-center space-x-2">
-                        <Calendar className="w-3 h-3 text-purple-400" />
-                        <span className="text-white text-xs font-medium">
-                          {formatDate(video.created_at)}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
               </div>
             ) : (
-              <div className="aspect-[9/16] bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
+              <div className="aspect-video bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center">
                 <div className="text-center">
                   <Video className="w-24 h-24 mx-auto mb-6 text-purple-500/30" />
                   <div className="text-2xl font-bold text-gray-300 mb-4">
@@ -638,18 +532,37 @@ function VideoModal({
               </div>
             )}
           </div>
+
+          {/* Footer with Date and Creator Info */}
+          <div className="p-6 border-t border-white/10 bg-gradient-to-r from-slate-950/90 via-indigo-950/50 to-slate-950/90 backdrop-blur-xl">
+            <div className="flex items-center justify-center space-x-2 text-gray-400 mb-4">
+              <Calendar className="w-4 h-4 text-purple-400" />
+              <span className="text-sm font-medium">
+                {translations.modalCreatedOn} {formatDate(video.created_at)}
+              </span>
+            </div>
+
+            <div className="space-y-2 text-sm">
+              <div className="flex items-center justify-center space-x-2 text-gray-300">
+                <span className="font-medium">{translations.createdBy}:</span>
+                <span className="text-purple-300">
+                  {userEmails[video.user_id]
+                    ? censorEmail(userEmails[video.user_id])
+                    : "Loading..."}
+                </span>
+              </div>
+              <div className="text-center text-gray-400">
+                <span className="font-medium">
+                  {translations.videoDescription}:
+                </span>
+                <p className="mt-1 text-gray-300">
+                  {getVideoDescription(video)}
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
-
-      {/* CSS for line clamp */}
-      <style>{`
-        .line-clamp-3 {
-          display: -webkit-box;
-          -webkit-line-clamp: 3;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-        }
-      `}</style>
     </div>
   );
 }
