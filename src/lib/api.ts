@@ -730,10 +730,22 @@ export interface ChatAIReplyResponse {
   };
 }
 
+// Utility function to get language from localStorage
+export const getPreferredLanguage = (): string => {
+  if (typeof window !== "undefined") {
+    return localStorage.getItem("preferredLanguage") || "en";
+  }
+  return "en";
+};
+
 export const chatAIApi = {
-  async initChat(xApiKey: string): Promise<ChatAIInitResponse> {
+  async initChat(
+    xApiKey: string,
+    language?: string
+  ): Promise<ChatAIInitResponse> {
     try {
-      const response = await fetch(`${BASE_URL}/api/chat-ai`, {
+      const lang = language || getPreferredLanguage();
+      const response = await fetch(`${BASE_URL}/api/chat-ai?lang=${lang}`, {
         method: "GET",
         headers: {
           "Content-Type": "application/json",
@@ -762,17 +774,22 @@ export const chatAIApi = {
   async sendReply(
     uuid: string,
     message: string,
-    xApiKey: string
+    xApiKey: string,
+    language?: string
   ): Promise<ChatAIReplyResponse> {
     try {
-      const response = await fetch(`${BASE_URL}/api/chat-ai/replies/${uuid}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-key": xApiKey,
-        },
-        body: JSON.stringify({ message }),
-      });
+      const lang = language || getPreferredLanguage();
+      const response = await fetch(
+        `${BASE_URL}/api/chat-ai/replies/${uuid}?lang=${lang}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": xApiKey,
+          },
+          body: JSON.stringify({ message }),
+        }
+      );
 
       const result = await response.json();
 

@@ -436,7 +436,7 @@ export function VideoConsultant() {
 
     try {
       setIsInitializing(true);
-      const response = await chatAIApi.initChat(xApiKey);
+      const response = await chatAIApi.initChat(xApiKey, selectedLanguage);
 
       if (response.status) {
         setChatUuid(response.data.uuid);
@@ -504,7 +504,8 @@ export function VideoConsultant() {
       const response = await chatAIApi.sendReply(
         chatUuid,
         messageToSend,
-        xApiKey!
+        xApiKey!,
+        selectedLanguage
       );
 
       if (response.status) {
@@ -616,7 +617,7 @@ export function VideoConsultant() {
       localStorage.removeItem("collection_data");
       localStorage.removeItem("batch_scene");
 
-      const response = await chatAIApi.initChat(xApiKey);
+      const response = await chatAIApi.initChat(xApiKey, selectedLanguage);
 
       if (response.status) {
         setChatUuid(response.data.uuid);
@@ -688,7 +689,8 @@ export function VideoConsultant() {
       const response = await chatAIApi.sendReply(
         chatUuid,
         continueMessage,
-        xApiKey
+        xApiKey,
+        selectedLanguage
       );
 
       if (response.status) {
