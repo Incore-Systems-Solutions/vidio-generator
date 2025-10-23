@@ -788,9 +788,13 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
 
   // Batch Processing Modal
   if (isBatchProcessing) {
+    // Calculate total scenes (1 batch = 3 scenes)
+    const totalScenes = batchData.length * 3;
+    const scenesPerBatch = 3;
+
     return (
       <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center p-4">
-        <div className="max-w-3xl w-full">
+        <div className="max-w-4xl w-full">
           <div className="relative">
             <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
@@ -812,54 +816,126 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     ? t.loadingStatus
                     : allBatchesSuccess
                     ? t.allBatchSuccess
-                    : t.batchProcessing}
+                    : selectedLanguage === "ID"
+                    ? "Memproses Batch Naskah"
+                    : "Processing Script Batches"}
                 </h3>
                 <p className="text-gray-400 text-lg mb-6">
                   {loading || isWaitingForGeneration
                     ? t.fetchingInfo
                     : allBatchesSuccess
-                    ? t.readyToGenerate
-                    : t.systemProcessing}
+                    ? selectedLanguage === "ID"
+                      ? "Semua batch telah selesai diproses. Anda dapat melanjutkan untuk generate video."
+                      : "All batches have been processed successfully. You can proceed to generate video."
+                    : selectedLanguage === "ID"
+                    ? "AI sedang memproses naskah video Anda per batch"
+                    : "AI is processing your video script per batch"}
                 </p>
+
+                {/* Batch & Scene Info */}
+                {batchData.length > 0 && (
+                  <div className="inline-flex flex-col items-center px-6 py-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl backdrop-blur-sm mb-6">
+                    <div className="flex items-center space-x-3 mb-2">
+                      <VideoIcon className="w-5 h-5 text-purple-400" />
+                      <span className="text-base font-semibold text-purple-200">
+                        {selectedLanguage === "ID"
+                          ? `Membagi naskah menjadi ${batchData.length} batch of scenes`
+                          : `Dividing script into ${batchData.length} batch of scenes`}
+                      </span>
+                    </div>
+                    <div className="text-sm text-purple-300">
+                      {selectedLanguage === "ID"
+                        ? `Total scenes: ${totalScenes} (${scenesPerBatch} scenes per batch)`
+                        : `Total scenes: ${totalScenes} (${scenesPerBatch} scenes per batch)`}
+                    </div>
+                  </div>
+                )}
               </div>
 
-              {/* Batch List */}
+              {/* Batch Progress List */}
               {batchData.length > 0 && (
                 <div className="space-y-3 mb-6">
-                  <h4 className="text-sm font-semibold text-gray-300 mb-3">
-                    {t.batchStatus}
+                  <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                    {selectedLanguage === "ID"
+                      ? "Progress Pembuatan Batch:"
+                      : "Batch Creation Progress:"}
                   </h4>
                   {batchData.map((batch) => (
                     <div
                       key={batch.id}
-                      className="flex items-center justify-between p-4 bg-slate-800/50 border border-white/5 rounded-xl hover:border-purple-500/30 transition-all"
+                      className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                        batch.status === "success"
+                          ? "bg-green-500/10 border-green-500/30"
+                          : batch.status === "progress"
+                          ? "bg-blue-500/10 border-blue-500/30"
+                          : batch.status === "antri"
+                          ? "bg-yellow-500/10 border-yellow-500/30"
+                          : batch.status === "failed"
+                          ? "bg-red-500/10 border-red-500/30"
+                          : "bg-slate-800/30 border-white/5"
+                      }`}
                     >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-lg flex items-center justify-center">
-                          <span className="text-sm font-bold text-white">
+                      <div className="flex items-center space-x-4">
+                        {/* Status Icon */}
+                        {batch.status === "success" ? (
+                          <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
+                        ) : batch.status === "progress" ? (
+                          <Loader2 className="w-6 h-6 text-blue-400 animate-spin flex-shrink-0" />
+                        ) : batch.status === "antri" ? (
+                          <Clock className="w-6 h-6 text-yellow-400 flex-shrink-0" />
+                        ) : batch.status === "failed" ? (
+                          <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0" />
+                        ) : (
+                          <div className="w-6 h-6 rounded-full border-2 border-gray-600 flex-shrink-0"></div>
+                        )}
+
+                        <div className="flex-1">
+                          <div className="flex items-center space-x-3 mb-1">
+                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-lg flex items-center justify-center">
+                              <span className="text-xs font-bold text-white">
                             #{batch.batch_number}
                           </span>
                         </div>
-                        <div>
-                          <p className="text-white font-medium">
+                            <span className="text-white font-semibold">
                             {batch.batch_label}
+                            </span>
+                          </div>
+                          <p className="text-xs text-gray-500 ml-11">
+                            {selectedLanguage === "ID"
+                              ? `${scenesPerBatch} scenes dalam batch ini`
+                              : `${scenesPerBatch} scenes in this batch`}
                           </p>
-                          <p className="text-xs text-gray-500">ID: {batch.id}</p>
                         </div>
                       </div>
 
                       <div className="flex items-center space-x-3">
+                        {/* Status Badge */}
                         <Badge
-                          className={`${getBatchStatusColor(
-                            batch.status
-                          )} border`}
+                          variant="secondary"
+                          className={`${
+                            batch.status === "success"
+                              ? "bg-green-500/20 text-green-300 border-green-500/30"
+                              : batch.status === "progress"
+                              ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
+                              : batch.status === "antri"
+                              ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
+                              : batch.status === "failed"
+                              ? "bg-red-500/20 text-red-300 border-red-500/30"
+                              : "bg-slate-700/30 text-gray-400 border-slate-600/30"
+                          }`}
                         >
-                          {getBatchStatusIcon(batch.status)}
-                          <span className="ml-2 text-xs font-semibold">
-                            {getBatchStatusText(batch.status)}
-                          </span>
+                          {batch.status === "success"
+                            ? "✅ " + (selectedLanguage === "ID" ? "Selesai" : "Done")
+                            : batch.status === "progress"
+                            ? "⚙️ " + (selectedLanguage === "ID" ? "Proses" : "Processing")
+                            : batch.status === "antri"
+                            ? "🕒 " + (selectedLanguage === "ID" ? "Antri" : "Queue")
+                            : batch.status === "failed"
+                            ? "❌ " + (selectedLanguage === "ID" ? "Gagal" : "Failed")
+                            : batch.status}
                         </Badge>
 
+                        {/* Regenerate Button for Failed */}
                         {batch.status === "failed" && (
                           <Button
                             size="sm"
@@ -877,32 +953,85 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                 </div>
               )}
 
-              {/* Generate Video Button */}
+              {/* Success Message & Generate Button */}
               {allBatchesSuccess && (
-                <div className="relative group mt-6">
+                <div className="space-y-4 animate-in fade-in slide-in-from-bottom duration-500">
+                  <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
+                    <div className="flex items-center">
+                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                      <div>
+                        <p className="font-semibold text-green-300">
+                          {selectedLanguage === "ID"
+                            ? "Semua Batch Selesai Diproses!"
+                            : "All Batches Processed Successfully!"}
+                        </p>
+                        <p className="text-sm text-green-400/80">
+                          {selectedLanguage === "ID"
+                            ? "Anda dapat melanjutkan untuk generate video sekarang."
+                            : "You can proceed to generate video now."}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="relative group">
                   <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
                   <Button
                     className="relative w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/30 text-lg py-6"
                     onClick={handleGenerateVideo}
                     disabled={generatingVideo}
                   >
-                    {generatingVideo ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        {t.generatingVideo}
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        {t.generateVideo}
-                      </>
-                    )}
+                      {generatingVideo ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          {t.generatingVideo}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          {t.generateVideo}
+                        </>
+                      )}
                   </Button>
+                  </div>
                 </div>
               )}
 
-              {/* Animated Progress Bar */}
-              {!allBatchesSuccess && (
+              {/* Animated Progress Bar - Only show when not all done */}
+              {!allBatchesSuccess && batchData.length > 0 && (
+                <div className="space-y-3 mt-6">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-400">
+                      {selectedLanguage === "ID" ? "Progress:" : "Progress:"}
+                    </span>
+                    <span className="text-purple-300 font-semibold">
+                      {batchData.filter((b) => b.status === "success").length} /{" "}
+                      {batchData.length}{" "}
+                      {selectedLanguage === "ID" ? "batch selesai" : "batches done"}
+                    </span>
+                  </div>
+                  <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                    <div
+                      className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-500"
+                      style={{
+                        width: `${
+                          (batchData.filter((b) => b.status === "success").length /
+                            batchData.length) *
+                          100
+                        }%`,
+                      }}
+                    ></div>
+                  </div>
+                  <div className="text-center text-sm text-gray-500 mt-2">
+                    {selectedLanguage === "ID"
+                      ? "💡 Proses ini membutuhkan waktu beberapa menit"
+                      : "💡 This process takes a few minutes"}
+                  </div>
+                </div>
+              )}
+
+              {/* Loading State Progress Bar */}
+              {(loading || isWaitingForGeneration) && batchData.length === 0 && (
                 <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5 mt-6">
                   <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
                 </div>
