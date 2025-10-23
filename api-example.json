@@ -2,53 +2,33 @@
   "status": true,
   "message": "Success Get Data",
   "data": {
-    "id": 157,
-    "user_video_id": 10,
-    "uuid_flag": "727d426d-3226-4191-91bf-221f6e0736f1",
-    "final_url_merge_video": "https://api.instantvideoapp.com/merge_video_konsultan/merged_I2GEJpyV.mp4",
-    "list_merge_video": "[\"https://tempfile.aiquickdraw.com/v/ec1a3587f7447be8711456e0657c91e7_1761114845.mp4\", \"https://tempfile.aiquickdraw.com/v/afe3c6fb23941c8cb49871f57e3ea5ab_1761114835.mp4\", \"https://tempfile.aiquickdraw.com/v/4702928bf205b0642759507b5648b4d7_1761114821.mp4\"]",
-    "created_at": "2025-10-22T06:32:30.000000Z",
-    "updated_at": "2025-10-22T08:16:46.000000Z",
-    "prompt": "Character:\n- Batman (Gender: Male, Race: Caucasian, Age: 35 years, Height: 188 cm, Body type: Athletic, Skin color: White, Hair color and style: Black, short, Eye color: Blue, Main outfit: Full black costume with a bat logo on the chest, Distinct accessory: Utility belt and black cape, Unique visual feature: Bat mask with glowing eyes.)\n- Wonder Woman (Gender: Female, Race: Amazonian, Age: Appears 30 years old, Height: 183 cm, Body type: Muscular, Skin color: Olive, Hair color and style: Long, wavy black, Eye color: Brown, Main outfit: Red, blue, and gold battle armor, Distinct accessory: Golden tiara and bullet-deflecting bracelets, Unique visual feature: Lasso of truth coiled at her waist.)\n\nLocation & Time:\nLocation: On top of a futuristic skyscraper, a spacious deck with granite and decorative plants, neon lights shimmering from surrounding buildings.\nTime: Night, with lighting from the city's neon lights, casting contrasting shadows throughout the area.\n\nVisual Description:\nTwo iconic figures stand facing each other atop the skyscraper. Batman appears resolute and ready to fight, while Wonder Woman stands gracefully, prepared with her bracelets. The city's neon lights provide dramatic illumination radiating between their shadows.\n\nSub Scene:\n0\u20134 seconds \u2192 The camera focuses on Batman crossing the deck with a steady stride, his eyes glowing. He pauses momentarily, focused on Wonder Woman in front of him. (A tense atmosphere, neon lights blinking, adding a mysterious tone along with slowly shifting shadows.)\n4\u20138 seconds \u2192 Then, the camera shifts to Wonder Woman taking a defensive stance, raising her bracelets. The light reflects off her iconic weapons, extending her battle-ready aura. (The atmosphere remains tense, the neon lights add a sparkling effect to her bracelets, creating a pre-battle ambiance.)\n\nAudio & Sounds:\nGently whispering night breeze, distant sounds from the busy city below, the sound of Batman's heavy footsteps on the skyscraper's peak gradation.",
-    "promp_id": null,
-    "prompt_en": "Character:\n- Batman (Gender: Male, Race: Caucasian, Age: 35 years, Height: 188 cm, Body type: Athletic, Skin color: White, Hair color and style: Black, short, Eye color: Blue, Main outfit: Full black costume with a bat logo on the chest, Distinct accessory: Utility belt and black cape, Unique visual feature: Bat mask with glowing eyes.)\n- Wonder Woman (Gender: Female, Race: Amazonian, Age: Appears 30 years old, Height: 183 cm, Body type: Muscular, Skin color: Olive, Hair color and style: Long, wavy black, Eye color: Brown, Main outfit: Red, blue, and gold battle armor, Distinct accessory: Golden tiara and bullet-deflecting bracelets, Unique visual feature: Lasso of truth coiled at her waist.)\n\nLocation & Time:\nLocation: On top of a futuristic skyscraper, a spacious deck with granite and decorative plants, neon lights shimmering from surrounding buildings.\nTime: Night, with lighting from the city's neon lights, casting contrasting shadows throughout the area.\n\nVisual Description:\nTwo iconic figures stand facing each other atop the skyscraper. Batman appears resolute and ready to fight, while Wonder Woman stands gracefully, prepared with her bracelets. The city's neon lights provide dramatic illumination radiating between their shadows.\n\nSub Scene:\n0\u20134 seconds \u2192 The camera focuses on Batman crossing the deck with a steady stride, his eyes glowing. He pauses momentarily, focused on Wonder Woman in front of him. (A tense atmosphere, neon lights blinking, adding a mysterious tone along with slowly shifting shadows.)\n4\u20138 seconds \u2192 Then, the camera shifts to Wonder Woman taking a defensive stance, raising her bracelets. The light reflects off her iconic weapons, extending her battle-ready aura. (The atmosphere remains tense, the neon lights add a sparkling effect to her bracelets, creating a pre-battle ambiance.)\n\nAudio & Sounds:\nGently whispering night breeze, distant sounds from the busy city below, the sound of Batman's heavy footsteps on the skyscraper's peak gradation.",
-    "prompt_zh": null,
-    "prompt_ar": null,
-    "user": {
-      "whatsapp_number": null,
-      "email": "slsesevn@gmail.com"
-    },
-    "list_video": [
-      {
-        "id": 804,
-        "user_video_id": "10",
-        "task_id": "ec1a3587f7447be8711456e0657c91e7",
-        "status_video": "success",
-        "url_video": "https://tempfile.aiquickdraw.com/v/ec1a3587f7447be8711456e0657c91e7_1761114845.mp4",
-        "flag_multiple_uuid": "727d426d-3226-4191-91bf-221f6e0736f1",
-        "prompt": "Karakter:\n- Batman (Jenis kelamin: Laki-laki, Ras: Kaukasoid, Usia: 35 tahun, Tinggi badan: 188 cm, Bentuk tubuh: Atletis, Warna kulit: Putih, Warna dan gaya rambut: Hitam, pendek, Warna mata: Biru, Pakaian utama: Kostum hitam penuh dengan logo kelelawar di dada, Aksesori khas: Sabuk utilitas dan jubah hitam, Ciri visual unik: Topeng kelelawar dengan mata yang menyala.)\n- Wonder Woman (Jenis kelamin: Perempuan, Ras: Amazonian, Usia: Tampak 30 tahun, Tinggi badan: 183 cm, Bentuk tubuh: Berotot, Warna kulit: Sawo matang, Warna dan gaya rambut: Hitam panjang dan bergelombang, Warna mata: Cokelat, Pakaian utama: Armatur perang merah biru dan emas, Aksesori khas: Tiara emas dan gelang penghalau peluru, Ciri visual unik: Lasso kebenaran tergulung di pinggang.)\n\nLokasi & Waktu:\nLokasi: Di puncak gedung pencakar langit futuristik, geladak yang luas dengan batu granit dan tanaman hias, lampu neon berkilauan dari gedung di sekitarnya.\nWaktu: Malam hari, dengan pencahayaan dari lampu neon kota, menciptakan bayangan kontras di seluruh area.\n\nDeskripsi Visual:\nDua tokoh ikonik berdiri saling berhadapan di puncak gedung pencakar langit. Batman terlihat tegas dan siap bertarung, sementara Wonder Woman berdiri dengan anggun, siap dengan gelangnya. Lampu neon dari kota memberikan cahaya dramatis yang memancar di antara bayangan mereka.\n\nSub Scene:\n0\u20134 detik \u2192 Kamera menyorot Batman yang melintasi geladak dengan langkah mantap, matanya bersinar. Dia berhenti sejenak, fokus pada Wonder Woman di hadapannya. (Suasana tegang, lampu neon berkelip, menambahkan nuansa misterius seiring dengan bayangan yang bergerak perlahan.)\n4\u20138 detik \u2192 Lalu, kamera beralih ke Wonder Woman yang mengambil posisi bertahan dengan mengangkat gelangnya. Cahaya mencerminkan senjata ikoniknya, melanjutkan aura siap tempurnya. (Nuansa tetap tegang, lampu neon menambah efek kilauan pada gelangnya, menciptakan suasana pertempuran yang akan datang.)\n\nAudio & Suara:\nAngin malam yang berdesir lembut, suara jauh kota yang sibuk di bawah, suara langkah kaki berat Batman di gradasi puncak gedung.",
-        "created_at": "2025-10-22T06:32:30.000000Z"
-      },
-      {
-        "id": 805,
-        "user_video_id": "10",
-        "task_id": "afe3c6fb23941c8cb49871f57e3ea5ab",
-        "status_video": "success",
-        "url_video": "https://tempfile.aiquickdraw.com/v/afe3c6fb23941c8cb49871f57e3ea5ab_1761114835.mp4",
-        "flag_multiple_uuid": "727d426d-3226-4191-91bf-221f6e0736f1",
-        "prompt": "Karakter:\n- Batman (Jenis kelamin: Laki-laki, Ras: Kaukasoid, Usia: 35 tahun, Tinggi badan: 188 cm, Bentuk tubuh: Atletis, Warna kulit: Putih, Warna dan gaya rambut: Hitam, pendek, Warna mata: Biru, Pakaian utama: Kostum hitam penuh dengan logo kelelawar di dada, Aksesori khas: Sabuk utilitas dan jubah hitam, Ciri visual unik: Topeng kelelawar dengan mata yang menyala.)\n- Wonder Woman (Jenis kelamin: Perempuan, Ras: Amazonian, Usia: Tampak 30 tahun, Tinggi badan: 183 cm, Bentuk tubuh: Berotot, Warna kulit: Sawo matang, Warna dan gaya rambut: Hitam panjang dan bergelombang, Warna mata: Cokelat, Pakaian utama: Armatur perang merah biru dan emas, Aksesori khas: Tiara emas dan gelang penghalau peluru, Ciri visual unik: Lasso kebenaran tergulung di pinggang.)\n\nLokasi & Waktu:\nLokasi: Tetap di puncak gedung pencakar langit yang sama, dengan lampu neon kota yang menyinari pertempuran.\nWaktu: Malam hari, cahaya masih berkilauan dari lampu-lampu neon.\n\nDeskripsi Visual:\nPertempuran dimulai dengan cepat dengan Batman dan Wonder Woman saling menyerang dengan kecepatan tinggi. Mereka bergerak lincah, memanfaatkan setiap sudut dari geladak.\n\nSub Scene:\n0\u20134 detik \u2192 Batman melancarkan serangkaian serangan cepat, kamera menyorot gerakan tangan dan kakinya dengan detail yang halus, setiap serangan ditangkis Wonder Woman dengan cekatan. (Suasana memanas, suara decitan dan dentingan metal dari senjata dan armor menambah ketegangan.)\n4\u20138 detik \u2192 Kamera beralih ke Wonder Woman yang kemudian mengambil keuntungan dengan serangan balik menggunakan lasso-nya, menangkap pergelangan tangan Batman dan menariknya dengan kuat. (Energi eksplosif saat lasso bersinar terang sesaat, memberikan efek dramatis dalam pertarungan mereka.)\n\nAudio & Suara:\nDentuman suara pukulan yang berat, gemuruh energi dari lasso, dan suara debat yang intens di antara mereka berdua.",
-        "created_at": "2025-10-22T06:32:30.000000Z"
-      },
-      {
-        "id": 806,
-        "user_video_id": "10",
-        "task_id": "4702928bf205b0642759507b5648b4d7",
-        "status_video": "success",
-        "url_video": "https://tempfile.aiquickdraw.com/v/4702928bf205b0642759507b5648b4d7_1761114821.mp4",
-        "flag_multiple_uuid": "727d426d-3226-4191-91bf-221f6e0736f1",
-        "prompt": "Karakter:\n- Batman (Jenis kelamin: Laki-laki, Ras: Kaukasoid, Usia: 35 tahun, Tinggi badan: 188 cm, Bentuk tubuh: Atletis, Warna kulit: Putih, Warna dan gaya rambut: Hitam, pendek, Warna mata: Biru, Pakaian utama: Kostum hitam penuh dengan logo kelelawar di dada, Aksesori khas: Sabuk utilitas dan jubah hitam, Ciri visual unik: Topeng kelelawar dengan mata yang menyala.)\n- Wonder Woman (Jenis kelamin: Perempuan, Ras: Amazonian, Usia: Tampak 30 tahun, Tinggi badan: 183 cm, Bentuk tubuh: Berotot, Warna kulit: Sawo matang, Warna dan gaya rambut: Hitam panjang dan bergelombang, Warna mata: Cokelat, Pakaian utama: Armatur perang merah biru dan emas, Aksesori khas: Tiara emas dan gelang penghalau peluru, Ciri visual unik: Lasso kebenaran tergulung di pinggang.)\n\nLokasi & Waktu:\nLokasi: Masih di puncak gedung yang futuristik, dengan latar belakang kota yang berkilauan.\nWaktu: Malam hari, suasana tetap bercahaya dengan kota bersinar.\n\nDeskripsi Visual:\nPertarungan mereda, dengan kedua pahlawan mengambil jarak. Mereka saling bertukar pandangan, dan menyadari bahwa mereka tengah dalam satu misi yang sama.\n\nSub Scene:\n0\u20134 detik \u2192 Kamera menyorot tatapan Batman yang mengangguk dengan pengertian terhadap Wonder Woman. Dia kemudian melepas genggaman perlahan dari lasso yang mengikatnya. (Nuansa menghangat, cahaya neon memberikan bayangan lembut, menekankan kedamaian dan saling pengertian.)\n4\u20138 detik \u2192 Kamera beralih ke Wonder Woman yang tersenyum kecil, pertanda persahabatan, sebelum keduanya berdiri tegak melihat ke arah horizon kota. (Cahaya neon berkedip yang harmonis dengan keharmonisan yang terbangun, menutup cerita dengan suasana yang damai.)\n\nAudio & Suara:\nMusik latar yang lembut perlahan mengambil alih, diiringi suara angin malam dan bisik-bisik kota dari kejauhan.",
-        "created_at": "2025-10-22T06:32:30.000000Z"
-      }
-    ]
+      "list_batch": [
+          {
+              "id": 37,
+              "video_chat_ai_id": 479,
+              "batch_number": 1,
+              "status": "success",
+              "created_at": "2025-10-23T07:58:39.000000Z",
+              "updated_at": "2025-10-23T07:58:39.000000Z",
+              "batch_label": "Batch 1",
+              "videochatai": {
+                  "id": 479,
+                  "user_video_id": 5
+              }
+          },
+          {
+              "id": 38,
+              "video_chat_ai_id": 479,
+              "batch_number": 2,
+              "status": "antri",
+              "created_at": "2025-10-23T07:58:39.000000Z",
+              "updated_at": "2025-10-23T07:58:39.000000Z",
+              "batch_label": "Batch 2",
+              "videochatai": {
+                  "id": 479,
+                  "user_video_id": 5
+              }
+          }
+      ]
   }
 }

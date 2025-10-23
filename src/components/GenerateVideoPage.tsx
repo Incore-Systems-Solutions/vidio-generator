@@ -61,6 +61,14 @@ const translations = {
     autoUpdate: "Halaman akan otomatis diperbarui saat proses selesai",
     failedToLoad: "Gagal Memuat Data",
     tryAgain: "Coba Lagi",
+    batchProcessing: "Memproses Batch Scene",
+    batchStatus: "Status Batch",
+    regenerateBatch: "Regenerate Batch",
+    generateVideo: "Generate Video",
+    generatingVideo: "Generating Video...",
+    allBatchSuccess: "✨ Semua Batch Selesai!",
+    readyToGenerate: "Semua batch telah berhasil diproses. Siap untuk generate video final.",
+    success: "Selesai",
   },
   EN: {
     backToHome: "Back to Home",
@@ -102,6 +110,14 @@ const translations = {
     autoUpdate: "Page will automatically update when process is complete",
     failedToLoad: "Failed to Load Data",
     tryAgain: "Try Again",
+    batchProcessing: "Processing Batch Scenes",
+    batchStatus: "Batch Status",
+    regenerateBatch: "Regenerate Batch",
+    generateVideo: "Generate Video",
+    generatingVideo: "Generating Video...",
+    allBatchSuccess: "✨ All Batches Complete!",
+    readyToGenerate: "All batches have been successfully processed. Ready to generate final video.",
+    success: "Success",
   },
   ZH: {
     backToHome: "返回主页",
@@ -140,6 +156,14 @@ const translations = {
     autoUpdate: "流程完成后页面将自动更新",
     failedToLoad: "无法加载数据",
     tryAgain: "重试",
+    batchProcessing: "正在处理批次场景",
+    batchStatus: "批次状态",
+    regenerateBatch: "重新生成批次",
+    generateVideo: "生成视频",
+    generatingVideo: "正在生成视频...",
+    allBatchSuccess: "✨ 所有批次已完成！",
+    readyToGenerate: "所有批次已成功处理。准备生成最终视频。",
+    success: "成功",
   },
   AR: {
     backToHome: "العودة إلى الصفحة الرئيسية",
@@ -180,6 +204,14 @@ const translations = {
     autoUpdate: "ستتم تحديث الصفحة تلقائيًا عند اكتمال العملية",
     failedToLoad: "فشل تحميل البيانات",
     tryAgain: "حاول مرة أخرى",
+    batchProcessing: "معالجة دفعات المشاهد",
+    batchStatus: "حالة الدفعات",
+    regenerateBatch: "إعادة إنشاء الدفعة",
+    generateVideo: "إنشاء الفيديو",
+    generatingVideo: "جارٍ إنشاء الفيديو...",
+    allBatchSuccess: "✨ اكتملت جميع الدفعات!",
+    readyToGenerate: "تمت معالجة جميع الدفعات بنجاح. جاهز لإنشاء الفيديو النهائي.",
+    success: "نجح",
   },
 };
 
@@ -208,6 +240,36 @@ interface ApiResponse {
     list_video: ApiSceneData[];
     estimated_merge: string;
   };
+}
+
+// Batch API interfaces
+interface ApiBatchData {
+  id: number;
+  video_chat_ai_id: number;
+  batch_number: number;
+  status: string; // "success", "antri", "progress", "failed"
+  created_at: string;
+  updated_at: string;
+  batch_label: string;
+  videochatai: {
+    id: number;
+    user_video_id: number;
+  };
+}
+
+interface ApiBatchResponse {
+  status: boolean;
+  message: string;
+  data: {
+    list_batch: ApiBatchData[];
+  };
+}
+
+interface BatchData {
+  id: number;
+  batch_number: number;
+  batch_label: string;
+  status: string;
 }
 
 interface SceneData {
@@ -240,6 +302,11 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [isWaitingForGeneration, setIsWaitingForGeneration] = useState(false);
+  
+  // Batch processing states
+  const [batchData, setBatchData] = useState<BatchData[]>([]);
+  const [isBatchProcessing, setIsBatchProcessing] = useState(true);
+  const [generatingVideo, setGeneratingVideo] = useState(false);
 
   // Language state
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
@@ -280,25 +347,113 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     };
   }, [selectedLanguage]);
 
-  // Fetch generate status and set up polling
+  // Fetch batch status first, then video merge status
   useEffect(() => {
-    fetchGenerateStatus();
+    // Check if we should fetch batch status or video merge status
+    if (isBatchProcessing) {
+      fetchBatchStatus();
+    } else {
+      fetchGenerateStatus();
+    }
 
     // Set up polling every 5 seconds
-    // Stop polling when final video is ready
     const interval = setInterval(() => {
-      // Check if we should stop polling
-      if (generateData?.final_url_merge_video) {
-        console.log("Final video is ready, stopping polling");
-        clearInterval(interval);
-        return;
+      if (isBatchProcessing) {
+        fetchBatchStatus();
+      } else {
+        // Check if we should stop polling
+        if (generateData?.final_url_merge_video) {
+          console.log("Final video is ready, stopping polling");
+          clearInterval(interval);
+          return;
+        }
+        fetchGenerateStatus();
       }
-      // Continue polling even if waiting for generation (404)
-      fetchGenerateStatus();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [uuid, generateData?.final_url_merge_video]);
+  }, [uuid, isBatchProcessing, generateData?.final_url_merge_video]);
+
+  const fetchBatchStatus = async () => {
+    try {
+      setError(null);
+
+      // Get UUID from localStorage (saved by PaymentPage)
+      const savedUuid = localStorage.getItem("generate-uuid") || uuid;
+      console.log("Fetching batch status for UUID:", savedUuid);
+
+      // Get x-api-key from localStorage
+      const xApiKey = localStorage.getItem("x-api-key");
+
+      if (!xApiKey) {
+        throw new Error("API key tidak ditemukan. Silakan login kembali.");
+      }
+
+      // Call batch status API
+      const response = await fetch(
+        `${BASE_URL}/api/chat-ai/status-batch/${savedUuid}`,
+        {
+          headers: {
+            "x-api-key": xApiKey,
+          },
+        }
+      );
+
+      // Handle 404 - batch not ready yet
+      if (response.status === 404) {
+        console.log("Batch not ready yet (404), will retry...");
+        setIsWaitingForGeneration(true);
+        setLoading(false);
+        return;
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const apiData: ApiBatchResponse = await response.json();
+
+      if (!apiData.status) {
+        throw new Error(apiData.message || "Gagal memuat data batch");
+      }
+
+      console.log("Batch API Response:", apiData);
+
+      // If we get here with valid data, batch is ready
+      setIsWaitingForGeneration(false);
+
+      // Transform batch data
+      const transformedBatches: BatchData[] = apiData.data.list_batch.map(
+        (batch) => ({
+          id: batch.id,
+          batch_number: batch.batch_number,
+          batch_label: batch.batch_label,
+          status: batch.status,
+        })
+      );
+
+      setBatchData(transformedBatches);
+      setLoading(false);
+      setRefreshing(false);
+
+      // Check if all batches are successful - stop polling batch status
+      const allSuccess = transformedBatches.every(
+        (batch) => batch.status === "success"
+      );
+
+      if (allSuccess) {
+        console.log("All batches are successful!");
+        // Don't automatically generate video, wait for user action
+      }
+    } catch (err) {
+      console.error("Error fetching batch status:", err);
+      setError(
+        err instanceof Error ? err.message : "Gagal memuat status batch"
+      );
+      setLoading(false);
+      setRefreshing(false);
+    }
+  };
 
   const fetchGenerateStatus = async () => {
     try {
@@ -475,6 +630,78 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     window.open(url, "_blank");
   };
 
+  const handleRegenerateBatch = async (batchId: number) => {
+    try {
+      const xApiKey = localStorage.getItem("x-api-key");
+      if (!xApiKey) {
+        throw new Error("API key tidak ditemukan. Silakan login kembali.");
+      }
+
+      const response = await fetch(
+        `${BASE_URL}/api/chat-ai/refetch-batch/${batchId}`,
+        {
+          method: "POST",
+          headers: {
+            "x-api-key": xApiKey,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Regenerate batch result:", result);
+
+      // Refresh batch status
+      fetchBatchStatus();
+    } catch (err) {
+      console.error("Error regenerating batch:", err);
+      alert(err instanceof Error ? err.message : "Gagal meregenerasi batch");
+    }
+  };
+
+  const handleGenerateVideo = async () => {
+    try {
+      setGeneratingVideo(true);
+      const xApiKey = localStorage.getItem("x-api-key");
+      if (!xApiKey) {
+        throw new Error("API key tidak ditemukan. Silakan login kembali.");
+      }
+
+      const savedUuid = localStorage.getItem("generate-uuid") || uuid;
+
+      const response = await fetch(
+        `${BASE_URL}/api/generate-video/${savedUuid}`,
+        {
+          method: "GET",
+          headers: {
+            "x-api-key": xApiKey,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Generate video result:", result);
+
+      // Switch to video merge status tracking
+      setIsBatchProcessing(false);
+      setGeneratingVideo(false);
+    } catch (err) {
+      console.error("Error generating video:", err);
+      alert(err instanceof Error ? err.message : "Gagal generate video");
+      setGeneratingVideo(false);
+    }
+  };
+
+  // For scene status
   const getStatusIcon = (status: string) => {
     switch (status) {
       case "completed":
@@ -505,9 +732,189 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     }
   };
 
+  // For batch status
+  const getBatchStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "success":
+        return <CheckCircle className="w-5 h-5 text-green-400" />;
+      case "progress":
+        return <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />;
+      case "antri":
+        return <Clock className="w-5 h-5 text-yellow-400" />;
+      case "failed":
+        return <AlertCircle className="w-5 h-5 text-red-400" />;
+      default:
+        return <Clock className="w-5 h-5 text-gray-400" />;
+    }
+  };
+
+  const getBatchStatusColor = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "success":
+        return "bg-green-500/20 text-green-300 border-green-500/30";
+      case "progress":
+        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
+      case "antri":
+        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
+      case "failed":
+        return "bg-red-500/20 text-red-300 border-red-500/30";
+      default:
+        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
+    }
+  };
+
+  const getBatchStatusText = (status: string) => {
+    switch (status.toLowerCase()) {
+      case "success":
+        return t.success;
+      case "progress":
+        return t.processing2;
+      case "antri":
+        return t.waiting;
+      case "failed":
+        return t.failed;
+      default:
+        return status;
+    }
+  };
+
   // Get current translations
   const t = translations[selectedLanguage as keyof typeof translations];
 
+  // Check if all batches are successful
+  const allBatchesSuccess = batchData.every(
+    (batch) => batch.status === "success"
+  );
+
+  // Batch Processing Modal
+  if (isBatchProcessing) {
+    return (
+      <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center p-4">
+        <div className="max-w-3xl w-full">
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+
+            <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
+              <div className="text-center mb-8">
+                <div className="relative inline-block mb-6">
+                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
+                  {loading || isWaitingForGeneration ? (
+                    <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
+                  ) : allBatchesSuccess ? (
+                    <CheckCircle className="relative w-16 h-16 text-green-400 mx-auto" />
+                  ) : (
+                    <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
+                  )}
+                </div>
+
+                <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
+                  {loading || isWaitingForGeneration
+                    ? t.loadingStatus
+                    : allBatchesSuccess
+                    ? t.allBatchSuccess
+                    : t.batchProcessing}
+                </h3>
+                <p className="text-gray-400 text-lg mb-6">
+                  {loading || isWaitingForGeneration
+                    ? t.fetchingInfo
+                    : allBatchesSuccess
+                    ? t.readyToGenerate
+                    : t.systemProcessing}
+                </p>
+              </div>
+
+              {/* Batch List */}
+              {batchData.length > 0 && (
+                <div className="space-y-3 mb-6">
+                  <h4 className="text-sm font-semibold text-gray-300 mb-3">
+                    {t.batchStatus}
+                  </h4>
+                  {batchData.map((batch) => (
+                    <div
+                      key={batch.id}
+                      className="flex items-center justify-between p-4 bg-slate-800/50 border border-white/5 rounded-xl hover:border-purple-500/30 transition-all"
+                    >
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-lg flex items-center justify-center">
+                          <span className="text-sm font-bold text-white">
+                            #{batch.batch_number}
+                          </span>
+                        </div>
+                        <div>
+                          <p className="text-white font-medium">
+                            {batch.batch_label}
+                          </p>
+                          <p className="text-xs text-gray-500">ID: {batch.id}</p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-3">
+                        <Badge
+                          className={`${getBatchStatusColor(
+                            batch.status
+                          )} border`}
+                        >
+                          {getBatchStatusIcon(batch.status)}
+                          <span className="ml-2 text-xs font-semibold">
+                            {getBatchStatusText(batch.status)}
+                          </span>
+                        </Badge>
+
+                        {batch.status === "failed" && (
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/30"
+                            onClick={() => handleRegenerateBatch(batch.id)}
+                          >
+                            <RefreshCw className="w-4 h-4 mr-1" />
+                            {t.regenerateBatch}
+                          </Button>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* Generate Video Button */}
+              {allBatchesSuccess && (
+                <div className="relative group mt-6">
+                  <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                  <Button
+                    className="relative w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/30 text-lg py-6"
+                    onClick={handleGenerateVideo}
+                    disabled={generatingVideo}
+                  >
+                    {generatingVideo ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        {t.generatingVideo}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        {t.generateVideo}
+                      </>
+                    )}
+                  </Button>
+                </div>
+              )}
+
+              {/* Animated Progress Bar */}
+              {!allBatchesSuccess && (
+                <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5 mt-6">
+                  <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Loading state for video merge status
   if (loading || isWaitingForGeneration) {
     return (
       <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center">
