@@ -835,7 +835,7 @@ export function VideoConsultant() {
   // Visual style options with multilingual support
   const visualStyleOptions = [
     {
-      value: "Ultra Realistic",
+      value: "Ultra-realistic 8K ASMR cinematic realism",
       label: {
         ID: "Ultra Realistic",
         EN: "Ultra Realistic",
@@ -850,7 +850,7 @@ export function VideoConsultant() {
       },
     },
     {
-      value: "Realistic / Live Action",
+      value: "Realistic 8K ASMR cinematic realism",
       label: {
         ID: "Realistic / Live Action",
         EN: "Realistic / Live Action",
@@ -865,7 +865,7 @@ export function VideoConsultant() {
       },
     },
     {
-      value: "Cinematic 3D",
+      value: "Cinematic 3D 8K ASMR cinematic realism",
       label: {
         ID: "Cinematic 3D",
         EN: "Cinematic 3D",
@@ -880,7 +880,7 @@ export function VideoConsultant() {
       },
     },
     {
-      value: "Cartoon / 2D Animation",
+      value: "Cartoon 8K cinematic animation realism",
       label: {
         ID: "Cartoon / 2D Animation",
         EN: "Cartoon / 2D Animation",
@@ -895,7 +895,7 @@ export function VideoConsultant() {
       },
     },
     {
-      value: "Anime Style",
+      value: "Anime 8K cinematic illustration realism",
       label: {
         ID: "Anime Style",
         EN: "Anime Style",
@@ -910,7 +910,7 @@ export function VideoConsultant() {
       },
     },
     {
-      value: "Motion Graphics / Explainer",
+      value: "Motion Graphics 8K cinematic realism",
       label: {
         ID: "Motion Graphics / Explainer",
         EN: "Motion Graphics / Explainer",
