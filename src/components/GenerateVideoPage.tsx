@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Film,
   CheckCircle,
+  Check,
   Clock,
   AlertCircle,
   Loader2,
@@ -875,32 +876,17 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                           : "bg-slate-800/30 border-white/5"
                       }`}
                     >
-                      <div className="flex items-center space-x-4">
-                        {/* Status Icon */}
-                        {batch.status === "success" ? (
-                          <CheckCircle className="w-6 h-6 text-green-400 flex-shrink-0" />
-                        ) : batch.status === "progress" ? (
-                          <Loader2 className="w-6 h-6 text-blue-400 animate-spin flex-shrink-0" />
-                        ) : batch.status === "antri" ? (
-                          <Clock className="w-6 h-6 text-yellow-400 flex-shrink-0" />
-                        ) : batch.status === "failed" ? (
-                          <AlertCircle className="w-6 h-6 text-red-400 flex-shrink-0" />
-                        ) : (
-                          <div className="w-6 h-6 rounded-full border-2 border-gray-600 flex-shrink-0"></div>
-                        )}
-
-                        <div className="flex-1">
-                          <div className="flex items-center space-x-3 mb-1">
-                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-lg flex items-center justify-center">
-                              <span className="text-xs font-bold text-white">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
+                          <span className="text-xs font-bold text-white">
                             #{batch.batch_number}
                           </span>
                         </div>
-                            <span className="text-white font-semibold">
+                        <div>
+                          <span className="text-white font-semibold">
                             {batch.batch_label}
-                            </span>
-                          </div>
-                          <p className="text-xs text-gray-500 ml-11">
+                          </span>
+                          <p className="text-xs text-gray-500 mt-0.5">
                             {selectedLanguage === "ID"
                               ? `${scenesPerBatch} scenes dalam batch ini`
                               : `${scenesPerBatch} scenes in this batch`}
@@ -908,32 +894,107 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                         </div>
                       </div>
 
-                      <div className="flex items-center space-x-3">
-                        {/* Status Badge */}
-                        <Badge
-                          variant="secondary"
-                          className={`${
-                            batch.status === "success"
-                              ? "bg-green-500/20 text-green-300 border-green-500/30"
-                              : batch.status === "progress"
-                              ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
-                              : batch.status === "antri"
-                              ? "bg-yellow-500/20 text-yellow-300 border-yellow-500/30"
-                              : batch.status === "failed"
-                              ? "bg-red-500/20 text-red-300 border-red-500/30"
-                              : "bg-slate-700/30 text-gray-400 border-slate-600/30"
-                          }`}
-                        >
-                          {batch.status === "success"
-                            ? "✅ " + (selectedLanguage === "ID" ? "Selesai" : "Done")
-                            : batch.status === "progress"
-                            ? "⚙️ " + (selectedLanguage === "ID" ? "Proses" : "Processing")
-                            : batch.status === "antri"
-                            ? "🕒 " + (selectedLanguage === "ID" ? "Antri" : "Queue")
-                            : batch.status === "failed"
-                            ? "❌ " + (selectedLanguage === "ID" ? "Gagal" : "Failed")
-                            : batch.status}
-                        </Badge>
+                      <div className="flex items-center space-x-4">
+                        {/* Circular Progress Indicator */}
+                        <div className="relative flex items-center">
+                          {/* Circular Progress */}
+                          <div className="relative w-14 h-14">
+                            {/* Background Circle */}
+                            <svg className="w-14 h-14 transform -rotate-90">
+                              <circle
+                                cx="28"
+                                cy="28"
+                                r="24"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                fill="none"
+                                className={
+                                  batch.status === "success"
+                                    ? "text-green-500/20"
+                                    : batch.status === "progress"
+                                    ? "text-blue-500/20"
+                                    : batch.status === "antri"
+                                    ? "text-yellow-500/20"
+                                    : "text-red-500/20"
+                                }
+                              />
+                              {/* Progress Circle */}
+                              <circle
+                                cx="28"
+                                cy="28"
+                                r="24"
+                                stroke="currentColor"
+                                strokeWidth="3"
+                                fill="none"
+                                strokeDasharray={`${2 * Math.PI * 24}`}
+                                strokeDashoffset={
+                                  batch.status === "success"
+                                    ? 0
+                                    : batch.status === "progress"
+                                    ? 2 * Math.PI * 24 * 0.35
+                                    : batch.status === "antri"
+                                    ? 2 * Math.PI * 24 * 0.85
+                                    : 2 * Math.PI * 24
+                                }
+                                className={`transition-all duration-1000 ease-out ${
+                                  batch.status === "success"
+                                    ? "text-green-400"
+                                    : batch.status === "progress"
+                                    ? "text-blue-400"
+                                    : batch.status === "antri"
+                                    ? "text-yellow-400"
+                                    : "text-red-400"
+                                }`}
+                                strokeLinecap="round"
+                              />
+                            </svg>
+                            
+                            {/* Center Icon */}
+                            <div className="absolute inset-0 flex items-center justify-center">
+                              {batch.status === "success" ? (
+                                <Check className="w-5 h-5 text-green-400 font-bold stroke-[3]" />
+                              ) : batch.status === "progress" ? (
+                                <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                              ) : batch.status === "antri" ? (
+                                <Clock className="w-5 h-5 text-yellow-400 animate-spin" />
+                              ) : (
+                                <AlertCircle className="w-5 h-5 text-red-400" />
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Status Text */}
+                          <div className="ml-3">
+                            <p
+                              className={`text-sm font-semibold leading-tight ${
+                                batch.status === "success"
+                                  ? "text-green-300"
+                                  : batch.status === "progress"
+                                  ? "text-blue-300"
+                                  : batch.status === "antri"
+                                  ? "text-yellow-300"
+                                  : "text-red-300"
+                              }`}
+                            >
+                              {batch.status === "success"
+                                ? selectedLanguage === "ID"
+                                  ? "Selesai"
+                                  : "Done"
+                                : batch.status === "progress"
+                                ? selectedLanguage === "ID"
+                                  ? "Proses"
+                                  : "Processing"
+                                : batch.status === "antri"
+                                ? selectedLanguage === "ID"
+                                  ? "Antri"
+                                  : "Queue"
+                                : selectedLanguage === "ID"
+                                ? "Gagal"
+                                : "Failed"}
+                            </p>
+                            
+                          </div>
+                        </div>
 
                         {/* Regenerate Button for Failed */}
                         {batch.status === "failed" && (
@@ -981,17 +1042,17 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     onClick={handleGenerateVideo}
                     disabled={generatingVideo}
                   >
-                      {generatingVideo ? (
-                        <>
-                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          {t.generatingVideo}
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5 mr-2" />
-                          {t.generateVideo}
-                        </>
-                      )}
+                    {generatingVideo ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        {t.generatingVideo}
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-5 h-5 mr-2" />
+                        {t.generateVideo}
+                      </>
+                    )}
                   </Button>
                   </div>
                 </div>
