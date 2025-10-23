@@ -1,14 +1,14 @@
 import { e as createComponent, k as renderComponent, r as renderTemplate, m as maybeRenderHead } from '../chunks/astro/server_BY5bc-G0.mjs';
 import 'kleur/colors';
-import { $ as $$Main } from '../chunks/main_DBzESP1K.mjs';
+import { $ as $$Main } from '../chunks/main_DkERgG5E.mjs';
 import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect } from 'react';
 import { B as Button, a as Badge } from '../chunks/badge_DSQWoPdL.mjs';
 import { C as Card, a as CardHeader, b as CardTitle, c as CardContent } from '../chunks/input_DEe1eFb5.mjs';
 import { RefreshCw, AlertCircle, ArrowLeft, Clock, Video, Eye, Download, FileText, CheckCircle, Play } from 'lucide-react';
-import { v as videoGenerationApi } from '../chunks/api_yL4KI-YJ.mjs';
+import { v as videoGenerationApi } from '../chunks/api_BUhEShyy.mjs';
 import { v as videoSetupStorage } from '../chunks/videoSetupStorage_DUxbdP36.mjs';
-import { N as NavbarWithModal } from '../chunks/NavbarWithModal_BRrC7jRw.mjs';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_CECN1nH9.mjs';
 export { renderers } from '../renderers.mjs';
 
 function GenerateVideo({ onBack }) {

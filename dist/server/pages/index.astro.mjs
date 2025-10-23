@@ -1,11 +1,11 @@
 import { e as createComponent, f as createAstro, h as addAttribute, l as renderHead, k as renderComponent, o as renderScript, r as renderTemplate } from '../chunks/astro/server_BY5bc-G0.mjs';
 import 'kleur/colors';
-import { N as NavbarWithModal } from '../chunks/NavbarWithModal_BRrC7jRw.mjs';
+import { N as NavbarWithModal } from '../chunks/NavbarWithModal_CECN1nH9.mjs';
 import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import { useState, useEffect, useRef } from 'react';
 import { B as Button } from '../chunks/badge_DSQWoPdL.mjs';
-import { Sparkles, Loader2, Video, Play, Calendar, X, Pause, VolumeX, Volume2, Bot, MessageCircle, Send } from 'lucide-react';
-import { p as publicVideoGalleryApi } from '../chunks/api_yL4KI-YJ.mjs';
+import { Sparkles, Loader2, Video, Play, Calendar, X, Minimize, Maximize, Pause, VolumeX, Volume2, Bot, MessageCircle, Send } from 'lucide-react';
+import { p as publicVideoGalleryApi } from '../chunks/api_BUhEShyy.mjs';
 import { I as Input } from '../chunks/input_DEe1eFb5.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
@@ -96,6 +96,9 @@ function VideoGallery() {
   const [totalPages, setTotalPages] = useState(1);
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
   const [userEmails, setUserEmails] = useState({});
+  const [videoDetail, setVideoDetail] = useState(null);
+  const [loadingDetail, setLoadingDetail] = useState(false);
+  const [currentVideoUser, setCurrentVideoUser] = useState(null);
   useEffect(() => {
     const savedLanguage = localStorage.getItem("preferredLanguage");
     if (savedLanguage && translations$1[savedLanguage]) {
@@ -155,8 +158,14 @@ function VideoGallery() {
     };
     fetchVideos();
   }, [currentPage]);
+  useEffect(() => {
+    if (selectedVideo) {
+      fetchVideoDetail(selectedVideo.id, selectedLanguage);
+    }
+  }, [selectedLanguage, selectedVideo]);
   const handleVideoClick = (video) => {
     setSelectedVideo(video);
+    fetchVideoDetail(video.id, selectedLanguage);
   };
   const handleLoadMore = () => {
     if (currentPage < totalPages && !loading && !loadingMore) {
@@ -188,7 +197,63 @@ function VideoGallery() {
     const censored = username.substring(0, visibleStart) + "*".repeat(visibleEnd - visibleStart) + username.substring(visibleEnd);
     return `${censored}@${domain}`;
   };
+  const getLanguageCode = (language) => {
+    const languageMap = {
+      ID: "id",
+      EN: "en",
+      ZH: "zh",
+      AR: "ar"
+    };
+    return languageMap[language] || "id";
+  };
+  const fetchVideoDetail = async (videoId, language) => {
+    try {
+      setLoadingDetail(true);
+      const languageCode = getLanguageCode(language);
+      const response = await publicVideoGalleryApi.getVideoDetail(
+        videoId,
+        languageCode
+      );
+      setVideoDetail(response.data);
+      if (response.data.user) {
+        setCurrentVideoUser(response.data.user);
+      }
+    } catch (error2) {
+      console.error("Error fetching video detail:", error2);
+      setVideoDetail(null);
+      setCurrentVideoUser(null);
+    } finally {
+      setLoadingDetail(false);
+    }
+  };
   const getVideoDescription = (video) => {
+    if (videoDetail) {
+      let promptToUse = videoDetail.prompt;
+      switch (selectedLanguage) {
+        case "EN":
+          if (videoDetail.prompt_en) {
+            promptToUse = videoDetail.prompt_en;
+          }
+          break;
+        case "ZH":
+          if (videoDetail.prompt_zh) {
+            promptToUse = videoDetail.prompt_zh;
+          }
+          break;
+        case "AR":
+          if (videoDetail.prompt_ar) {
+            promptToUse = videoDetail.prompt_ar;
+          }
+          break;
+      }
+      const descriptionMatch = promptToUse.match(
+        /(?:Visual Description|Deskripsi Visual|视觉描述|الوصف البصري)[:\s]*(.*?)(?=\n\n|\nSub Scene|\nSub Scene|$)/s
+      );
+      if (descriptionMatch && descriptionMatch[1]) {
+        return descriptionMatch[1].trim();
+      }
+      return promptToUse.length > 200 ? promptToUse.substring(0, 200) + "..." : promptToUse;
+    }
     if (video.prompt && typeof video.prompt === "string") {
       const promptText = video.prompt;
       const descriptionMatch = promptText.match(
@@ -304,12 +369,19 @@ function VideoGallery() {
       VideoModal,
       {
         video: selectedVideo,
-        onClose: () => setSelectedVideo(null),
+        onClose: () => {
+          setSelectedVideo(null);
+          setVideoDetail(null);
+          setCurrentVideoUser(null);
+        },
         formatDate,
         translations: t,
         userEmails,
         censorEmail,
-        getVideoDescription
+        getVideoDescription,
+        videoDetail,
+        loadingDetail,
+        currentVideoUser
       }
     ),
     /* @__PURE__ */ jsx("style", { children: `
@@ -330,12 +402,18 @@ function VideoModal({
   translations: translations2,
   userEmails,
   censorEmail,
-  getVideoDescription
+  getVideoDescription,
+  videoDetail,
+  loadingDetail,
+  currentVideoUser
 }) {
   const displayVideo = video.final_url_merge_video;
-  const [isMuted, setIsMuted] = useState(true);
+  const [isMuted, setIsMuted] = useState(false);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [orientation, setOrientation] = useState(0);
   const videoRef = useRef(null);
+  const modalRef = useRef(null);
   const toggleMute = () => {
     if (videoRef.current) {
       videoRef.current.muted = !videoRef.current.muted;
@@ -353,88 +431,198 @@ function VideoModal({
       }
     }
   };
-  return /* @__PURE__ */ jsxs("div", { className: "fixed inset-0 z-[9999] flex items-center justify-center p-4", children: [
-    /* @__PURE__ */ jsx(
-      "div",
-      {
-        className: "absolute inset-0 bg-slate-950/95 backdrop-blur-xl",
-        onClick: onClose
+  const toggleFullscreen = async () => {
+    if (!document.fullscreenElement) {
+      try {
+        if (modalRef.current?.requestFullscreen) {
+          await modalRef.current.requestFullscreen();
+          setIsFullscreen(true);
+        }
+      } catch (error) {
+        console.error("Error attempting to enable fullscreen:", error);
       }
-    ),
-    /* @__PURE__ */ jsxs("div", { className: "relative w-full max-w-4xl mx-auto", children: [
-      /* @__PURE__ */ jsx("div", { className: "absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-30 blur-2xl" }),
-      /* @__PURE__ */ jsxs("div", { className: "relative bg-black rounded-2xl overflow-hidden shadow-2xl shadow-purple-500/20", children: [
+    } else {
+      try {
+        await document.exitFullscreen();
+        setIsFullscreen(false);
+      } catch (error) {
+        console.error("Error attempting to exit fullscreen:", error);
+      }
+    }
+  };
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      setOrientation(window.orientation || 0);
+      if (Math.abs(window.orientation || 0) === 90) {
+        if (!isFullscreen) {
+          toggleFullscreen();
+        }
+      }
+    };
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    window.addEventListener("orientationchange", handleOrientationChange);
+    document.addEventListener("fullscreenchange", handleFullscreenChange);
+    return () => {
+      window.removeEventListener("orientationchange", handleOrientationChange);
+      document.removeEventListener("fullscreenchange", handleFullscreenChange);
+    };
+  }, [isFullscreen]);
+  return /* @__PURE__ */ jsxs(
+    "div",
+    {
+      ref: modalRef,
+      className: `fixed inset-0 z-[9999] flex items-center justify-center ${isFullscreen ? "p-0" : "p-4"}`,
+      children: [
         /* @__PURE__ */ jsx(
-          "button",
+          "div",
           {
-            onClick: onClose,
-            className: "absolute top-4 right-4 z-20 text-white hover:text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm",
-            children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
+            className: "absolute inset-0 bg-slate-950/95 backdrop-blur-xl",
+            onClick: onClose
           }
         ),
-        /* @__PURE__ */ jsx("div", { className: "relative aspect-video bg-black", children: displayVideo ? /* @__PURE__ */ jsxs("div", { className: "relative w-full h-full", children: [
-          /* @__PURE__ */ jsx("div", { className: "absolute -inset-2 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 blur-2xl" }),
-          /* @__PURE__ */ jsxs(
-            "video",
-            {
-              ref: videoRef,
-              controls: false,
-              autoPlay: true,
-              loop: true,
-              muted: isMuted,
-              playsInline: true,
-              className: "relative w-full h-full object-cover",
-              onPlay: () => setIsPlaying(true),
-              onPause: () => setIsPlaying(false),
-              children: [
-                /* @__PURE__ */ jsx("source", { src: displayVideo, type: "video/mp4" }),
-                "Your browser does not support the video tag."
-              ]
-            }
-          ),
-          /* @__PURE__ */ jsxs("div", { className: "absolute inset-0 pointer-events-none", children: [
-            /* @__PURE__ */ jsx("div", { className: "absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent" }),
-            /* @__PURE__ */ jsxs("div", { className: "absolute top-4 left-4 flex items-center space-x-2 pointer-events-auto", children: [
-              /* @__PURE__ */ jsx(
-                "button",
+        /* @__PURE__ */ jsxs(
+          "div",
+          {
+            className: `relative w-full mx-auto ${isFullscreen ? "h-full max-w-none" : "max-w-4xl"}`,
+            children: [
+              /* @__PURE__ */ jsx("div", { className: "absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-30 blur-2xl" }),
+              /* @__PURE__ */ jsxs(
+                "div",
                 {
-                  onClick: togglePlayPause,
-                  className: "bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110",
-                  children: isPlaying ? /* @__PURE__ */ jsx(Pause, { className: "w-4 h-4 text-white" }) : /* @__PURE__ */ jsx(Play, { className: "w-4 h-4 text-white" })
-                }
-              ),
-              /* @__PURE__ */ jsx(
-                "button",
-                {
-                  onClick: toggleMute,
-                  className: "bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110",
-                  children: isMuted ? /* @__PURE__ */ jsx(VolumeX, { className: "w-4 h-4 text-white" }) : /* @__PURE__ */ jsx(Volume2, { className: "w-4 h-4 text-white" })
+                  className: `relative bg-black overflow-hidden shadow-2xl shadow-purple-500/20 ${isFullscreen ? "h-full rounded-none" : "rounded-2xl"}`,
+                  children: [
+                    /* @__PURE__ */ jsx(
+                      "button",
+                      {
+                        onClick: onClose,
+                        className: "absolute top-4 right-4 z-20 text-white hover:text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm",
+                        children: /* @__PURE__ */ jsx(X, { className: "w-5 h-5" })
+                      }
+                    ),
+                    /* @__PURE__ */ jsx(
+                      "button",
+                      {
+                        onClick: toggleFullscreen,
+                        className: "absolute top-4 right-16 z-20 text-white hover:text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm",
+                        children: isFullscreen ? /* @__PURE__ */ jsx(Minimize, { className: "w-5 h-5" }) : /* @__PURE__ */ jsx(Maximize, { className: "w-5 h-5" })
+                      }
+                    ),
+                    /* @__PURE__ */ jsx(
+                      "div",
+                      {
+                        className: `relative bg-black ${isFullscreen ? "h-full" : "aspect-video"}`,
+                        children: displayVideo ? /* @__PURE__ */ jsxs("div", { className: "relative w-full h-full", children: [
+                          /* @__PURE__ */ jsx("div", { className: "absolute -inset-2 bg-gradient-to-r from-purple-500/20 via-blue-500/20 to-purple-500/20 blur-2xl" }),
+                          /* @__PURE__ */ jsxs(
+                            "video",
+                            {
+                              ref: videoRef,
+                              controls: false,
+                              autoPlay: true,
+                              loop: true,
+                              muted: isMuted,
+                              playsInline: true,
+                              className: `relative w-full h-full ${isFullscreen ? "object-contain" : "object-cover"}`,
+                              onPlay: () => setIsPlaying(true),
+                              onPause: () => setIsPlaying(false),
+                              onDoubleClick: toggleFullscreen,
+                              children: [
+                                /* @__PURE__ */ jsx("source", { src: displayVideo, type: "video/mp4" }),
+                                "Your browser does not support the video tag."
+                              ]
+                            }
+                          ),
+                          /* @__PURE__ */ jsxs(
+                            "div",
+                            {
+                              className: "absolute inset-0 pointer-events-none",
+                              onTouchStart: (e) => {
+                                const touch = e.touches[0];
+                                const startY = touch.clientY;
+                                const startTime = Date.now();
+                                const handleTouchEnd = (endEvent) => {
+                                  const endTouch = endEvent.changedTouches[0];
+                                  const endY = endTouch.clientY;
+                                  const endTime = Date.now();
+                                  const deltaY = startY - endY;
+                                  const deltaTime = endTime - startTime;
+                                  if (deltaY > 50 && deltaTime < 300) {
+                                    if (!isFullscreen) {
+                                      toggleFullscreen();
+                                    }
+                                  } else if (deltaY < -50 && deltaTime < 300) {
+                                    if (isFullscreen) {
+                                      toggleFullscreen();
+                                    }
+                                  }
+                                  document.removeEventListener("touchend", handleTouchEnd);
+                                };
+                                document.addEventListener("touchend", handleTouchEnd);
+                              },
+                              children: [
+                                /* @__PURE__ */ jsx("div", { className: "absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent" }),
+                                /* @__PURE__ */ jsxs(
+                                  "div",
+                                  {
+                                    className: `absolute top-4 left-4 flex items-center space-x-2 pointer-events-auto ${isFullscreen ? "opacity-0 hover:opacity-100 transition-opacity duration-300" : ""}`,
+                                    children: [
+                                      /* @__PURE__ */ jsx(
+                                        "button",
+                                        {
+                                          onClick: togglePlayPause,
+                                          className: "bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110",
+                                          children: isPlaying ? /* @__PURE__ */ jsx(Pause, { className: "w-4 h-4 text-white" }) : /* @__PURE__ */ jsx(Play, { className: "w-4 h-4 text-white" })
+                                        }
+                                      ),
+                                      /* @__PURE__ */ jsx(
+                                        "button",
+                                        {
+                                          onClick: toggleMute,
+                                          className: "bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110",
+                                          children: isMuted ? /* @__PURE__ */ jsx(VolumeX, { className: "w-4 h-4 text-white" }) : /* @__PURE__ */ jsx(Volume2, { className: "w-4 h-4 text-white" })
+                                        }
+                                      )
+                                    ]
+                                  }
+                                ),
+                                /* @__PURE__ */ jsxs(
+                                  "div",
+                                  {
+                                    className: `absolute bottom-4 left-4 right-4 space-y-3 max-w-md ${isFullscreen ? "opacity-0 hover:opacity-100 transition-opacity duration-300" : ""}`,
+                                    children: [
+                                      /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
+                                        /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx("span", { className: "text-white text-sm font-bold", children: currentVideoUser?.email ? currentVideoUser.email.charAt(0).toUpperCase() : userEmails[video.user_id] ? userEmails[video.user_id].charAt(0).toUpperCase() : "?" }) }),
+                                        /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
+                                          /* @__PURE__ */ jsx("p", { className: "text-white font-semibold text-sm truncate", children: currentVideoUser?.email ? censorEmail(currentVideoUser.email) : userEmails[video.user_id] ? censorEmail(userEmails[video.user_id]) : "Loading..." }),
+                                          /* @__PURE__ */ jsx("p", { className: "text-gray-300 text-xs", children: formatDate(video.created_at) })
+                                        ] })
+                                      ] }),
+                                      /* @__PURE__ */ jsx("div", { className: "space-y-2", children: loadingDetail ? /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
+                                        /* @__PURE__ */ jsx("div", { className: "w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" }),
+                                        /* @__PURE__ */ jsx("span", { className: "text-white/70 text-sm", children: "Loading description..." })
+                                      ] }) : /* @__PURE__ */ jsx("p", { className: "text-white text-sm leading-relaxed line-clamp-3", children: getVideoDescription(video) }) })
+                                    ]
+                                  }
+                                )
+                              ]
+                            }
+                          )
+                        ] }) : /* @__PURE__ */ jsx("div", { className: "aspect-video bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center", children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
+                          /* @__PURE__ */ jsx(Video, { className: "w-24 h-24 mx-auto mb-6 text-purple-500/30" }),
+                          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-gray-300 mb-4", children: translations2.videoNotAvailable }),
+                          /* @__PURE__ */ jsx("p", { className: "text-gray-500", children: translations2.videoUnavailableDesc })
+                        ] }) })
+                      }
+                    )
+                  ]
                 }
               )
-            ] }),
-            /* @__PURE__ */ jsxs("div", { className: "absolute bottom-4 left-4 right-4 space-y-3 max-w-md", children: [
-              /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-3", children: [
-                /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center", children: /* @__PURE__ */ jsx("span", { className: "text-white text-sm font-bold", children: userEmails[video.user_id] ? userEmails[video.user_id].charAt(0).toUpperCase() : "?" }) }),
-                /* @__PURE__ */ jsxs("div", { className: "flex-1 min-w-0", children: [
-                  /* @__PURE__ */ jsx("p", { className: "text-white font-semibold text-sm truncate", children: userEmails[video.user_id] ? censorEmail(userEmails[video.user_id]) : "Loading..." }),
-                  /* @__PURE__ */ jsx("p", { className: "text-gray-300 text-xs", children: formatDate(video.created_at) })
-                ] })
-              ] }),
-              /* @__PURE__ */ jsx("div", { className: "space-y-2", children: /* @__PURE__ */ jsx("p", { className: "text-white text-sm leading-relaxed line-clamp-3", children: getVideoDescription(video) }) })
-            ] }),
-            /* @__PURE__ */ jsx("div", { className: "absolute top-4 right-4", children: /* @__PURE__ */ jsx("div", { className: "bg-black/50 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/20", children: /* @__PURE__ */ jsxs("div", { className: "flex items-center space-x-2", children: [
-              /* @__PURE__ */ jsx(Calendar, { className: "w-3 h-3 text-purple-400" }),
-              /* @__PURE__ */ jsx("span", { className: "text-white text-xs font-medium", children: formatDate(video.created_at) })
-            ] }) }) })
-          ] })
-        ] }) : /* @__PURE__ */ jsx("div", { className: "aspect-video bg-gradient-to-br from-slate-900 to-slate-950 flex items-center justify-center", children: /* @__PURE__ */ jsxs("div", { className: "text-center", children: [
-          /* @__PURE__ */ jsx(Video, { className: "w-24 h-24 mx-auto mb-6 text-purple-500/30" }),
-          /* @__PURE__ */ jsx("div", { className: "text-2xl font-bold text-gray-300 mb-4", children: translations2.videoNotAvailable }),
-          /* @__PURE__ */ jsx("p", { className: "text-gray-500", children: translations2.videoUnavailableDesc })
-        ] }) }) })
-      ] })
-    ] }),
-    /* @__PURE__ */ jsx("style", { children: `
+            ]
+          }
+        ),
+        /* @__PURE__ */ jsx("style", { children: `
         .line-clamp-3 {
           display: -webkit-box;
           -webkit-line-clamp: 3;
@@ -442,7 +630,9 @@ function VideoModal({
           overflow: hidden;
         }
       ` })
-  ] });
+      ]
+    }
+  );
 }
 
 const translations = {

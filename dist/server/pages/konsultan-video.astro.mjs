@@ -4,8 +4,8 @@ import { jsxs, jsx, Fragment } from 'react/jsx-runtime';
 import { useState, useRef, useEffect } from 'react';
 import { B as Button } from '../chunks/badge_DSQWoPdL.mjs';
 import 'clsx';
-import { ArrowLeft, MessageCircle, Bot, Trash2, LogOut, Mail, AlertCircle, RefreshCw, Sparkles, Settings, Clock, CheckCircle, Loader2, User, CreditCard, Send } from 'lucide-react';
-import { c as chatAIApi, a as videoHistoryApi } from '../chunks/api_yL4KI-YJ.mjs';
+import { ArrowLeft, MessageCircle, Bot, Trash2, LogOut, Mail, AlertCircle, RefreshCw, Sparkles, Settings, Clock, CheckCircle, Loader2, User, Check, Video, CreditCard, Send } from 'lucide-react';
+import { c as chatAIApi, a as videoHistoryApi } from '../chunks/api_BUhEShyy.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
 
@@ -42,7 +42,10 @@ const translations = {
     scenesCreated: "scene telah dibuat.",
     pleaseWait: "Mohon menunggu, AI sedang memproses scene video...",
     typePlaceholder: "Ketik pertanyaan Anda di sini...",
-    justNow: "Baru saja"
+    justNow: "Baru saja",
+    selectVisualStyle: "Pilih Gaya Visual",
+    selectAspectRatio: "Pilih Aspek Ratio",
+    selectVisualAndAspect: "Pilih Gaya Visual dan Aspek Ratio terlebih dahulu"
   },
   EN: {
     back: "Back",
@@ -76,7 +79,10 @@ const translations = {
     scenesCreated: "scenes created.",
     pleaseWait: "Please wait, AI is processing video scenes...",
     typePlaceholder: "Type your question here...",
-    justNow: "Just now"
+    justNow: "Just now",
+    selectVisualStyle: "Select Visual Style",
+    selectAspectRatio: "Select Aspect Ratio",
+    selectVisualAndAspect: "Please select Visual Style and Aspect Ratio first"
   },
   ZH: {
     back: "返回",
@@ -110,7 +116,10 @@ const translations = {
     scenesCreated: "个场景已创建。",
     pleaseWait: "请稍候，AI 正在处理视频场景...",
     typePlaceholder: "在此输入您的问题...",
-    justNow: "刚刚"
+    justNow: "刚刚",
+    selectVisualStyle: "选择视觉风格",
+    selectAspectRatio: "选择宽高比",
+    selectVisualAndAspect: "请先选择视觉风格和宽高比"
   },
   AR: {
     back: "رجوع",
@@ -144,7 +153,10 @@ const translations = {
     scenesCreated: "تم إنشاء مشاهد.",
     pleaseWait: "يرجى الانتظار، AI يعالج مشاهد الفيديو...",
     typePlaceholder: "اكتب سؤالك هنا...",
-    justNow: "الآن"
+    justNow: "الآن",
+    selectVisualStyle: "اختر النمط البصري",
+    selectAspectRatio: "اختر نسبة العرض إلى الارتفاع",
+    selectVisualAndAspect: "يرجى اختيار النمط البصري ونسبة العرض إلى الارتفاع أولاً"
   }
 };
 function VideoConsultant() {
@@ -166,6 +178,8 @@ function VideoConsultant() {
   const [collectingData, setCollectingData] = useState(null);
   const [editedScenes, setEditedScenes] = useState([]);
   const [hasEdited, setHasEdited] = useState(false);
+  const [selectedVisualStyle, setSelectedVisualStyle] = useState("");
+  const [selectedAspectRatio, setSelectedAspectRatio] = useState("");
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
@@ -539,12 +553,20 @@ function VideoConsultant() {
       "editedScenes:",
       editedScenes.length,
       "collectingData:",
-      collectingData
+      collectingData,
+      "selectedVisualStyle:",
+      selectedVisualStyle,
+      "selectedAspectRatio:",
+      selectedAspectRatio
     );
     if (!isDone) {
       setError(
         "Silakan selesaikan pengumpulan data terlebih dahulu sebelum melanjutkan ke pembayaran"
       );
+      return;
+    }
+    if (!selectedVisualStyle || !selectedAspectRatio) {
+      setError("Silakan pilih Gaya Visual dan Aspek Ratio terlebih dahulu");
       return;
     }
     const konsultanData = {
@@ -556,8 +578,12 @@ function VideoConsultant() {
       xApiKey,
       is_share: "y",
       affiliate_by: "",
-      collectingData
+      collectingData,
       // Include collecting data
+      gaya_visual: selectedVisualStyle,
+      // Add visual style
+      aspek_rasio: selectedAspectRatio
+      // Add aspect ratio
     };
     console.log("Saving konsultan data to localStorage:", konsultanData);
     localStorage.setItem("konsultan-video-data", JSON.stringify(konsultanData));
@@ -576,6 +602,118 @@ function VideoConsultant() {
       handleSendMessage();
     }
   };
+  const visualStyleOptions = [
+    {
+      value: "Ultra-realistic 8K ASMR cinematic realism",
+      label: {
+        ID: "Ultra Realistic",
+        EN: "Ultra Realistic",
+        ZH: "超现实主义",
+        AR: "واقعية فائقة"
+      },
+      description: {
+        ID: "Realisme sinematik 8K ASMR ultra-realistis",
+        EN: "Ultra-realistic 8K ASMR cinematic realism",
+        ZH: "超现实8K ASMR电影现实主义",
+        AR: "واقعية سينمائية 8K ASMR فائقة الواقعية"
+      }
+    },
+    {
+      value: "Realistic 8K ASMR cinematic realism",
+      label: {
+        ID: "Realistic / Live Action",
+        EN: "Realistic / Live Action",
+        ZH: "现实主义/真人动作",
+        AR: "واقعي / حركة حية"
+      },
+      description: {
+        ID: "Realisme sinematik 8K ASMR realistis",
+        EN: "Realistic 8K ASMR cinematic realism",
+        ZH: "现实主义8K ASMR电影现实主义",
+        AR: "واقعية سينمائية 8K ASMR واقعية"
+      }
+    },
+    {
+      value: "Cinematic 3D 8K ASMR cinematic realism",
+      label: {
+        ID: "Cinematic 3D",
+        EN: "Cinematic 3D",
+        ZH: "电影3D",
+        AR: "سينمائي ثلاثي الأبعاد"
+      },
+      description: {
+        ID: "Realisme sinematik 3D 8K ASMR",
+        EN: "Cinematic 3D 8K ASMR cinematic realism",
+        ZH: "电影3D 8K ASMR电影现实主义",
+        AR: "واقعية سينمائية ثلاثية الأبعاد 8K ASMR"
+      }
+    },
+    {
+      value: "Cartoon 8K cinematic animation realism",
+      label: {
+        ID: "Cartoon / 2D Animation",
+        EN: "Cartoon / 2D Animation",
+        ZH: "卡通/2D动画",
+        AR: "كرتون / رسوم متحركة ثنائية الأبعاد"
+      },
+      description: {
+        ID: "Realisme animasi kartun 8K sinematik",
+        EN: "Cartoon 8K cinematic animation realism",
+        ZH: "卡通8K电影动画现实主义",
+        AR: "واقعية رسوم متحركة كرتونية 8K سينمائية"
+      }
+    },
+    {
+      value: "Anime 8K cinematic illustration realism",
+      label: {
+        ID: "Anime Style",
+        EN: "Anime Style",
+        ZH: "动漫风格",
+        AR: "أسلوب الأنمي"
+      },
+      description: {
+        ID: "Realisme ilustrasi sinematik anime 8K",
+        EN: "Anime 8K cinematic illustration realism",
+        ZH: "动漫8K电影插画现实主义",
+        AR: "واقعية رسوم توضيحية سينمائية أنمي 8K"
+      }
+    },
+    {
+      value: "Motion Graphics 8K cinematic realism",
+      label: {
+        ID: "Motion Graphics / Explainer",
+        EN: "Motion Graphics / Explainer",
+        ZH: "动态图形/解释器",
+        AR: "رسوم متحركة / توضيحية"
+      },
+      description: {
+        ID: "Realisme sinematik Motion Graphics 8K",
+        EN: "Motion Graphics 8K cinematic realism",
+        ZH: "动态图形8K电影现实主义",
+        AR: "واقعية سينمائية رسوم متحركة 8K"
+      }
+    }
+  ];
+  const aspectRatioOptions = [
+    {
+      value: "16:9",
+      label: {
+        ID: "16:9 (Landscape)",
+        EN: "16:9 (Landscape)",
+        ZH: "16:9 (横向)",
+        AR: "16:9 (أفقي)"
+      }
+    },
+    {
+      value: "9:16",
+      label: {
+        ID: "9:16 (Portrait)",
+        EN: "9:16 (Portrait)",
+        ZH: "9:16 (纵向)",
+        AR: "9:16 (عمودي)"
+      }
+    }
+  ];
   const t = translations[selectedLanguage];
   return /* @__PURE__ */ jsxs("div", { className: "w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden", children: [
     /* @__PURE__ */ jsxs("div", { className: "fixed inset-0 overflow-hidden pointer-events-none", children: [
@@ -893,11 +1031,52 @@ function VideoConsultant() {
               /* @__PURE__ */ jsx("div", { ref: messagesEndRef })
             ] }) }),
             /* @__PURE__ */ jsx("div", { className: "border-t border-white/10 p-4 bg-gradient-to-b from-slate-900/50 to-slate-950/80 backdrop-blur-sm", children: collectingData && isDone ? (
-              // When collecting_data received and is_done true, show payment button
-              /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
-                /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-center space-x-2 py-3 bg-green-500/10 rounded-xl border border-green-500/30", children: [
-                  /* @__PURE__ */ jsx(CheckCircle, { className: "w-5 h-5 text-green-400" }),
-                  /* @__PURE__ */ jsx("p", { className: "text-sm font-medium text-green-300", children: t.dataCollected })
+              // When collecting_data received and is_done true, show visual style and aspect ratio selection
+              /* @__PURE__ */ jsxs("div", { className: "space-y-6", children: [
+                /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+                  /* @__PURE__ */ jsxs("h4", { className: "text-lg font-semibold text-white mb-4 flex items-center", children: [
+                    /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30", children: /* @__PURE__ */ jsx(Sparkles, { className: "w-4 h-4 text-purple-400" }) }),
+                    t.selectVisualStyle
+                  ] }),
+                  /* @__PURE__ */ jsx("div", { className: "grid grid-cols-1 md:grid-cols-2 gap-3", children: visualStyleOptions.map((option) => /* @__PURE__ */ jsxs(
+                    "div",
+                    {
+                      className: `relative group p-4 rounded-2xl cursor-pointer transition-all ${selectedVisualStyle === option.value ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/50 shadow-lg shadow-purple-500/20" : "bg-slate-800/50 border border-white/10 hover:border-purple-500/30 hover:bg-slate-800/70"}`,
+                      onClick: () => setSelectedVisualStyle(option.value),
+                      children: [
+                        selectedVisualStyle === option.value && /* @__PURE__ */ jsx("div", { className: "absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-lg -z-10" }),
+                        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+                          /* @__PURE__ */ jsxs("div", { className: "flex-1", children: [
+                            /* @__PURE__ */ jsx("h5", { className: "font-semibold text-white mb-1", children: option.label[selectedLanguage] }),
+                            /* @__PURE__ */ jsx("p", { className: "text-sm text-gray-400", children: option.description[selectedLanguage] })
+                          ] }),
+                          selectedVisualStyle === option.value && /* @__PURE__ */ jsx("div", { className: "w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30", children: /* @__PURE__ */ jsx(Check, { className: "w-3 h-3 text-white" }) })
+                        ] })
+                      ]
+                    },
+                    option.value
+                  )) })
+                ] }),
+                /* @__PURE__ */ jsxs("div", { className: "space-y-3", children: [
+                  /* @__PURE__ */ jsxs("h4", { className: "text-lg font-semibold text-white mb-4 flex items-center", children: [
+                    /* @__PURE__ */ jsx("div", { className: "w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30", children: /* @__PURE__ */ jsx(Video, { className: "w-4 h-4 text-purple-400" }) }),
+                    t.selectAspectRatio
+                  ] }),
+                  /* @__PURE__ */ jsx("div", { className: "grid grid-cols-2 gap-3", children: aspectRatioOptions.map((option) => /* @__PURE__ */ jsxs(
+                    "div",
+                    {
+                      className: `relative group p-4 rounded-2xl cursor-pointer transition-all ${selectedAspectRatio === option.value ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/50 shadow-lg shadow-purple-500/20" : "bg-slate-800/50 border border-white/10 hover:border-purple-500/30 hover:bg-slate-800/70"}`,
+                      onClick: () => setSelectedAspectRatio(option.value),
+                      children: [
+                        selectedAspectRatio === option.value && /* @__PURE__ */ jsx("div", { className: "absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-lg -z-10" }),
+                        /* @__PURE__ */ jsxs("div", { className: "flex items-center justify-between", children: [
+                          /* @__PURE__ */ jsx("div", { className: "flex-1", children: /* @__PURE__ */ jsx("h5", { className: "font-semibold text-white", children: option.label[selectedLanguage] }) }),
+                          selectedAspectRatio === option.value && /* @__PURE__ */ jsx("div", { className: "w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30", children: /* @__PURE__ */ jsx(Check, { className: "w-3 h-3 text-white" }) })
+                        ] })
+                      ]
+                    },
+                    option.value
+                  )) })
                 ] }),
                 /* @__PURE__ */ jsxs("div", { className: "relative", children: [
                   /* @__PURE__ */ jsx("div", { className: "absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300" }),
@@ -905,10 +1084,11 @@ function VideoConsultant() {
                     "button",
                     {
                       onClick: handleGoToPayment,
-                      className: "relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30",
+                      disabled: !selectedVisualStyle || !selectedAspectRatio,
+                      className: "relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed",
                       children: [
                         /* @__PURE__ */ jsx(CreditCard, { className: "w-5 h-5" }),
-                        /* @__PURE__ */ jsx("span", { children: t.continuePayment })
+                        /* @__PURE__ */ jsx("span", { children: !selectedVisualStyle || !selectedAspectRatio ? t.selectVisualAndAspect : t.continuePayment })
                       ]
                     }
                   )

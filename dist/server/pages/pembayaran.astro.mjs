@@ -6,7 +6,7 @@ import { B as Button, a as Badge } from '../chunks/badge_DSQWoPdL.mjs';
 import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, I as Input } from '../chunks/input_DEe1eFb5.mjs';
 import 'clsx';
 import { X, Mail, Clock, AlertCircle, CheckCircle, Coins, Wallet, QrCode, CreditCard, Loader2, ArrowLeft, Sparkles, Video, Check, User, Play } from 'lucide-react';
-import { o as otpApi, b as videoStoreApi } from '../chunks/api_yL4KI-YJ.mjs';
+import { o as otpApi, b as videoStoreApi } from '../chunks/api_BUhEShyy.mjs';
 import { v as videoSetupStorage } from '../chunks/videoSetupStorage_DUxbdP36.mjs';
 /* empty css                                    */
 export { renderers } from '../renderers.mjs';
@@ -579,7 +579,9 @@ function PaymentPage() {
           metode_pengiriman: "kuota",
           metode: null,
           email,
-          affiliate_by: konsultanData.affiliate_by || ""
+          affiliate_by: konsultanData.affiliate_by || "",
+          gaya_visual: konsultanData.gaya_visual || "",
+          aspek_rasio: konsultanData.aspek_rasio || ""
         };
         console.log(
           "Sending konsultan payload with coins to store-multiple:",
@@ -647,7 +649,9 @@ function PaymentPage() {
           // Dynamic price based on list count
           email,
           no_wa: phoneNumber || null,
-          affiliate_by: konsultanData.affiliate_by || ""
+          affiliate_by: konsultanData.affiliate_by || "",
+          gaya_visual: konsultanData.gaya_visual || "",
+          aspek_rasio: konsultanData.aspek_rasio || ""
         };
         console.log("Sending konsultan payload to store-multiple:", payload);
         const result = await videoStoreApi.storeMultipleVideoData(payload);

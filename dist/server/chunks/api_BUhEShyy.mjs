@@ -196,6 +196,27 @@ const publicVideoGalleryApi = {
       throw error;
     }
   },
+  async getVideoDetail(id, language = "id") {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/gallery/public/show/${id}?lang=${language}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json"
+          }
+        }
+      );
+      const result = await response.json();
+      if (!response.ok) {
+        throw new Error(result.message || "Failed to fetch video detail");
+      }
+      return result;
+    } catch (error) {
+      console.error("Error fetching video detail:", error);
+      throw error;
+    }
+  },
   async getVideoDetail_OLD(id) {
     try {
       const response = await fetch(`${BASE_URL}/api/video-ai/public/${id}`, {

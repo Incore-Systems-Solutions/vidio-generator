@@ -3,7 +3,7 @@ import { useState, useEffect } from 'react';
 import { B as Button, a as Badge } from './badge_DSQWoPdL.mjs';
 import { Sparkles, MessageCircle, History, Globe, ChevronDown, X, Menu, User, AlertCircle, RefreshCw, Settings, Coins, List, Merge, Video, CheckCircle, Eye, Download, Check, Calendar, ChevronLeft, ChevronRight, Clock, XCircle } from 'lucide-react';
 import { C as Card, a as CardHeader, b as CardTitle, c as CardContent, I as Input } from './input_DEe1eFb5.mjs';
-import { a as videoHistoryApi } from './api_yL4KI-YJ.mjs';
+import { a as videoHistoryApi } from './api_BUhEShyy.mjs';
 
 const translations = {
   ID: {
