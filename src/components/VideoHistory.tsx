@@ -29,7 +29,7 @@ import {
 const translations = {
   ID: {
     back: "Kembali",
-    videoHistory: "Riwayat Video",
+    videoHistory: "Video Saya - Akses dan unduh semua video Anda di sini.",
     accessPortal: "Access Portal",
     enterEmail: "Masukkan email untuk mengakses riwayat",
     otpTitle: "Masukkan kode verifikasi untuk mengakses riwayat video",
@@ -73,7 +73,7 @@ const translations = {
   },
   EN: {
     back: "Back",
-    videoHistory: "Video History",
+    videoHistory: "My Videos - Access and download all your videos here.",
     accessPortal: "Access Portal",
     enterEmail: "Enter email to access history",
     otpTitle: "Enter verification code to access video history",

@@ -19,9 +19,10 @@ import { publicVideoGalleryApi, type PublicVideoItem } from "@/lib/api";
 // Translations for VideoGallery
 const translations = {
   ID: {
-    badge: "Video yang Dibuat AI",
-    title: "Galeri Video",
-    description: "Koleksi video AI terbaik yang dibuat oleh pengguna kami.",
+    badge: "Video yang Dibuat dengan Instant!!",
+    title: "Video AI Terbaik, Tanpa Keterampilan Prompt",
+    description:
+      "Lihat apa yang pembuat video buat dengan InstantVideoApp — dan dapatkan inspirasi untuk video Anda berikutnya",
     loadingTitle: "Memuat video...",
     loadingDesc: "Mengambil galeri AI terbaru",
     errorMessage: "Gagal memuat video. Silakan coba lagi nanti.",
@@ -37,9 +38,10 @@ const translations = {
     videoDescription: "Deskripsi",
   },
   EN: {
-    badge: "AI Generated Videos",
-    title: "Video Gallery",
-    description: "The best AI video collection created by our users.",
+    badge: "Video Made with Instant!!",
+    title: "Amazing AI Videos, No Prompt Skills Required",
+    description:
+      "Watch what creators are making with InstantVideoApp — and get inspired for your next video",
     loadingTitle: "Loading videos...",
     loadingDesc: "Fetching latest AI gallery",
     errorMessage: "Failed to load videos. Please try again later.",
@@ -55,9 +57,10 @@ const translations = {
     videoDescription: "Description",
   },
   ZH: {
-    badge: "AI 生成的视频",
-    title: "视频库",
-    description: "由我们用户创建的最佳 AI 视频集合。",
+    badge: "视频由 Instant!! 生成",
+    title: "惊人的 AI 视频，无需提示技能",
+    description:
+      "观看创作者使用 InstantVideoApp 制作的视频 — 并获得下一个视频的灵感",
     loadingTitle: "加载视频中...",
     loadingDesc: "获取最新 AI 画廊",
     errorMessage: "加载视频失败。请稍后再试。",
@@ -73,9 +76,10 @@ const translations = {
     videoDescription: "描述",
   },
   AR: {
-    badge: "مقاطع فيديو منشأة بالذكاء الاصطناعي",
-    title: "معرض الفيديو",
-    description: "أفضل مجموعة فيديو AI تم إنشاؤها بواسطة مستخدمينا.",
+    badge: "مقاطع فيديو منشأة بواسطة Instant!!",
+    title: "مقاطع فيديو AI رائعة، بدون مهارات التحديد",
+    description:
+      "شاهد ما يقوم به المنشئين باستخدام InstantVideoApp — واحصل على تأليف لمقطع فيديو التالي",
     loadingTitle: "جاري تحميل مقاطع الفيديو...",
     loadingDesc: "جلب أحدث معرض AI",
     errorMessage: "فشل تحميل مقاطع الفيديو. يرجى المحاولة مرة أخرى لاحقًا.",

@@ -2,33 +2,82 @@
   "status": true,
   "message": "Success Get Data",
   "data": {
-      "list_batch": [
-          {
-              "id": 37,
-              "video_chat_ai_id": 479,
-              "batch_number": 1,
-              "status": "success",
-              "created_at": "2025-10-23T07:58:39.000000Z",
-              "updated_at": "2025-10-23T07:58:39.000000Z",
-              "batch_label": "Batch 1",
-              "videochatai": {
-                  "id": 479,
-                  "user_video_id": 5
-              }
-          },
-          {
-              "id": 38,
-              "video_chat_ai_id": 479,
-              "batch_number": 2,
-              "status": "antri",
-              "created_at": "2025-10-23T07:58:39.000000Z",
-              "updated_at": "2025-10-23T07:58:39.000000Z",
-              "batch_label": "Batch 2",
-              "videochatai": {
-                  "id": 479,
-                  "user_video_id": 5
-              }
-          }
-      ]
+    "is_done": true,
+    "final_url_merge_video": null,
+    "list_video": [
+      {
+        "id": 977,
+        "user_video_id": "2",
+        "task_id": "c42f92748d9ff553af16a53b3aeb11f7",
+        "status_video": "success",
+        "url_video": "https://tempfile.aiquickdraw.com/v/325815197f131f654760f6a9eefd8554_1761367209.mp4",
+        "flag_multiple_uuid": "043c3056-9bfe-4cfc-9e94-54a962140dc2",
+        "prompt": "Gaya Visual:\nRealistic 8K ASMR cinematic realism\n\nKarakter:\n- Prajurit Alpha (Laki-laki, kulit Kaukasoid, berusia sekitar 30 tahun, tinggi 180 cm, tubuh atletis, kulit cokelat terang, rambut hitam dipotong sangat pendek, mata cokelat gelap, wajah persegi dengan rahang tegas, bibir tipis, alis tebal. Mengenakan seragam militer modern berwarna hijau tua dengan baju anti peluru, tali di bahu kanan, sepatu bot hitam tinggi, dan helm pelindung dengan visor bening. Terdapat tato tulisan bahasa Latin di lengan kanannya.)\n\nLokasi & Waktu:\nLokasi: Pusat kota besar yang hancur dengan gedung-gedung pencakar langit ambruk dan terbakar di sekitar. Jalanan retak penuh puing dan reruntuhan. Di kejauhan, ledakan nuklir membubung dengan awan jamur. Langit dipenuhi pesawat tempur dan asap.\nWaktu: Hari menjelang malam, namun suasana gelap terselimuti asap tebal, mengaburkan cahaya matahari.\n\nDeskripsi Visual:\nSeorang prajurit, Alpha, berdiri di tengah jalan yang hancur, dengan latar awan nuklir yang menjulang tinggi di kejauhan. Di sekelilingnya bangunan-bangunan terbakar, dan suara gemuruh pesawat tempur yang melintas di langit. Kendaraan lapis baja melintas di atas jalan yang berderak di bawah beban mereka.\n\nSub Scene:\n0\u20134 detik \u2192 Prajurit Alpha memandang lurus ke arah kamera dengan tatapan penuh tekad. Kamera menyorot wajah seriusnya dengan detail saat lensa kabut menerjang wajahnya, mengaburkan sejenak pandangan. (Suasana suram dengan pencahayaan redup, dibalur warna oranye dari api dan abu, memberikan efek dramatis pada kontur wajah Alpha.)\n4\u20138 detik \u2192 Kamera beralih menyorot pesawat tempur beraksi melawan pesawat musuh di langit. Adegan close-up pada Alpha yang melompat ke belakang kendaraan lapis baja dan berpegangan erat. (Langit gelap berpadu dengan ledakan dan asap, sementara kilatan tembakan membentuk siluet kendaraan lapis baja.)\n\nAudio & Suara:\nSuara detakan mesin kendaraan lapis baja, hembusan angin membawa debu dan serpihan, serta gemuruh khas segala suara pertempuran di langit.\n\n",
+        "created_at": "2025-10-27T03:23:16.000000Z",
+        "msg_err": null,
+        "estimated_scene": null
+      },
+      {
+        "id": 978,
+        "user_video_id": "2",
+        "task_id": "c42f92748d9ff553af16a53b3aeb11f7",
+        "status_video": "success",
+        "url_video": "https://tempfile.aiquickdraw.com/v/325815197f131f654760f6a9eefd8554_1761367209.mp4",
+        "flag_multiple_uuid": "043c3056-9bfe-4cfc-9e94-54a962140dc2",
+        "prompt": "Gaya Visual:\nRealistic 8K ASMR cinematic realism\n\nKarakter:\n- Prajurit Bravo (Perempuan, Asia Timur, berusia sekitar 28 tahun, tinggi 165 cm, tubuh ramping, kulit porselen, rambut hitam panjang diikat kencang, mata cokelat muda berbinar penuh kewaspadaan, wajah oval dengan dagu halus, bibir penuh, mengenakan seragam tempur dan helm pelindung tanpa visor, mengenakan sarung tangan pelindung dan sepatu tempur hitam, tato naga kecil di leher sebelah kanan.)\n\nLokasi & Waktu:\nLokasi: Sisi lain kota, dekat dengan reruntuhan gedung tinggi yang masih menyala di kejauhan. Jalan penuh lubang bekas tembakan, kendaraan lapis baja terbakar di sekitar.\nWaktu: Menjelang malam, dengan langit penuh asap hitam dan gelegar kilat bom, menciptakan bayangan seram.\n\nDeskripsi Visual:\nPrajurit Bravo bersiap dengan senjatanya, menggulung kabel komunikasi dan berlari di antara reruntuhan sambil memberikan aba-aba kepada prajurit lain. Di atasnya, pesawat tempur berputar bertarung di langit.\n\nSub Scene:\n0\u20134 detik \u2192 Bravo menoleh cepat saat pesawat tempur melepaskan rentetan tembakan ke sasaran musuh, kamera melacak dari pandangan kabin pesawat ke Bravo yang berlari melintasi jalan penuh puing. (Cahaya pijar oranye dari api dan kilat tembakan menciptakan efek siluet dan bayangan dramatis pada Bravo.)\n4\u20138 detik \u2192 Kamera mengikuti Bravo yang menghindari ledakan dan masuk ke dalam bangunan terbengkalai. Dia menempatkan diri di posisi bertahan sambil mengamati keluar dari balik jendela yang pecah. (Interior gelap dengan semburan cahaya dari luar menunjukkan ekspresi berkonsentrasi Bravo.)\n\nAudio & Suara:\nSuara pesawat tempur melesat di udara, rentetan senapan mesin, teriakan prajurit, serta suara lantang Bravo memberikan aba-aba.\n\n",
+        "created_at": "2025-10-27T03:23:16.000000Z",
+        "msg_err": null,
+        "estimated_scene": null
+      },
+      {
+        "id": 979,
+        "user_video_id": "2",
+        "task_id": "c42f92748d9ff553af16a53b3aeb11f7",
+        "status_video": "failed",
+        "url_video": null,
+        "flag_multiple_uuid": "043c3056-9bfe-4cfc-9e94-54a962140dc2",
+        "prompt": "Gaya Visual:\nRealistic 8K ASMR cinematic realism\n\nKarakter:\n- Prajurit Alpha (Laki-laki, kulit Kaukasoid, berusia sekitar 30 tahun, tinggi 180 cm, tubuh atletis, kulit cokelat terang, rambut hitam dipotong sangat pendek, mata cokelat gelap, wajah persegi dengan rahang tegas, bibir tipis, alis tebal. Mengenakan seragam militer modern berwarna hijau tua dengan baju anti peluru, tali di bahu kanan, sepatu bot hitam tinggi, dan helm pelindung dengan visor bening. Terdapat tato tulisan bahasa Latin di lengan kanannya.)\n- Prajurit Bravo (Perempuan, Asia Timur, berusia sekitar 28 tahun, tinggi 165 cm, tubuh ramping, kulit porselen, rambut hitam panjang diikat kencang, mata cokelat muda berbinar penuh kewaspadaan, wajah oval dengan dagu halus, bibir penuh, mengenakan seragam tempur dan helm pelindung tanpa visor, mengenakan sarung tangan pelindung dan sepatu tempur hitam, tato naga kecil di leher sebelah kanan.)\n\nLokasi & Waktu:\nLokasi: Luar gedung yang telah hampir runtuh, di balik tumpukan puing besar. Pemandangan bibir lintasan pesawat dan langit sara yang menyilaukan.\nWaktu: Malam hari, lampu pesawat dan kobaran api memberikan warna kemerahan keemasan.\n\nDeskripsi Visual:\nPrajurit Alpha dan Bravo bersama di balik reruntuhan, berkomunikasi lewat mikrofon, berkolaborasi dengan keyakinan kuat. Pesawat tempur bergerak di atas mereka, membelah awan tebal.\n\nSub Scene:\n0\u20134 detik \u2192 Alpha membuka peta strategi digital sembari menatap Bravo penuh makna. Kamera bergerak dinamis dari interaksi mereka ke langit, mengikuti pesawat melintasi malam. (Cahaya matari terbenam menciptakan gradasi biru keemasan yang membakar semangat kolaborasi mereka.)\n4\u20138 detik \u2192 Bravo mengangkat tangannya, memberi tanda sementara Alpha menyesuaikan arah yang ditunjukkan. Kamera beralih ke drone yang terbang tinggi menuju pesawat tempur yang bersiaga. (Nuansa optimis dari lampu pesawat yang menyala bagaikan harapan baru di tengah-tengah kehancuran.)\n\nAudio & Suara:\nSuntin suar pesawat pada malam hari, percakapan tegas Alpha dan Bravo, serta suara aliran drone yang bergerak cepat.\n\n",
+        "created_at": "2025-10-27T03:23:16.000000Z",
+        "msg_err": "Err, Please Contact Support",
+        "estimated_scene": null
+      },
+      {
+        "id": 980,
+        "user_video_id": "2",
+        "task_id": "c42f92748d9ff553af16a53b3aeb11f7",
+        "status_video": "success",
+        "url_video": "https://tempfile.aiquickdraw.com/v/325815197f131f654760f6a9eefd8554_1761367209.mp4",
+        "flag_multiple_uuid": "043c3056-9bfe-4cfc-9e94-54a962140dc2",
+        "prompt": "Gaya Visual:\nRealistic 8K ASMR cinematic realism\n\nKarakter:\n- Prajurit Alpha (Laki-laki, kulit Kaukasoid, berusia sekitar 30 tahun, tinggi 180 cm, tubuh atletis, kulit cokelat terang, rambut hitam dipotong sangat pendek, mata cokelat gelap, wajah persegi dengan rahang tegas, bibir tipis, alis tebal, memakai seragam militer modern hijau tua dengan baju anti peluru dan helm pelindung dengan visor bening, terdapat tato tulisan bahasa Latin di lengan kanannya.)\n- Prajurit Bravo (Perempuan, Asia Timur, berusia sekitar 28 tahun, tinggi 165 cm, tubuh ramping, kulit porselen, rambut hitam panjang diikat, mata cokelat muda, wajah oval, bibir penuh, mengenakan seragam tempur dengan helm tanpa visor, tato naga kecil di leher sebelah kanan.)\n\nLokasi & Waktu:\nLokasi: Reruntuhan kota dengan gedung-gedung lebih kecil yang runtuh, puing-puing bertebaran di sepanjang jalanan. Pemandangan ledakan dekat dan jauh terlihat dengan kilatan cerah.\nWaktu: Malam hari, disorot kilatan cahaya dari lontaran bom dan tembakan pesawat tempur.\n\nDeskripsi Visual:\nAlpha dan Bravo berlari bersama menghindari ledakan di belakang mereka. Mereka menembus jalan yang dipenuhi api dan ledakan dengan bahu-membahu.\n\nSub Scene:\n0\u20134 detik \u2192 Kamera menyorot Bravo yang berlari di depan, sebelum beralih cepat ke Alpha yang menembak ke arah pesawat musuh. Adegan mendekatkan fokus pada ekspresi terpatri mereka. (Atmosfir keras dengan kilatan cahaya dan dentuman suara yang intens, memberikan kesan pertarungan terakhir yang menegangkan.)\n4\u20138 detik \u2192 Maskapai tembakan dan ledakan beruntun mengguncang jalanan. Bravo mengangkat tangannya untuk memberi isyarat, kamera mengikutinya berlari menuju bangunan pelindung. (Lampu ledakan yang berpadu dengan kegelapan malam menonjolkan drama dan urgensi situasi.)\n\nAudio & Suara:\nTerdengar suara detak napas berat Alpha dan Bravo, dibarengi raungan pesawat yang terbang rendah, teriakan komando, dan dentuman tembakan dari segala arah.\n\n",
+        "created_at": "2025-10-27T03:23:16.000000Z",
+        "msg_err": null,
+        "estimated_scene": null
+      },
+      {
+        "id": 981,
+        "user_video_id": "2",
+        "task_id": "c42f92748d9ff553af16a53b3aeb11f7",
+        "status_video": "success",
+        "url_video": "https://tempfile.aiquickdraw.com/v/325815197f131f654760f6a9eefd8554_1761367209.mp4",
+        "flag_multiple_uuid": "043c3056-9bfe-4cfc-9e94-54a962140dc2",
+        "prompt": "Gaya Visual:\nRealistic 8K ASMR cinematic realism\n\nKarakter:\n- Prajurit Alpha (Laki-laki, kulit Kaukasoid, berusia sekitar 30 tahun, tinggi 180 cm, tubuh atletis, kulit cokelat terang, rambut hitam dipotong sangat pendek, mata cokelat gelap, wajah persegi dengan rahang tegas, bibir tipis, alis tebal, memakai seragam militer modern hijau tua dengan baju anti peluru dan helm pelindung dengan visor bening, terdapat tato tulisan bahasa Latin di lengan kanannya.)\n- Prajurit Bravo (Perempuan, Asia Timur, berusia sekitar 28 tahun, tinggi 165 cm, tubuh ramping, kulit porselen, rambut hitam panjang diikat, mata cokelat muda berbinar penuh kewaspadaan, wajah oval, bibir penuh, mengenakan seragam tempur dengan helm tanpa visor, tato naga kecil di leher sebelah kanan.)\n\nLokasi & Waktu:\nLokasi: Tenda militer setengah runtuh terletak di samping kendaraan lapis baja yang rusak. Di dalamnya, terdapat meja lipat dengan peta-peta dan radio kusam.\nWaktu: Malam hari dengan cahaya redup lampu dari sisa energi tenda dan kilasan api sporadik di kejauhan.\n\nDeskripsi Visual:\nAlpha dan Bravo duduk sejenak untuk menghimpun kekuatan. Alpha mengamati lingkungannya, memutarkan pistol dengan pelan di tangannya dan memikirkan setiap langkah ke depan.\n\nSub Scene:\n0\u20134 detik \u2192 Kamera fokus pada wajah penuh debu dan luka kecil pada Alpha, lalu bergeser ke Bravo yang mengikat kembali rambutnya, raut wajahnya penuh ketenangan meskipun situasi kacau. (Cahaya tenda memantulkan bayangan lembut di wajah dan tubuh mereka, memberikan momen tenang di tengah hiruk-pikuk perang.)\n4\u20138 detik \u2192 Alpha berdiri, memandang jauh ke arah suara pertempuran. Kamera berputar mengikuti tatapan matanya, lalu kembali menyorot Bravo yang mengamatinya dengan penuh pengertian. (Damai sesaat sebelum badai, suara jauh lagu pertempuran menciptakan nada kontemplatif.)\n\nAudio & Suara:\nSuara tenda berkibar lembut, detak degupan jantung dan napas tenang, dibalut suara redup berdentum dan gemuruh pertempuran dari kejauhan.\n\n",
+        "created_at": "2025-10-27T03:23:16.000000Z",
+        "msg_err": null,
+        "estimated_scene": null
+      },
+      {
+        "id": 982,
+        "user_video_id": "2",
+        "task_id": "c42f92748d9ff553af16a53b3aeb11f7",
+        "status_video": "success",
+        "url_video": "https://tempfile.aiquickdraw.com/v/325815197f131f654760f6a9eefd8554_1761367209.mp4",
+        "flag_multiple_uuid": "043c3056-9bfe-4cfc-9e94-54a962140dc2",
+        "prompt": "Gaya Visual:\nRealistic 8K ASMR cinematic realism\n\nKarakter:\n- Prajurit Alpha (Laki-laki, kulit Kaukasoid, berusia sekitar 30 tahun, tinggi 180 cm, tubuh atletis, kulit cokelat terang, rambut hitam dipotong sangat pendek, mata cokelat gelap, wajah persegi dengan rahang tegas, bibir tipis, alis tebal, memakai seragam militer modern hijau tua dengan baju anti peluru dan helm pelindung dengan visor bening, terdapat tato tulisan bahasa Latin di lengan kanannya.)\n- Prajurit Bravo (Perempuan, Asia Timur, berusia sekitar 28 tahun, tinggi 165 cm, tubuh ramping, kulit porselen, rambut hitam panjang diikat, mata cokelat muda berbinar penuh kewaspadaan, wajah oval, bibir penuh, mengenakan seragam tempur dengan helm tanpa visor, tato naga kecil di leher sebelah kanan.)\n\nLokasi & Waktu:\nLokasi: Jalan raya tertutup puing-puing lusuh dan kendaraan hancur. Di atasnya, jejak pesawat tempur semakin jelas, menandakan akan adanya serangan besar-besaran.\nWaktu: Malam yang semakin pekat, dengan kilatan cahaya dari langit memberikan siluet pada bangunan yang hancur.\n\nDeskripsi Visual:\nAlpha dan Bravo, berlari menuju kendaraan lapis baja yang terparkir. Mereka bergegas mempersiapkan serangan balik, memberikan semangat dan keyakinan kepada rekan mereka.\n\nSub Scene:\n0\u20134 detik \u2192 Kamera menangkap Bravo memimpin pergerakan, sementara Alpha memberikan instruksi melalui radio. Sorotan pada wajahnya penuh motivasi. (Suasana mendung namun penuh yakin, seluruh pesona pertempuran terekam dalam cahaya kilat dan gerakan taktis kendaraan lapis baja.)\n4\u20138 detik \u2192 Pergerakan kinetik saat kamera mengikuti Bravo melepas tembakan ke udara, disertai Alpha melempar granat asap, membentuk latar belakang baru bagi operasi balasan. (Emosional dan intens dengan latar dinamis yang menjelaskan keteguhan dalam menghadapi musuh.)\n\nAudio & Suara:\nSuara langkah kaki serempak, tembakan beruntun, dan semangat teriakan prajurit, disertai musik orkestra yang menaikkan adrenalin.\n\n",
+        "created_at": "2025-10-27T03:23:16.000000Z",
+        "msg_err": null,
+        "estimated_scene": null
+      }
+    ],
+    "estimated_merge": "2025-10-27 10:38:16"
   }
 }

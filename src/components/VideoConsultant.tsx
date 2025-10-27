@@ -37,26 +37,31 @@ import {
 const translations = {
   ID: {
     back: "Kembali",
-    emailTitle: "Masuk untuk berbicara dengan AI Video Consultant Anda",
-    otpTitle: "Masukkan kode verifikasi untuk mengakses ruang konsultasi AI",
-    aiConsultant: "AI Video Consultant",
+    emailTitle:
+      "Masuk untuk membuat video AI yang menakjubkan secara instan dengan Asisten AI kami - Tidak perlu perintah",
+    otpTitle: "Masukkan kode verifikasi untuk mengakses Asisten AI",
+    aiConsultant: "Buat Video Sekarang",
     onlineReady: "Online & Ready",
     clearChat: "Clear Chat",
     logout: "Logout",
-    aiAccessPortal: "AI Access Portal",
-    enterEmail: "Masukkan email untuk mengakses sistem AI",
+    aiAccessPortal: "Portal Akses AI",
+    enterEmail:
+      "akses instan ke asisten AI kami — buat video menakjubkan dalam hitungan detik..",
     emailAddress: "Email Address",
     emailPlaceholder: "your.email@example.com",
-    accessPortal: "Akses Portal AI",
+    accessPortal: "Akses Asisten AI",
     sendingOTP: "Mengirim OTP...",
-    verificationCodeSent: "Kode verifikasi akan dikirim ke email Anda",
+    verificationCodeSent:
+      "Tidak perlu kata sandi! Kode verifikasi akan dikirimkan ke email Anda.",
+    verificationCodeSentDesc:
+      "Kami menghargai privasi Anda. Tidak pernah ada spam.",
     securityVerification: "Security Verification",
-    otpSentTo: "Kode OTP telah dikirim ke:",
+    otpSentTo: "Kode verifikasi telah dikirim ke:",
     enter6Digit: "Masukkan 6 Digit Kode Verifikasi",
     resendIn: "Kirim ulang dalam",
     verifying: "Memverifikasi...",
     verifyEnter: "Verifikasi & Masuk",
-    backToEmail: "Kembali ke Email",
+    backToEmail: "Kembali ke Masukkan Email Anda",
     notReceived: "Tidak menerima kode?",
     resend: "Kirim ulang",
     initializingAI: "Menginisialisasi AI Consultant...",
@@ -67,7 +72,7 @@ const translations = {
     allBatchesDone: "Semua batch scene selesai! Total",
     scenesCreated: "scene telah dibuat.",
     pleaseWait: "Mohon menunggu, AI sedang memproses scene video...",
-    typePlaceholder: "Ketik pertanyaan Anda di sini...",
+    typePlaceholder: "Tulis balasan Anda di sini...",
     justNow: "Baru saja",
     selectVisualStyle: "Pilih Gaya Visual",
     selectAspectRatio: "Pilih Aspek Ratio",
@@ -75,26 +80,30 @@ const translations = {
   },
   EN: {
     back: "Back",
-    emailTitle: "Sign in to talk with your AI Video Consultant",
-    otpTitle: "Enter verification code to access AI consultation room",
-    aiConsultant: "AI Video Consultant",
+    emailTitle:
+      "Sign in to create stunning AI videos instantly with our AI Assistant - No prompt needed",
+    otpTitle: "Enter verification code to access AI Assistant",
+    aiConsultant: "Let's Create AI Video",
     onlineReady: "Online & Ready",
     clearChat: "Clear Chat",
     logout: "Logout",
-    aiAccessPortal: "AI Access Portal",
-    enterEmail: "Enter email to access AI system",
+    aiAccessPortal: "Access AI Assistant",
+    enterEmail:
+      "instant access to our AI assistant — create amazing videos in seconds.",
     emailAddress: "Email Address",
     emailPlaceholder: "your.email@example.com",
-    accessPortal: "Access AI Portal",
+    accessPortal: "Access AI Assistant",
     sendingOTP: "Sending OTP...",
-    verificationCodeSent: "Verification code will be sent to your email",
+    verificationCodeSent:
+      "No password needed! A verification code will be sent to your email.",
+    verificationCodeSentDesc: "We value your privacy. Never any spam.",
     securityVerification: "Security Verification",
-    otpSentTo: "OTP code has been sent to:",
+    otpSentTo: "Verification code has been sent to:",
     enter6Digit: "Enter 6 Digit Verification Code",
     resendIn: "Resend in",
     verifying: "Verifying...",
     verifyEnter: "Verify & Enter",
-    backToEmail: "Back to Email",
+    backToEmail: " Back to Enter your Email",
     notReceived: "Didn't receive code?",
     resend: "Resend",
     initializingAI: "Initializing AI Consultant...",
@@ -104,7 +113,7 @@ const translations = {
     allBatchesDone: "All batch scenes completed! Total",
     scenesCreated: "scenes created.",
     pleaseWait: "Please wait, AI is processing video scenes...",
-    typePlaceholder: "Type your question here...",
+    typePlaceholder: "Write your reply here...",
     justNow: "Just now",
     selectVisualStyle: "Select Visual Style",
     selectAspectRatio: "Select Aspect Ratio",
@@ -112,19 +121,21 @@ const translations = {
   },
   ZH: {
     back: "返回",
-    emailTitle: "登录与您的 AI 视频顾问交谈",
-    otpTitle: "输入验证码以访问 AI 咨询室",
-    aiConsultant: "AI 视频顾问",
+    emailTitle:
+      "登入即可使用我們的 AI 助理立即創建令人驚嘆的 AI 影片 - 無需提示",
+    otpTitle: "輸入驗證碼訪問AI助手",
+    aiConsultant: "立即制作视频",
     onlineReady: "在线并准备就绪",
     clearChat: "清除聊天",
     logout: "登出",
-    aiAccessPortal: "AI 访问门户",
-    enterEmail: "输入电子邮件以访问 AI 系统",
+    aiAccessPortal: "人工智慧存取門戶",
+    enterEmail: "即時存取我們的 AI 助理——在幾秒鐘內創建精彩的影片。",
     emailAddress: "电子邮件地址",
     emailPlaceholder: "your.email@example.com",
     accessPortal: "访问 AI 门户",
     sendingOTP: "发送 OTP...",
-    verificationCodeSent: "验证码将发送到您的电子邮件",
+    verificationCodeSent: "没有密码需要！验证码将发送到您的电子邮件",
+    verificationCodeSentDesc: "我们重视您的隐私。永远不会发送垃圾邮件。",
     securityVerification: "安全验证",
     otpSentTo: "OTP 代码已发送至：",
     enter6Digit: "输入 6 位验证码",
@@ -149,19 +160,23 @@ const translations = {
   },
   AR: {
     back: "رجوع",
-    emailTitle: "قم بتسجيل الدخول للتحدث مع مستشار الفيديو AI الخاص بك",
-    otpTitle: "أدخل رمز التحقق للوصول إلى غرفة استشارة AI",
-    aiConsultant: "مستشار فيديو AI",
+    emailTitle:
+      "قم بتسجيل الدخول لإنشاء مقاطع فيديو مذهلة بتقنية الذكاء الاصطناعي على الفور باستخدام مساعد الذكاء الاصطناعي الخاص بنا - لا حاجة إلى مطالبة",
+    otpTitle: "أدخل رمز التحقق للوصول إلى مساعد الذكاء الاصطناعي",
+    aiConsultant: "إنشاء فيديو الآن",
     onlineReady: "متصل وجاهز",
     clearChat: "مسح الدردشة",
     logout: "تسجيل الخروج",
     aiAccessPortal: "بوابة الوصول إلى AI",
-    enterEmail: "أدخل البريد الإلكتروني للوصول إلى نظام AI",
+    enterEmail:
+      "أدخل البريد الإلكتروني للوصول إلى نظام AIالوصول الفوري إلى مساعد الذكاء الاصطناعي الخاص بنا - قم بإنشاء مقاطع فيديو مذهلة في ثوانٍ.",
     emailAddress: "عنوان البريد الإلكتروني",
     emailPlaceholder: "your.email@example.com",
     accessPortal: "الوصول إلى بوابة AI",
     sendingOTP: "إرسال OTP...",
-    verificationCodeSent: "سيتم إرسال رمز التحقق إلى بريدك الإلكتروني",
+    verificationCodeSent:
+      "لا حاجة لكلمة المرور! سيتم إرسال رمز التحقق إلى بريدك الإلكتروني.",
+    verificationCodeSentDesc: "نحن نقدر خصوصيتك. لا يوجد أي لغز.",
     securityVerification: "التحقق الأمني",
     otpSentTo: "تم إرسال رمز OTP إلى:",
     enter6Digit: "أدخل رمز التحقق المكون من 6 أرقام",
@@ -1059,13 +1074,17 @@ export function VideoConsultant() {
 
               <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
                 {/* Header with Icon */}
-                <div className="text-center mb-6">
+                <div className="text-center mb-6 flex flex-col items-center">
                   <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl mb-4 border border-purple-500/30">
                     <Mail className="w-7 h-7 text-purple-300" />
                   </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    {t.aiAccessPortal}
-                  </h2>
+                  <div className="flex justify-center mb-2">
+                    <img
+                      src="/logo.svg"
+                      alt="Instant VideoApp"
+                      className="h-8 sm:h-10 md:h-11 w-auto relative z-10 transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </div>
                   <p className="text-gray-400 text-sm">{t.enterEmail}</p>
                 </div>
 
@@ -1128,6 +1147,9 @@ export function VideoConsultant() {
                 </div>
 
                 {/* Footer Note */}
+                <p className="text-center text-xs text-gray-500 mt-6">
+                  {t.verificationCodeSentDesc}
+                </p>
                 <p className="text-center text-xs text-gray-500 mt-6">
                   {t.verificationCodeSent}
                 </p>

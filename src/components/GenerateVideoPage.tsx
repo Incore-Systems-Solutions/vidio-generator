@@ -68,7 +68,8 @@ const translations = {
     generateVideo: "Generate Video",
     generatingVideo: "Generating Video...",
     allBatchSuccess: "✨ Semua Batch Selesai!",
-    readyToGenerate: "Semua batch telah berhasil diproses. Siap untuk generate video final.",
+    readyToGenerate:
+      "Semua batch telah berhasil diproses. Siap untuk generate video final.",
     success: "Selesai",
   },
   EN: {
@@ -117,7 +118,8 @@ const translations = {
     generateVideo: "Generate Video",
     generatingVideo: "Generating Video...",
     allBatchSuccess: "✨ All Batches Complete!",
-    readyToGenerate: "All batches have been successfully processed. Ready to generate final video.",
+    readyToGenerate:
+      "All batches have been successfully processed. Ready to generate final video.",
     success: "Success",
   },
   ZH: {
@@ -211,7 +213,8 @@ const translations = {
     generateVideo: "إنشاء الفيديو",
     generatingVideo: "جارٍ إنشاء الفيديو...",
     allBatchSuccess: "✨ اكتملت جميع الدفعات!",
-    readyToGenerate: "تمت معالجة جميع الدفعات بنجاح. جاهز لإنشاء الفيديو النهائي.",
+    readyToGenerate:
+      "تمت معالجة جميع الدفعات بنجاح. جاهز لإنشاء الفيديو النهائي.",
     success: "نجح",
   },
 };
@@ -225,6 +228,7 @@ interface ApiSceneData {
   url_video: string | null;
   flag_multiple_uuid: string;
   prompt: string;
+  msg_err: string | null;
 }
 
 interface ApiResponse {
@@ -279,6 +283,7 @@ interface SceneData {
   status_video: string;
   task_id: string;
   prompt: string;
+  msg_err: string | null;
 }
 
 interface GenerateData {
@@ -303,11 +308,18 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [isWaitingForGeneration, setIsWaitingForGeneration] = useState(false);
-  
+
   // Batch processing states
   const [batchData, setBatchData] = useState<BatchData[]>([]);
   const [isBatchProcessing, setIsBatchProcessing] = useState(true);
   const [generatingVideo, setGeneratingVideo] = useState(false);
+
+  // Manual merge states
+  const [selectedVideos, setSelectedVideos] = useState<Set<number>>(new Set());
+  const [isMergingManual, setIsMergingManual] = useState(false);
+  const [manualMergeResult, setManualMergeResult] = useState<string | null>(
+    null
+  );
 
   // Language state
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
@@ -524,6 +536,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
           status_video: normalizeStatus(video.status_video),
           task_id: video.task_id,
           prompt: video.prompt,
+          msg_err: video.msg_err,
         })
       );
 
@@ -641,7 +654,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       const response = await fetch(
         `${BASE_URL}/api/chat-ai/refetch-batch/${batchId}`,
         {
-          method: "POST",
+          method: "GET",
           headers: {
             "x-api-key": xApiKey,
             "Content-Type": "application/json",
@@ -699,6 +712,91 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       console.error("Error generating video:", err);
       alert(err instanceof Error ? err.message : "Gagal generate video");
       setGeneratingVideo(false);
+    }
+  };
+
+  const handleVideoCheckbox = (sceneNumber: number) => {
+    setSelectedVideos((prev) => {
+      const newSet = new Set(prev);
+      if (newSet.has(sceneNumber)) {
+        newSet.delete(sceneNumber);
+      } else {
+        newSet.add(sceneNumber);
+      }
+      return newSet;
+    });
+  };
+
+  const handleManualMerge = async () => {
+    try {
+      if (selectedVideos.size < 2) {
+        alert(
+          selectedLanguage === "ID"
+            ? "Pilih minimal 2 video untuk digabungkan"
+            : "Select at least 2 videos to merge"
+        );
+        return;
+      }
+
+      setIsMergingManual(true);
+      setManualMergeResult(null);
+
+      const xApiKey = localStorage.getItem("x-api-key");
+      const uuidChat = localStorage.getItem("konsultan-chat-uuid");
+
+      if (!xApiKey) {
+        throw new Error("API key tidak ditemukan. Silakan login kembali.");
+      }
+
+      if (!uuidChat) {
+        throw new Error("UUID chat tidak ditemukan.");
+      }
+
+      // Get video URLs from selected scene numbers
+      const selectedUrls =
+        generateData?.estimated_scene
+          .filter((scene) => selectedVideos.has(scene.scene) && scene.url_video)
+          .map((scene) => scene.url_video) || [];
+
+      const payload = {
+        uuid_chat: uuidChat,
+        url: selectedUrls,
+      };
+
+      console.log("Merging videos with payload:", payload);
+
+      const response = await fetch(
+        `${BASE_URL}/api/video-ai/merge-video-konsultan`,
+        {
+          method: "POST",
+          headers: {
+            "x-api-key": xApiKey,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
+      console.log("Manual merge result:", result);
+
+      if (result.status && result.data.final_url_merge_video) {
+        setManualMergeResult(result.data.final_url_merge_video);
+        // Clear selected videos after successful merge
+        setSelectedVideos(new Set());
+      } else {
+        throw new Error(result.message || "Gagal merge video");
+      }
+
+      setIsMergingManual(false);
+    } catch (err) {
+      console.error("Error merging videos:", err);
+      alert(err instanceof Error ? err.message : "Gagal merge video");
+      setIsMergingManual(false);
     }
   };
 
@@ -948,7 +1046,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                                 strokeLinecap="round"
                               />
                             </svg>
-                            
+
                             {/* Center Icon */}
                             <div className="absolute inset-0 flex items-center justify-center">
                               {batch.status === "success" ? (
@@ -980,7 +1078,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                                 ? selectedLanguage === "ID"
                                   ? "Selesai"
                                   : "Done"
-                                : batch.status === "progress"
+                                : batch.status === "proses"
                                 ? selectedLanguage === "ID"
                                   ? "Proses"
                                   : "Processing"
@@ -992,7 +1090,6 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                                 ? "Gagal"
                                 : "Failed"}
                             </p>
-                            
                           </div>
                         </div>
 
@@ -1036,24 +1133,24 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                   </div>
 
                   <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                  <Button
-                    className="relative w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/30 text-lg py-6"
-                    onClick={handleGenerateVideo}
-                    disabled={generatingVideo}
-                  >
-                    {generatingVideo ? (
-                      <>
-                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                        {t.generatingVideo}
-                      </>
-                    ) : (
-                      <>
-                        <Sparkles className="w-5 h-5 mr-2" />
-                        {t.generateVideo}
-                      </>
-                    )}
-                  </Button>
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                    <Button
+                      className="relative w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/30 text-lg py-6"
+                      onClick={handleGenerateVideo}
+                      disabled={generatingVideo}
+                    >
+                      {generatingVideo ? (
+                        <>
+                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                          {t.generatingVideo}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          {t.generateVideo}
+                        </>
+                      )}
+                    </Button>
                   </div>
                 </div>
               )}
@@ -1068,7 +1165,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     <span className="text-purple-300 font-semibold">
                       {batchData.filter((b) => b.status === "success").length} /{" "}
                       {batchData.length}{" "}
-                      {selectedLanguage === "ID" ? "batch selesai" : "batches done"}
+                      {selectedLanguage === "ID"
+                        ? "batch selesai"
+                        : "batches done"}
                     </span>
                   </div>
                   <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
@@ -1076,7 +1175,8 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                       className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-500"
                       style={{
                         width: `${
-                          (batchData.filter((b) => b.status === "success").length /
+                          (batchData.filter((b) => b.status === "success")
+                            .length /
                             batchData.length) *
                           100
                         }%`,
@@ -1092,11 +1192,12 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
               )}
 
               {/* Loading State Progress Bar */}
-              {(loading || isWaitingForGeneration) && batchData.length === 0 && (
-                <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5 mt-6">
-                  <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
-                </div>
-              )}
+              {(loading || isWaitingForGeneration) &&
+                batchData.length === 0 && (
+                  <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5 mt-6">
+                    <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
+                  </div>
+                )}
             </div>
           </div>
         </div>
@@ -1173,6 +1274,11 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
 
   const overallProgress = Math.round(
     (generateData.completed_scenes / generateData.total_scenes) * 100
+  );
+
+  // Check if any scene has failed
+  const hasFailedScenes = generateData.estimated_scene.some(
+    (scene) => scene.status_video === "failed"
   );
 
   return (
@@ -1325,6 +1431,11 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                           <>
                             <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-2" />
                             <p className="text-sm text-red-300">{t.failed}</p>
+                            {scene.msg_err && (
+                              <p className="text-xs text-red-200">
+                                {scene.msg_err}
+                              </p>
+                            )}
                           </>
                         )}
                       </div>
@@ -1332,7 +1443,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                   )}
 
                   {/* Status Badge */}
-                  <div className="absolute top-3 right-3">
+                  {/* <div className="absolute top-3 right-3">
                     <Badge
                       className={`${getStatusColor(
                         scene.status_video
@@ -1343,7 +1454,70 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                         {scene.status_video}
                       </span>
                     </Badge>
-                  </div>
+                  </div> */}
+
+                  {/* Checkbox for manual merge - Only show if video is available and there are failed scenes */}
+                  {scene.url_video && hasFailedScenes && (
+                    <div className="absolute top-3 right-3">
+                      <label className="relative flex items-center cursor-pointer group/checkbox">
+                        {/* Glowing background effect on hover/checked */}
+                        <div
+                          className={`absolute -inset-1 rounded-lg transition-opacity duration-300 ${
+                            selectedVideos.has(scene.scene)
+                              ? "bg-gradient-to-r from-purple-500 to-pink-500 blur-md opacity-60"
+                              : "bg-gradient-to-r from-purple-500 to-blue-500 blur-md opacity-0 group-hover/checkbox:opacity-40"
+                          }`}
+                        ></div>
+
+                        {/* Checkbox container with animation */}
+                        <div
+                          className={`relative flex items-center space-x-2 px-3 py-2 rounded-lg backdrop-blur-xl border transition-all duration-300 ${
+                            selectedVideos.has(scene.scene)
+                              ? "bg-gradient-to-r from-purple-600/90 to-pink-600/90 border-purple-400/50 shadow-lg shadow-purple-500/50 scale-105"
+                              : "bg-slate-900/90 border-white/20 group-hover/checkbox:border-purple-400/50 group-hover/checkbox:bg-slate-800/90"
+                          }`}
+                        >
+                          {/* Custom checkbox */}
+                          <div className="relative">
+                            <input
+                              type="checkbox"
+                              checked={selectedVideos.has(scene.scene)}
+                              onChange={() => handleVideoCheckbox(scene.scene)}
+                              className="sr-only peer"
+                            />
+                            <div
+                              className={`w-5 h-5 rounded border-2 transition-all duration-300 flex items-center justify-center ${
+                                selectedVideos.has(scene.scene)
+                                  ? "bg-white border-white scale-110"
+                                  : "bg-transparent border-purple-400 group-hover/checkbox:border-purple-300 group-hover/checkbox:scale-110"
+                              }`}
+                            >
+                              {selectedVideos.has(scene.scene) && (
+                                <Check className="w-4 h-4 text-purple-600 animate-in zoom-in duration-200" />
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Label text */}
+                          <span
+                            className={`text-xs font-semibold transition-all duration-300 whitespace-nowrap ${
+                              selectedVideos.has(scene.scene)
+                                ? "text-white"
+                                : "text-gray-300 group-hover/checkbox:text-white"
+                            }`}
+                          >
+                            {selectedVideos.has(scene.scene)
+                              ? selectedLanguage === "ID"
+                                ? "Terpilih"
+                                : "Selected"
+                              : selectedLanguage === "ID"
+                              ? "Pilih"
+                              : "Select"}
+                          </span>
+                        </div>
+                      </label>
+                    </div>
+                  )}
 
                   {/* Scene Number */}
                   <div className="absolute top-3 left-3">
@@ -1384,148 +1558,257 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
         </div>
       </div>
 
-      {/* Merge Status & Final Video */}
-      <div className="relative">
-        <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-emerald-500 to-cyan-500 rounded-3xl opacity-20 blur-xl"></div>
-
-        <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
-          <div className="flex items-center space-x-3 mb-6">
+      {/* Manual Merge Section - Only show if there are completed videos and failed scenes exist */}
+      {hasFailedScenes &&
+        generateData.estimated_scene.some((s) => s.url_video) && (
+          <div className="mb-12">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
-              <div className="relative w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                <VideoIcon className="w-6 h-6 text-white" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                {t.finalVideoMerge}
-              </h3>
-              <p className="text-sm text-gray-400">{t.mergingAllScenes}</p>
-            </div>
-          </div>
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-3xl opacity-20 blur-xl"></div>
 
-          {/* Merge Progress Bar */}
-          <div className="mb-6">
-            <div className="flex justify-between mb-2">
-              <span className="text-sm text-gray-400">Merge Progress</span>
-              <span className="text-sm font-bold text-green-300">
-                {generateData.estimated_merge.progress}%
-              </span>
-            </div>
-            <div className="relative h-4 bg-slate-900 rounded-full overflow-hidden border border-white/5">
-              <div
-                className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-1000 ease-out relative overflow-hidden"
-                style={{ width: `${generateData.estimated_merge.progress}%` }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-shimmer"></div>
-              </div>
-            </div>
-          </div>
+              <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center space-x-3">
+                    <div className="relative">
+                      <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
+                      <div className="relative w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-lg flex items-center justify-center">
+                        <Film className="w-6 h-6 text-white" />
+                      </div>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold bg-gradient-to-r from-indigo-400 to-purple-400 bg-clip-text text-transparent">
+                        {selectedLanguage === "ID"
+                          ? "Merge Video Manual"
+                          : "Manual Video Merge"}
+                      </h3>
+                      <p className="text-sm text-gray-400">
+                        {selectedLanguage === "ID"
+                          ? "Pilih video yang berhasil untuk digabungkan"
+                          : "Select successful videos to merge"}
+                      </p>
+                    </div>
+                  </div>
 
-          {/* Final Video Player or Status */}
-          {generateData.final_url_merge_video ? (
-            <div className="space-y-4">
-              <div className="relative aspect-video bg-slate-900 rounded-2xl overflow-hidden border border-green-500/30">
-                <video
-                  className="w-full h-full"
-                  src={generateData.final_url_merge_video}
-                  controls
-                  preload="metadata"
-                />
-              </div>
-
-              <div className="flex gap-4">
-                <div className="relative flex-1 group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                  <Button
-                    className="relative w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/30"
-                    onClick={() =>
-                      window.open(generateData.final_url_merge_video!, "_blank")
-                    }
-                  >
-                    <Play className="w-4 h-4 mr-2" />
-                    {t.playFinalVideo}
-                  </Button>
+                  {selectedVideos.size > 0 && (
+                    <Badge className="bg-gradient-to-r from-indigo-500/20 to-purple-500/20 border border-indigo-500/30 text-indigo-200 px-4 py-2">
+                      {selectedVideos.size}{" "}
+                      {selectedLanguage === "ID"
+                        ? "video terpilih"
+                        : "videos selected"}
+                    </Badge>
+                  )}
                 </div>
 
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                  <Button
-                    className="relative bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/30"
-                    onClick={() =>
-                      handleDownload(generateData.final_url_merge_video!)
-                    }
-                  >
-                    <Download className="w-4 h-4 mr-2" />
-                    {t.download}
-                  </Button>
+                {/* Merge Button */}
+                {selectedVideos.size >= 2 &&
+                  !isMergingManual &&
+                  !manualMergeResult && (
+                    <div className="mb-6">
+                      <div className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                        <Button
+                          className="relative w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/30 text-lg py-6"
+                          onClick={handleManualMerge}
+                        >
+                          <Sparkles className="w-5 h-5 mr-2" />
+                          {selectedLanguage === "ID"
+                            ? "Merge Video Sekarang"
+                            : "Merge Videos Now"}
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+
+                {/* Merging Progress */}
+                {isMergingManual && (
+                  <div className="space-y-4 mb-6">
+                    <div className="bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/30 rounded-xl p-6 backdrop-blur-sm text-center">
+                      <Loader2 className="w-12 h-12 text-indigo-400 animate-spin mx-auto mb-4" />
+                      <p className="font-semibold text-indigo-300 text-lg mb-2">
+                        {selectedLanguage === "ID"
+                          ? "Menggabungkan Video..."
+                          : "Merging Videos..."}
+                      </p>
+                      <p className="text-sm text-indigo-400/80">
+                        {selectedLanguage === "ID"
+                          ? "Mohon tunggu, video sedang digabungkan"
+                          : "Please wait, videos are being merged"}
+                      </p>
+                    </div>
+
+                    {/* Animated Progress Bar */}
+                    <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                      <div className="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 animate-shimmer-slow"></div>
+                    </div>
+                  </div>
+                )}
+
+                {/* Manual Merge Result */}
+                {manualMergeResult && (
+                  <div className="space-y-4 animate-in fade-in slide-in-from-bottom duration-500">
+                    <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm mb-4">
+                      <div className="flex items-center">
+                        <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                        <div>
+                          <p className="font-semibold text-green-300">
+                            {selectedLanguage === "ID"
+                              ? "✨ Video Berhasil Digabungkan!"
+                              : "✨ Videos Merged Successfully!"}
+                          </p>
+                          <p className="text-sm text-green-400/80">
+                            {selectedLanguage === "ID"
+                              ? "Video Anda telah berhasil digabungkan"
+                              : "Your videos have been successfully merged"}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="relative aspect-video bg-slate-900 rounded-2xl overflow-hidden border border-indigo-500/30">
+                      <video
+                        className="w-full h-full"
+                        src={manualMergeResult}
+                        controls
+                        preload="metadata"
+                      />
+                    </div>
+
+                    <div className="flex gap-4">
+                      <div className="relative flex-1 group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                        <Button
+                          className="relative w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-500/30"
+                          onClick={() =>
+                            window.open(manualMergeResult, "_blank")
+                          }
+                        >
+                          <Play className="w-4 h-4 mr-2" />
+                          {selectedLanguage === "ID"
+                            ? "Putar Video"
+                            : "Play Video"}
+                        </Button>
+                      </div>
+
+                      <div className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                        <Button
+                          className="relative bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/30"
+                          onClick={() => handleDownload(manualMergeResult)}
+                        >
+                          <Download className="w-4 h-4 mr-2" />
+                          {selectedLanguage === "ID" ? "Unduh" : "Download"}
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+
+      {/* Merge Status & Final Video - Only show if no scenes have failed */}
+      {!hasFailedScenes && (
+        <div className="relative">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-emerald-500 to-cyan-500 rounded-3xl opacity-20 blur-xl"></div>
+
+          <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
+            <div className="flex items-center space-x-3 mb-6">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
+                <div className="relative w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                  <VideoIcon className="w-6 h-6 text-white" />
                 </div>
               </div>
+              <div>
+                <h3 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                  {t.finalVideoMerge}
+                </h3>
+                <p className="text-sm text-gray-400">{t.mergingAllScenes}</p>
+              </div>
+            </div>
 
-              {/* Success Message */}
-              <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
-                <div className="flex items-center">
-                  <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                  <div>
-                    <p className="font-semibold text-green-300">
-                      {t.videoReady}
-                    </p>
-                    <p className="text-sm text-green-400/80">
-                      {t.allScenesMerged}
-                    </p>
+            {/* Merge Progress Bar */}
+            <div className="mb-6">
+              <div className="flex justify-between mb-2">
+                <span className="text-sm text-gray-400">Merge Progress</span>
+                <span className="text-sm font-bold text-green-300">
+                  {generateData.estimated_merge.progress}%
+                </span>
+              </div>
+              <div className="relative h-4 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                <div
+                  className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-1000 ease-out relative overflow-hidden"
+                  style={{ width: `${generateData.estimated_merge.progress}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-shimmer"></div>
+                </div>
+              </div>
+            </div>
+
+            {/* Final Video Player or Status */}
+            {generateData.final_url_merge_video ? (
+              <div className="space-y-4">
+                <div className="relative aspect-video bg-slate-900 rounded-2xl overflow-hidden border border-green-500/30">
+                  <video
+                    className="w-full h-full"
+                    src={generateData.final_url_merge_video}
+                    controls
+                    preload="metadata"
+                  />
+                </div>
+
+                <div className="flex gap-4">
+                  <div className="relative flex-1 group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                    <Button
+                      className="relative w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/30"
+                      onClick={() =>
+                        window.open(
+                          generateData.final_url_merge_video!,
+                          "_blank"
+                        )
+                      }
+                    >
+                      <Play className="w-4 h-4 mr-2" />
+                      {t.playFinalVideo}
+                    </Button>
+                  </div>
+
+                  <div className="relative group">
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
+                    <Button
+                      className="relative bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700 shadow-lg shadow-blue-500/30"
+                      onClick={() =>
+                        handleDownload(generateData.final_url_merge_video!)
+                      }
+                    >
+                      <Download className="w-4 h-4 mr-2" />
+                      {t.download}
+                    </Button>
                   </div>
                 </div>
-              </div>
 
-              {/* Action Buttons */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                  <Button
-                    className="relative w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/30"
-                    onClick={handleCreateNewVideo}
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {t.createNewVideo}
-                  </Button>
+                {/* Success Message */}
+                <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="flex items-center">
+                    <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
+                    <div>
+                      <p className="font-semibold text-green-300">
+                        {t.videoReady}
+                      </p>
+                      <p className="text-sm text-green-400/80">
+                        {t.allScenesMerged}
+                      </p>
+                    </div>
+                  </div>
                 </div>
 
-                <div className="relative group">
-                  <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                  <Button
-                    className="relative w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30"
-                    onClick={handleViewHistory}
-                  >
-                    <Film className="w-4 h-4 mr-2" />
-                    {t.viewHistory}
-                  </Button>
-                </div>
-              </div>
-            </div>
-          ) : (
-            <div className="space-y-4">
-              <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-6 backdrop-blur-sm text-center">
-                <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-3" />
-                <p className="font-semibold text-yellow-300 mb-1">
-                  {generateData.estimated_merge.status === "merging"
-                    ? t.mergingScenes
-                    : t.waitingAll}
-                </p>
-                <p className="text-sm text-yellow-400/80 mb-4">{t.takesTime}</p>
-              </div>
-
-              {/* Info box - dapat melihat di riwayat */}
-              <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
-                <div className="text-center mb-3">
-                  <p className="text-sm text-blue-300 mb-2">{t.dontWantWait}</p>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                {/* Action Buttons */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
                   <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
                     <Button
-                      variant="outline"
-                      className="relative w-full bg-slate-800/50 border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 hover:border-purple-500/50"
+                      className="relative w-full bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 shadow-lg shadow-purple-500/30"
                       onClick={handleCreateNewVideo}
                     >
                       <Sparkles className="w-4 h-4 mr-2" />
@@ -1534,10 +1817,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                   </div>
 
                   <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
                     <Button
-                      variant="outline"
-                      className="relative w-full bg-slate-800/50 border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10 hover:border-cyan-500/50"
+                      className="relative w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 shadow-lg shadow-cyan-500/30"
                       onClick={handleViewHistory}
                     >
                       <Film className="w-4 h-4 mr-2" />
@@ -1546,10 +1828,116 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                   </div>
                 </div>
               </div>
-            </div>
-          )}
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-6 backdrop-blur-sm text-center">
+                  <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-3" />
+                  <p className="font-semibold text-yellow-300 mb-1">
+                    {generateData.estimated_merge.status === "merging"
+                      ? t.mergingScenes
+                      : t.waitingAll}
+                  </p>
+                  <p className="text-sm text-yellow-400/80 mb-4">
+                    {t.takesTime}
+                  </p>
+                </div>
+
+                {/* Info box - dapat melihat di riwayat */}
+                <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+                  <div className="text-center mb-3">
+                    <p className="text-sm text-blue-300 mb-2">
+                      {t.dontWantWait}
+                    </p>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                      <Button
+                        variant="outline"
+                        className="relative w-full bg-slate-800/50 border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 hover:border-purple-500/50"
+                        onClick={handleCreateNewVideo}
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        {t.createNewVideo}
+                      </Button>
+                    </div>
+
+                    <div className="relative group">
+                      <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                      <Button
+                        variant="outline"
+                        className="relative w-full bg-slate-800/50 border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10 hover:border-cyan-500/50"
+                        onClick={handleViewHistory}
+                      >
+                        <Film className="w-4 h-4 mr-2" />
+                        {t.viewHistory}
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
-      </div>
+      )}
+
+      {/* Fixed Merge Button - Show when videos are selected */}
+      {/* {selectedVideos.size > 0 && hasFailedScenes && (
+        <div className="fixed bottom-8 left-1/2 transform -translate-x-1/2 z-50 animate-in slide-in-from-bottom duration-300">
+          <div className="relative">
+            <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-2xl blur-xl opacity-75 animate-pulse"></div>
+
+
+            <div className="relative bg-gradient-to-r from-slate-900 to-slate-800 rounded-2xl border border-purple-500/50 shadow-2xl p-4 z-index-10">
+              <div className="flex items-center space-x-4">
+
+                <div className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-600/30 to-pink-600/30 rounded-xl border border-purple-500/30">
+                  <CheckCircle className="w-5 h-5 text-purple-400" />
+                  <span className="text-white font-semibold">
+                    {selectedVideos.size}{" "}
+                    {selectedLanguage === "ID"
+                      ? "video dipilih"
+                      : "videos selected"}
+                  </span>
+                </div>
+
+                <Button
+                  onClick={handleManualMerge}
+                  disabled={selectedVideos.size < 2}
+                  className={`relative px-8 py-6 text-lg font-bold transition-all duration-300 ${
+                    selectedVideos.size < 2
+                      ? "bg-gray-600 cursor-not-allowed opacity-50"
+                      : "bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/50 hover:shadow-purple-500/75 hover:scale-105"
+                  }`}
+                >
+                  <Sparkles className="w-5 h-5 mr-2" />
+                  {selectedLanguage === "ID"
+                    ? "Merge Video Sekarang"
+                    : "Merge Videos Now"}
+                  {selectedVideos.size < 2 && (
+                    <span className="ml-2 text-xs opacity-75">
+                      (
+                      {selectedLanguage === "ID"
+                        ? "min. 2 video"
+                        : "min. 2 videos"}
+                      )
+                    </span>
+                  )}
+                </Button>
+
+                <Button
+                  variant="ghost"
+                  onClick={() => setSelectedVideos(new Set())}
+                  className="text-gray-400 hover:text-white hover:bg-slate-700/50"
+                >
+                  <RefreshCw className="w-4 h-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )} */}
 
       {/* CSS for animations */}
       <style>{`
