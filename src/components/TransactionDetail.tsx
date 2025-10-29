@@ -47,6 +47,9 @@ export function TransactionDetail({
   const [collectionData, setCollectionData] = useState<any>(null);
   const [isOptimizingPrompt, setIsOptimizingPrompt] = useState(false);
   const [optimizationProgress, setOptimizationProgress] = useState<any>(null);
+  const [sceneStatuses, setSceneStatuses] = useState<
+    Array<{ scene: number; status: "Antri" | "Proses" | "Selesai" }>
+  >([]);
 
   const fetchTransaction = async () => {
     try {
@@ -146,23 +149,118 @@ export function TransactionDetail({
     }
   };
 
-  // Poll prompt optimization until complete
+  // Poll prompt optimization until complete with scene-by-scene simulation
   const waitForPromptOptimization = async (
     uuidChat: string,
     apiKey: string
   ): Promise<void> => {
     setIsOptimizingPrompt(true);
 
-    // Poll every 5 seconds until optimization is complete
-    while (true) {
-      const isComplete = await checkPromptOptimization(uuidChat, apiKey);
-      if (isComplete) {
-        setIsOptimizingPrompt(false);
-        return;
+    // Get total scenes from collection_data
+    const getVideoCount = () => {
+      try {
+        const collectionDataStr = localStorage.getItem("collection_data");
+        if (collectionDataStr) {
+          const collectionData = JSON.parse(collectionDataStr);
+          return collectionData?.data?.count_scene_video || 1;
+        }
+      } catch (err) {
+        console.error("Error parsing collection_data:", err);
       }
-      // Wait 5 seconds before checking again
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      return 1;
+    };
+
+    const totalScenes = getVideoCount();
+
+    // Initialize all scenes with "Antri" status
+    const initialScenes = Array.from({ length: totalScenes }, (_, i) => ({
+      scene: i + 1,
+      status: "Antri" as const,
+    }));
+    setSceneStatuses(initialScenes);
+
+    // First API call to get estimation time
+    let estimationTime = 60; // Default 60 seconds
+    let isComplete = await checkPromptOptimization(uuidChat, apiKey);
+
+    if (optimizationProgress && optimizationProgress.estimation_time) {
+      estimationTime = optimizationProgress.estimation_time;
     }
+
+    // If already complete, fast forward all to "Selesai"
+    if (isComplete) {
+      const completedScenes = initialScenes.map((scene) => ({
+        ...scene,
+        status: "Selesai" as const,
+      }));
+      setSceneStatuses(completedScenes);
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+      setIsOptimizingPrompt(false);
+      return;
+    }
+
+    // Calculate duration per scene
+    const sceneDuration = Math.max(5, estimationTime / totalScenes); // Minimum 5 seconds per scene
+    let currentSceneIndex = 0;
+    let promptReady = false;
+
+    // Start scene simulation
+    while (currentSceneIndex < totalScenes || !promptReady) {
+      // Update current scene to "Proses"
+      if (currentSceneIndex < totalScenes) {
+        setSceneStatuses((prev) =>
+          prev.map((scene, idx) =>
+            idx === currentSceneIndex
+              ? { ...scene, status: "Proses" as const }
+              : scene
+          )
+        );
+
+        // Wait for half of scene duration
+        await new Promise((resolve) =>
+          setTimeout(resolve, (sceneDuration * 1000) / 2)
+        );
+
+        // Check API status
+        isComplete = await checkPromptOptimization(uuidChat, apiKey);
+
+        if (isComplete) {
+          promptReady = true;
+          // Fast forward all remaining scenes to "Selesai"
+          setSceneStatuses((prev) =>
+            prev.map((scene) => ({ ...scene, status: "Selesai" as const }))
+          );
+          await new Promise((resolve) => setTimeout(resolve, 1000));
+          break;
+        }
+
+        // Complete current scene
+        setSceneStatuses((prev) =>
+          prev.map((scene, idx) =>
+            idx === currentSceneIndex
+              ? { ...scene, status: "Selesai" as const }
+              : scene
+          )
+        );
+
+        // Wait for remaining half of scene duration
+        await new Promise((resolve) =>
+          setTimeout(resolve, (sceneDuration * 1000) / 2)
+        );
+
+        currentSceneIndex++;
+      } else {
+        // All scenes completed, but prompt not ready yet - keep polling
+        await new Promise((resolve) => setTimeout(resolve, 3000));
+        isComplete = await checkPromptOptimization(uuidChat, apiKey);
+        if (isComplete) {
+          promptReady = true;
+          break;
+        }
+      }
+    }
+
+    setIsOptimizingPrompt(false);
   };
 
   // Handle Generate Video button click
@@ -394,52 +492,136 @@ export function TransactionDetail({
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
       {/* Prompt Optimization Overlay */}
       {isOptimizingPrompt && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center">
-          <div className="max-w-2xl w-full px-4">
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
+          <div className="max-w-3xl w-full">
             <div className="relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
               <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
-                <div className="text-center mb-6">
+                <div className="text-center mb-8">
                   <div className="relative inline-block mb-6">
                     <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
                     <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
                   </div>
 
                   <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                    Optimasi Prompt Video
+                    Optimasi Naskah Video
                   </h3>
                   <p className="text-gray-400 text-lg mb-6">
-                    AI sedang mengoptimalkan prompt video Anda untuk hasil
-                    terbaik
+                    AI sedang membuat naskah video Anda untuk hasil terbaik
                   </p>
 
-                  {optimizationProgress && (
-                    <div className="space-y-4">
-                      <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
+                  {/* Video Count Info */}
+                  {collectionData?.data?.count_scene_video && (
+                    <div className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl backdrop-blur-sm mb-6">
+                      <Video className="w-5 h-5 text-purple-400 mr-3" />
+                      <span className="text-base font-semibold text-purple-200">
+                        Membuat {collectionData.data.count_scene_video} video
+                        (total {collectionData.data.count_scene_video} scene
+                        {collectionData.data.count_scene_video > 1 ? "s" : ""})
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Estimation Time */}
+                  {optimizationProgress &&
+                    optimizationProgress.estimation_time && (
+                      <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm mb-6">
                         <div className="text-center">
                           <div className="text-3xl font-bold text-purple-300 mb-2">
-                            {optimizationProgress.minutes}
+                            ~
+                            {Math.ceil(
+                              optimizationProgress.estimation_time / 60
+                            )}{" "}
+                            menit
                           </div>
                           <div className="text-sm text-gray-400">
                             Estimasi Waktu
                           </div>
                         </div>
                       </div>
+                    )}
+                </div>
 
-                      <div className="text-center text-sm text-gray-500">
-                        <p>
-                          💡 Proses ini memastikan video Anda memiliki kualitas
-                          optimal
-                        </p>
+                {/* Scene Progress List */}
+                <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
+                  <h4 className="text-sm font-semibold text-gray-400 mb-3">
+                    Progress Pembuatan:
+                  </h4>
+                  {sceneStatuses.map((sceneStatus) => (
+                    <div
+                      key={sceneStatus.scene}
+                      className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
+                        sceneStatus.status === "Selesai"
+                          ? "bg-green-500/10 border-green-500/30"
+                          : sceneStatus.status === "Proses"
+                          ? "bg-blue-500/10 border-blue-500/30"
+                          : "bg-slate-800/30 border-white/5"
+                      }`}
+                    >
+                      <div className="flex items-center space-x-3">
+                        {sceneStatus.status === "Selesai" ? (
+                          <CheckCircle className="w-5 h-5 text-green-400" />
+                        ) : sceneStatus.status === "Proses" ? (
+                          <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
+                        ) : (
+                          <div className="w-5 h-5 rounded-full border-2 border-gray-600"></div>
+                        )}
+                        <span className="text-white font-medium">
+                          Scene {sceneStatus.scene}: Memahami deskripsi dan
+                          membuat naskah video
+                        </span>
                       </div>
+                      <Badge
+                        variant="secondary"
+                        className={`${
+                          sceneStatus.status === "Selesai"
+                            ? "bg-green-500/20 text-green-300 border-green-500/30"
+                            : sceneStatus.status === "Proses"
+                            ? "bg-blue-500/20 text-blue-300 border-blue-500/30"
+                            : "bg-slate-700/30 text-gray-400 border-slate-600/30"
+                        }`}
+                      >
+                        {sceneStatus.status}
+                      </Badge>
                     </div>
-                  )}
+                  ))}
+                </div>
+
+                {/* Info Message */}
+                <div className="text-center text-sm text-gray-500 mb-6">
+                  <p>
+                    💡 Proses ini memastikan video Anda memiliki kualitas
+                    optimal
+                  </p>
                 </div>
 
                 {/* Animated Progress Bar */}
                 <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
-                  <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
+                  <div
+                    className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-500"
+                    style={{
+                      width: `${
+                        (sceneStatuses.filter((s) => s.status === "Selesai")
+                          .length /
+                          sceneStatuses.length) *
+                        100
+                      }%`,
+                    }}
+                  ></div>
+                </div>
+
+                {/* Progress Percentage */}
+                <div className="text-center mt-3 text-sm font-medium text-purple-300">
+                  {sceneStatuses.length > 0
+                    ? Math.round(
+                        (sceneStatuses.filter((s) => s.status === "Selesai")
+                          .length /
+                          sceneStatuses.length) *
+                          100
+                      )
+                    : 0}
+                  %
                 </div>
               </div>
             </div>
