@@ -247,36 +247,6 @@ interface ApiResponse {
   };
 }
 
-// Batch API interfaces
-interface ApiBatchData {
-  id: number;
-  video_chat_ai_id: number;
-  batch_number: number;
-  status: string; // "success", "antri", "progress", "failed"
-  created_at: string;
-  updated_at: string;
-  batch_label: string;
-  videochatai: {
-    id: number;
-    user_video_id: number;
-  };
-}
-
-interface ApiBatchResponse {
-  status: boolean;
-  message: string;
-  data: {
-    list_batch: ApiBatchData[];
-  };
-}
-
-interface BatchData {
-  id: number;
-  batch_number: number;
-  batch_label: string;
-  status: string;
-}
-
 interface SceneData {
   scene: number;
   url_video: string | null;
@@ -307,12 +277,6 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
-  const [isWaitingForGeneration, setIsWaitingForGeneration] = useState(false);
-
-  // Batch processing states
-  const [batchData, setBatchData] = useState<BatchData[]>([]);
-  const [isBatchProcessing, setIsBatchProcessing] = useState(true);
-  const [generatingVideo, setGeneratingVideo] = useState(false);
 
   // Manual merge states
   const [selectedVideos, setSelectedVideos] = useState<Set<number>>(new Set());
@@ -360,113 +324,23 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     };
   }, [selectedLanguage]);
 
-  // Fetch batch status first, then video merge status
+  // Fetch video merge status
   useEffect(() => {
-    // Check if we should fetch batch status or video merge status
-    if (isBatchProcessing) {
-      fetchBatchStatus();
-    } else {
-      fetchGenerateStatus();
-    }
+    fetchGenerateStatus();
 
     // Set up polling every 5 seconds
     const interval = setInterval(() => {
-      if (isBatchProcessing) {
-        fetchBatchStatus();
-      } else {
-        // Check if we should stop polling
-        if (generateData?.final_url_merge_video) {
-          console.log("Final video is ready, stopping polling");
-          clearInterval(interval);
-          return;
-        }
-        fetchGenerateStatus();
+      // Check if we should stop polling
+      if (generateData?.final_url_merge_video) {
+        console.log("Final video is ready, stopping polling");
+        clearInterval(interval);
+        return;
       }
+      fetchGenerateStatus();
     }, 5000);
 
     return () => clearInterval(interval);
-  }, [uuid, isBatchProcessing, generateData?.final_url_merge_video]);
-
-  const fetchBatchStatus = async () => {
-    try {
-      setError(null);
-
-      // Get UUID from localStorage (saved by PaymentPage)
-      const savedUuid = localStorage.getItem("generate-uuid") || uuid;
-      console.log("Fetching batch status for UUID:", savedUuid);
-
-      // Get x-api-key from localStorage
-      const xApiKey = localStorage.getItem("x-api-key");
-
-      if (!xApiKey) {
-        throw new Error("API key tidak ditemukan. Silakan login kembali.");
-      }
-
-      // Call batch status API
-      const response = await fetch(
-        `${BASE_URL}/api/chat-ai/status-batch/${savedUuid}`,
-        {
-          headers: {
-            "x-api-key": xApiKey,
-          },
-        }
-      );
-
-      // Handle 404 - batch not ready yet
-      if (response.status === 404) {
-        console.log("Batch not ready yet (404), will retry...");
-        setIsWaitingForGeneration(true);
-        setLoading(false);
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const apiData: ApiBatchResponse = await response.json();
-
-      if (!apiData.status) {
-        throw new Error(apiData.message || "Gagal memuat data batch");
-      }
-
-      console.log("Batch API Response:", apiData);
-
-      // If we get here with valid data, batch is ready
-      setIsWaitingForGeneration(false);
-
-      // Transform batch data
-      const transformedBatches: BatchData[] = apiData.data.list_batch.map(
-        (batch) => ({
-          id: batch.id,
-          batch_number: batch.batch_number,
-          batch_label: batch.batch_label,
-          status: batch.status,
-        })
-      );
-
-      setBatchData(transformedBatches);
-      setLoading(false);
-      setRefreshing(false);
-
-      // Check if all batches are successful - stop polling batch status
-      const allSuccess = transformedBatches.every(
-        (batch) => batch.status === "success"
-      );
-
-      if (allSuccess) {
-        console.log("All batches are successful!");
-        // Don't automatically generate video, wait for user action
-      }
-    } catch (err) {
-      console.error("Error fetching batch status:", err);
-      setError(
-        err instanceof Error ? err.message : "Gagal memuat status batch"
-      );
-      setLoading(false);
-      setRefreshing(false);
-    }
-  };
+  }, [uuid, generateData?.final_url_merge_video]);
 
   const fetchGenerateStatus = async () => {
     try {
@@ -496,7 +370,6 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       // Handle 404 - video generation not ready yet
       if (response.status === 404) {
         console.log("Video generation not ready yet (404), will retry...");
-        setIsWaitingForGeneration(true);
         setLoading(false);
         return; // Don't throw error, just return and let polling continue
       }
@@ -512,9 +385,6 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       }
 
       console.log("API Response:", apiData);
-
-      // If we get here with valid data, generation is ready
-      setIsWaitingForGeneration(false);
 
       // Helper function to normalize status
       const normalizeStatus = (status: string): string => {
@@ -644,77 +514,6 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     window.open(url, "_blank");
   };
 
-  const handleRegenerateBatch = async (batchId: number) => {
-    try {
-      const xApiKey = localStorage.getItem("x-api-key");
-      if (!xApiKey) {
-        throw new Error("API key tidak ditemukan. Silakan login kembali.");
-      }
-
-      const response = await fetch(
-        `${BASE_URL}/api/chat-ai/refetch-batch/${batchId}`,
-        {
-          method: "GET",
-          headers: {
-            "x-api-key": xApiKey,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Regenerate batch result:", result);
-
-      // Refresh batch status
-      fetchBatchStatus();
-    } catch (err) {
-      console.error("Error regenerating batch:", err);
-      alert(err instanceof Error ? err.message : "Gagal meregenerasi batch");
-    }
-  };
-
-  const handleGenerateVideo = async () => {
-    try {
-      setGeneratingVideo(true);
-      const xApiKey = localStorage.getItem("x-api-key");
-      if (!xApiKey) {
-        throw new Error("API key tidak ditemukan. Silakan login kembali.");
-      }
-
-      const savedUuid = localStorage.getItem("generate-uuid") || uuid;
-
-      const response = await fetch(
-        `${BASE_URL}/api/generate-video/${savedUuid}`,
-        {
-          method: "GET",
-          headers: {
-            "x-api-key": xApiKey,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const result = await response.json();
-      console.log("Generate video result:", result);
-
-      // Switch to video merge status tracking
-      setIsBatchProcessing(false);
-      setGeneratingVideo(false);
-    } catch (err) {
-      console.error("Error generating video:", err);
-      alert(err instanceof Error ? err.message : "Gagal generate video");
-      setGeneratingVideo(false);
-    }
-  };
-
   const handleVideoCheckbox = (sceneNumber: number) => {
     setSelectedVideos((prev) => {
       const newSet = new Set(prev);
@@ -831,382 +630,11 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     }
   };
 
-  // For batch status
-  const getBatchStatusIcon = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "success":
-        return <CheckCircle className="w-5 h-5 text-green-400" />;
-      case "progress":
-        return <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />;
-      case "antri":
-        return <Clock className="w-5 h-5 text-yellow-400" />;
-      case "failed":
-        return <AlertCircle className="w-5 h-5 text-red-400" />;
-      default:
-        return <Clock className="w-5 h-5 text-gray-400" />;
-    }
-  };
-
-  const getBatchStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "success":
-        return "bg-green-500/20 text-green-300 border-green-500/30";
-      case "progress":
-        return "bg-blue-500/20 text-blue-300 border-blue-500/30";
-      case "antri":
-        return "bg-yellow-500/20 text-yellow-300 border-yellow-500/30";
-      case "failed":
-        return "bg-red-500/20 text-red-300 border-red-500/30";
-      default:
-        return "bg-gray-500/20 text-gray-300 border-gray-500/30";
-    }
-  };
-
-  const getBatchStatusText = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "success":
-        return t.success;
-      case "progress":
-        return t.processing2;
-      case "antri":
-        return t.waiting;
-      case "failed":
-        return t.failed;
-      default:
-        return status;
-    }
-  };
-
   // Get current translations
   const t = translations[selectedLanguage as keyof typeof translations];
 
-  // Check if all batches are successful
-  const allBatchesSuccess = batchData.every(
-    (batch) => batch.status === "success"
-  );
-
-  // Batch Processing Modal
-  if (isBatchProcessing) {
-    // Calculate total scenes (1 batch = 3 scenes)
-    const totalScenes = batchData.length * 3;
-    const scenesPerBatch = 3;
-
-    return (
-      <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center p-4">
-        <div className="max-w-4xl w-full">
-          <div className="relative">
-            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
-
-            <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
-              <div className="text-center mb-8">
-                <div className="relative inline-block mb-6">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                  {loading || isWaitingForGeneration ? (
-                    <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
-                  ) : allBatchesSuccess ? (
-                    <CheckCircle className="relative w-16 h-16 text-green-400 mx-auto" />
-                  ) : (
-                    <Loader2 className="relative w-16 h-16 animate-spin text-purple-400 mx-auto" />
-                  )}
-                </div>
-
-                <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                  {loading || isWaitingForGeneration
-                    ? t.loadingStatus
-                    : allBatchesSuccess
-                    ? t.allBatchSuccess
-                    : selectedLanguage === "ID"
-                    ? "Memproses Batch Naskah"
-                    : "Processing Script Batches"}
-                </h3>
-                <p className="text-gray-400 text-lg mb-6">
-                  {loading || isWaitingForGeneration
-                    ? t.fetchingInfo
-                    : allBatchesSuccess
-                    ? selectedLanguage === "ID"
-                      ? "Semua batch telah selesai diproses. Anda dapat melanjutkan untuk generate video."
-                      : "All batches have been processed successfully. You can proceed to generate video."
-                    : selectedLanguage === "ID"
-                    ? "AI sedang memproses naskah video Anda per batch"
-                    : "AI is processing your video script per batch"}
-                </p>
-
-                {/* Batch & Scene Info */}
-                {batchData.length > 0 && (
-                  <div className="inline-flex flex-col items-center px-6 py-4 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl backdrop-blur-sm mb-6">
-                    <div className="flex items-center space-x-3 mb-2">
-                      <VideoIcon className="w-5 h-5 text-purple-400" />
-                      <span className="text-base font-semibold text-purple-200">
-                        {selectedLanguage === "ID"
-                          ? `Membagi naskah menjadi ${batchData.length} batch of scenes`
-                          : `Dividing script into ${batchData.length} batch of scenes`}
-                      </span>
-                    </div>
-                    <div className="text-sm text-purple-300">
-                      {selectedLanguage === "ID"
-                        ? `Total scenes: ${totalScenes} (${scenesPerBatch} scenes per batch)`
-                        : `Total scenes: ${totalScenes} (${scenesPerBatch} scenes per batch)`}
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Batch Progress List */}
-              {batchData.length > 0 && (
-                <div className="space-y-3 mb-6">
-                  <h4 className="text-sm font-semibold text-gray-400 mb-3">
-                    {selectedLanguage === "ID"
-                      ? "Progress Pembuatan Batch:"
-                      : "Batch Creation Progress:"}
-                  </h4>
-                  {batchData.map((batch) => (
-                    <div
-                      key={batch.id}
-                      className={`flex items-center justify-between p-4 rounded-xl border transition-all ${
-                        batch.status === "success"
-                          ? "bg-green-500/10 border-green-500/30"
-                          : batch.status === "progress"
-                          ? "bg-blue-500/10 border-blue-500/30"
-                          : batch.status === "antri"
-                          ? "bg-yellow-500/10 border-yellow-500/30"
-                          : batch.status === "failed"
-                          ? "bg-red-500/10 border-red-500/30"
-                          : "bg-slate-800/30 border-white/5"
-                      }`}
-                    >
-                      <div className="flex items-center space-x-3">
-                        <div className="w-8 h-8 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-lg flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs font-bold text-white">
-                            #{batch.batch_number}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-white font-semibold">
-                            {batch.batch_label}
-                          </span>
-                          <p className="text-xs text-gray-500 mt-0.5">
-                            {selectedLanguage === "ID"
-                              ? `${scenesPerBatch} scenes dalam batch ini`
-                              : `${scenesPerBatch} scenes in this batch`}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="flex items-center space-x-4">
-                        {/* Circular Progress Indicator */}
-                        <div className="relative flex items-center">
-                          {/* Circular Progress */}
-                          <div className="relative w-14 h-14">
-                            {/* Background Circle */}
-                            <svg className="w-14 h-14 transform -rotate-90">
-                              <circle
-                                cx="28"
-                                cy="28"
-                                r="24"
-                                stroke="currentColor"
-                                strokeWidth="3"
-                                fill="none"
-                                className={
-                                  batch.status === "success"
-                                    ? "text-green-500/20"
-                                    : batch.status === "progress"
-                                    ? "text-blue-500/20"
-                                    : batch.status === "antri"
-                                    ? "text-yellow-500/20"
-                                    : "text-red-500/20"
-                                }
-                              />
-                              {/* Progress Circle */}
-                              <circle
-                                cx="28"
-                                cy="28"
-                                r="24"
-                                stroke="currentColor"
-                                strokeWidth="3"
-                                fill="none"
-                                strokeDasharray={`${2 * Math.PI * 24}`}
-                                strokeDashoffset={
-                                  batch.status === "success"
-                                    ? 0
-                                    : batch.status === "progress"
-                                    ? 2 * Math.PI * 24 * 0.35
-                                    : batch.status === "antri"
-                                    ? 2 * Math.PI * 24 * 0.85
-                                    : 2 * Math.PI * 24
-                                }
-                                className={`transition-all duration-1000 ease-out ${
-                                  batch.status === "success"
-                                    ? "text-green-400"
-                                    : batch.status === "progress"
-                                    ? "text-blue-400"
-                                    : batch.status === "antri"
-                                    ? "text-yellow-400"
-                                    : "text-red-400"
-                                }`}
-                                strokeLinecap="round"
-                              />
-                            </svg>
-
-                            {/* Center Icon */}
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              {batch.status === "success" ? (
-                                <Check className="w-5 h-5 text-green-400 font-bold stroke-[3]" />
-                              ) : batch.status === "progress" ? (
-                                <Loader2 className="w-5 h-5 text-blue-400 animate-spin" />
-                              ) : batch.status === "antri" ? (
-                                <Clock className="w-5 h-5 text-yellow-400 animate-spin" />
-                              ) : (
-                                <AlertCircle className="w-5 h-5 text-red-400" />
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Status Text */}
-                          <div className="ml-3">
-                            <p
-                              className={`text-sm font-semibold leading-tight ${
-                                batch.status === "success"
-                                  ? "text-green-300"
-                                  : batch.status === "progress"
-                                  ? "text-blue-300"
-                                  : batch.status === "antri"
-                                  ? "text-yellow-300"
-                                  : "text-red-300"
-                              }`}
-                            >
-                              {batch.status === "success"
-                                ? selectedLanguage === "ID"
-                                  ? "Selesai"
-                                  : "Done"
-                                : batch.status === "proses"
-                                ? selectedLanguage === "ID"
-                                  ? "Proses"
-                                  : "Processing"
-                                : batch.status === "antri"
-                                ? selectedLanguage === "ID"
-                                  ? "Antri"
-                                  : "Queue"
-                                : selectedLanguage === "ID"
-                                ? "Gagal"
-                                : "Failed"}
-                            </p>
-                          </div>
-                        </div>
-
-                        {/* Regenerate Button for Failed */}
-                        {batch.status === "failed" && (
-                          <Button
-                            size="sm"
-                            variant="ghost"
-                            className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/30"
-                            onClick={() => handleRegenerateBatch(batch.id)}
-                          >
-                            <RefreshCw className="w-4 h-4 mr-1" />
-                            {t.regenerateBatch}
-                          </Button>
-                        )}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-
-              {/* Success Message & Generate Button */}
-              {allBatchesSuccess && (
-                <div className="space-y-4 animate-in fade-in slide-in-from-bottom duration-500">
-                  <div className="bg-gradient-to-r from-green-500/10 to-emerald-500/10 border border-green-500/30 rounded-xl p-4 backdrop-blur-sm">
-                    <div className="flex items-center">
-                      <CheckCircle className="w-5 h-5 text-green-400 mr-3 flex-shrink-0" />
-                      <div>
-                        <p className="font-semibold text-green-300">
-                          {selectedLanguage === "ID"
-                            ? "Semua Batch Selesai Diproses!"
-                            : "All Batches Processed Successfully!"}
-                        </p>
-                        <p className="text-sm text-green-400/80">
-                          {selectedLanguage === "ID"
-                            ? "Anda dapat melanjutkan untuk generate video sekarang."
-                            : "You can proceed to generate video now."}
-                        </p>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="relative group">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity"></div>
-                    <Button
-                      className="relative w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 shadow-lg shadow-green-500/30 text-lg py-6"
-                      onClick={handleGenerateVideo}
-                      disabled={generatingVideo}
-                    >
-                      {generatingVideo ? (
-                        <>
-                          <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                          {t.generatingVideo}
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5 mr-2" />
-                          {t.generateVideo}
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              )}
-
-              {/* Animated Progress Bar - Only show when not all done */}
-              {!allBatchesSuccess && batchData.length > 0 && (
-                <div className="space-y-3 mt-6">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-gray-400">
-                      {selectedLanguage === "ID" ? "Progress:" : "Progress:"}
-                    </span>
-                    <span className="text-purple-300 font-semibold">
-                      {batchData.filter((b) => b.status === "success").length} /{" "}
-                      {batchData.length}{" "}
-                      {selectedLanguage === "ID"
-                        ? "batch selesai"
-                        : "batches done"}
-                    </span>
-                  </div>
-                  <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5">
-                    <div
-                      className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-500"
-                      style={{
-                        width: `${
-                          (batchData.filter((b) => b.status === "success")
-                            .length /
-                            batchData.length) *
-                          100
-                        }%`,
-                      }}
-                    ></div>
-                  </div>
-                  <div className="text-center text-sm text-gray-500 mt-2">
-                    {selectedLanguage === "ID"
-                      ? "💡 Proses ini membutuhkan waktu beberapa menit"
-                      : "💡 This process takes a few minutes"}
-                  </div>
-                </div>
-              )}
-
-              {/* Loading State Progress Bar */}
-              {(loading || isWaitingForGeneration) &&
-                batchData.length === 0 && (
-                  <div className="relative h-2 bg-slate-900 rounded-full overflow-hidden border border-white/5 mt-6">
-                    <div className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 animate-shimmer-slow"></div>
-                  </div>
-                )}
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  // Loading state for video merge status
-  if (loading || isWaitingForGeneration) {
+  // Loading state
+  if (loading) {
     return (
       <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 flex items-center justify-center">
         <div className="max-w-2xl w-full px-4">
@@ -1221,11 +649,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                 </div>
 
                 <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
-                  {isWaitingForGeneration ? t.processingVideo : t.loadingStatus}
+                  {t.processingVideo}
                 </h3>
-                <p className="text-gray-400 text-lg mb-6">
-                  {isWaitingForGeneration ? t.aiPreparing : t.fetchingInfo}
-                </p>
+                <p className="text-gray-400 text-lg mb-6">{t.aiPreparing}</p>
 
                 <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm">
                   <div className="space-y-3 text-sm text-center">
