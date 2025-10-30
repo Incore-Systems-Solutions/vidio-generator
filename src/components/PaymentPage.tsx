@@ -520,7 +520,7 @@ export function PaymentPage() {
     // First API call to get estimation time
     let estimationTime = 60; // Default 60 seconds
     let isComplete = await checkPromptOptimization(uuidChat, apiKey);
-    
+
     if (optimizationProgress && optimizationProgress.estimation_time) {
       estimationTime = optimizationProgress.estimation_time;
     }
@@ -861,8 +861,8 @@ export function PaymentPage() {
 
                   <h3 className="text-3xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent mb-2">
                     {selectedLanguage === "ID"
-                      ? "Optimasi Naskah Video"
-                      : "Video Script Optimization"}
+                      ? "Pembuatan Naskah Video"
+                      : "Video Script Creation"}
                   </h3>
                   <p className="text-gray-400 text-lg mb-6">
                     {selectedLanguage === "ID"
@@ -887,19 +887,23 @@ export function PaymentPage() {
                   </div>
 
                   {/* Estimation Time */}
-                  {optimizationProgress && optimizationProgress.estimation_time && (
-                    <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm mb-6">
-                      <div className="text-center">
-                        <div className="text-3xl font-bold text-purple-300 mb-2">
-                          ~{Math.ceil(optimizationProgress.estimation_time / 60)}{" "}
-                          {selectedLanguage === "ID" ? "menit" : "minutes"}
-                        </div>
-                        <div className="text-sm text-gray-400">
-                          {t.estimatedTime}
+                  {optimizationProgress &&
+                    optimizationProgress.estimation_time && (
+                      <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-xl p-6 backdrop-blur-sm mb-6">
+                        <div className="text-center">
+                          <div className="text-3xl font-bold text-purple-300 mb-2">
+                            ~
+                            {Math.ceil(
+                              optimizationProgress.estimation_time / 60
+                            )}{" "}
+                            {selectedLanguage === "ID" ? "menit" : "minutes"}
+                          </div>
+                          <div className="text-sm text-gray-400">
+                            {t.estimatedTime}
+                          </div>
                         </div>
                       </div>
-                    </div>
-                  )}
+                    )}
                 </div>
 
                 {/* Scene Progress List */}

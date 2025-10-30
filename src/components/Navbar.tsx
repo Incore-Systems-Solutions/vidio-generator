@@ -29,7 +29,7 @@ const translations = {
   },
   EN: {
     brandName: "Instant!!",
-    tagline: "AI Video Generation",
+    tagline: "",
     videoGallery: "Explore Videos",
     consultant: "Create Video Now",
     videoHistory: "My Videos",

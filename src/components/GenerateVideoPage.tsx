@@ -23,8 +23,8 @@ const BASE_URL = "https://api.instantvideoapp.com";
 const translations = {
   ID: {
     backToHome: "Kembali ke Beranda",
-    aiVideoGeneration: "AI Video Generation",
-    consultant: "Konsultan AI",
+    aiVideoGeneration: "Video Menakjubkan untuk Anda",
+    consultant: "Mari Membuat Video AI",
     processing: "Video Anda sedang diproses dengan teknologi AI canggih",
     totalScenes: "Scene Total",
     completedScenes: "Scene Selesai",
@@ -74,8 +74,8 @@ const translations = {
   },
   EN: {
     backToHome: "Back to Home",
-    aiVideoGeneration: "AI Video Generation",
-    consultant: "AI Consultant",
+    aiVideoGeneration: "Amazing Videos for You",
+    consultant: "Let's Create AI Video",
     processing: "Your video is being processed with advanced AI technology",
     totalScenes: "Total Scenes",
     completedScenes: "Completed Scenes",
@@ -124,8 +124,8 @@ const translations = {
   },
   ZH: {
     backToHome: "返回主页",
-    aiVideoGeneration: "AI 视频生成",
-    consultant: "AI 顾问",
+    aiVideoGeneration: "精彩影片推薦",
+    consultant: "讓我們一起創作人工智慧視頻",
     processing: "您的视频正在使用先进的 AI 技术进行处理",
     totalScenes: "总场景",
     completedScenes: "已完成场景",
@@ -170,8 +170,8 @@ const translations = {
   },
   AR: {
     backToHome: "العودة إلى الصفحة الرئيسية",
-    aiVideoGeneration: "إنشاء فيديو AI",
-    consultant: "مستشار AI",
+    aiVideoGeneration: "فيديوهات مذهلة لك",
+    consultant: "دعونا ننشئ فيديو الذكاء الاصطناعي",
     processing: "يتم معالجة الفيديو الخاص بك باستخدام تقنية AI المتقدمة",
     totalScenes: "إجمالي المشاهد",
     completedScenes: "المشاهد المكتملة",
