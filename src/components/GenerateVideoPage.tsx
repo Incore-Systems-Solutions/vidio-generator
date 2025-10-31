@@ -16,6 +16,7 @@ import {
   Video as VideoIcon,
   Zap,
 } from "lucide-react";
+import Pusher from "pusher-js";
 
 const BASE_URL = "https://api.instantvideoapp.com";
 
@@ -324,23 +325,123 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     };
   }, [selectedLanguage]);
 
-  // Fetch video merge status
+  // Real-time video generation status using Pusher
   useEffect(() => {
+    console.log("Setting up Pusher for real-time video generation updates...");
+
+    // Get UUID from localStorage
+    const savedUuid = localStorage.getItem("generate-uuid") || uuid;
+    if (!savedUuid) {
+      console.error("Generate UUID tidak ditemukan");
+      setError("UUID tidak ditemukan");
+      setLoading(false);
+      return;
+    }
+
+    // Initialize Pusher
+    const pusher = new Pusher('e5807c7a5b7e40f5c02c', {
+      cluster: 'ap1',
+    });
+
+    // Subscribe to merge-video channel
+    const channelName = `merge-video.${savedUuid}`;
+    console.log("Subscribing to channel:", channelName);
+    const channel = pusher.subscribe(channelName);
+
+    // Listen to VideoStatusUpdated event
+    channel.bind('VideoStatusUpdated', (data: any) => {
+      console.log("Received video update from Pusher:", data);
+
+      const { payload } = data;
+
+      if (payload.type === "video_progress") {
+        // Update individual scene progress
+        console.log("Scene progress update:", payload);
+        
+        setGenerateData((prevData) => {
+          if (!prevData) return prevData;
+
+          // Find and update the scene with matching task_id
+          const updatedScenes = prevData.estimated_scene.map((scene) => {
+            if (scene.task_id === payload.task_id) {
+              return {
+                ...scene,
+                status_video: payload.status_video === "success" ? "completed" : payload.status_video,
+                url_video: payload.url_video,
+                msg_err: payload.msg_err,
+              };
+            }
+            return scene;
+          });
+
+          // Count completed scenes
+          const completedScenes = updatedScenes.filter(
+            (scene) => scene.status_video === "completed"
+          ).length;
+
+          // Update merge progress based on completed scenes
+          let mergeProgress = Math.round(
+            (completedScenes / updatedScenes.length) * 50
+          );
+          let mergeStatus = "waiting";
+
+          if (completedScenes === updatedScenes.length) {
+            mergeProgress = 75; // All scenes done, merging in progress
+            mergeStatus = "merging";
+          }
+
+          return {
+            ...prevData,
+            estimated_scene: updatedScenes,
+            completed_scenes: completedScenes,
+            estimated_merge: {
+              progress: mergeProgress,
+              status: mergeStatus,
+            },
+          };
+        });
+
+      } else if (payload.type === "merge_completed") {
+        // Final video is ready
+        console.log("Merge completed:", payload);
+        
+        if (payload.is_done && payload.final_url_merge_video) {
+          setGenerateData((prevData) => {
+            if (!prevData) return prevData;
+
+            return {
+              ...prevData,
+              final_url_merge_video: payload.final_url_merge_video,
+              estimated_merge: {
+                progress: 100,
+                status: "completed",
+              },
+            };
+          });
+
+          // Clear localStorage except x-api-key and konsultan-email
+          clearLocalStorageExceptKeys(["x-api-key", "konsultan-email"]);
+
+          // Disconnect Pusher since we're done
+          console.log("Merge completed, disconnecting Pusher");
+          channel.unbind_all();
+          channel.unsubscribe();
+          pusher.disconnect();
+        }
+      }
+    });
+
+    // Initial fetch to load current status
     fetchGenerateStatus();
 
-    // Set up polling every 5 seconds
-    const interval = setInterval(() => {
-      // Check if we should stop polling
-      if (generateData?.final_url_merge_video) {
-        console.log("Final video is ready, stopping polling");
-        clearInterval(interval);
-        return;
-      }
-      fetchGenerateStatus();
-    }, 5000);
-
-    return () => clearInterval(interval);
-  }, [uuid, generateData?.final_url_merge_video]);
+    // Cleanup on unmount
+    return () => {
+      console.log("Unsubscribing from Pusher channel:", channelName);
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
+    };
+  }, [uuid]);
 
   const fetchGenerateStatus = async () => {
     try {

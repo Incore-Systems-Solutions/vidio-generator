@@ -24,6 +24,7 @@ import {
 import { OTPModal } from "./OTPModal";
 import { videoSetupStorage } from "@/lib/videoSetupStorage";
 import { videoStoreApi } from "@/lib/api";
+import Pusher from "pusher-js";
 
 const BASE_URL = "https://api.instantvideoapp.com";
 
@@ -318,6 +319,7 @@ export function PaymentPage() {
   const [totalSceneCount, setTotalSceneCount] = useState<number>(0);
   const [isWaitingForBatch, setIsWaitingForBatch] = useState(false);
   const [generatingVideo, setGeneratingVideo] = useState(false);
+  const [regeneratingBatchId, setRegeneratingBatchId] = useState<number | null>(null);
 
   // Language state
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
@@ -409,6 +411,41 @@ export function PaymentPage() {
         }
       }
     }
+
+    // Restore modal states after page refresh
+    const savedModalState = localStorage.getItem("payment-modal-state");
+    if (savedModalState) {
+      try {
+        const modalState = JSON.parse(savedModalState);
+        console.log("Restoring modal state:", modalState);
+        
+        if (modalState.isOptimizingPrompt) {
+          setIsOptimizingPrompt(true);
+          if (modalState.sceneStatuses) {
+            setSceneStatuses(modalState.sceneStatuses);
+          }
+          // Resume optimization check
+          const uuidChat = localStorage.getItem("konsultan-chat-uuid");
+          if (uuidChat && savedApiKey) {
+            waitForPromptOptimization(uuidChat, savedApiKey);
+          }
+        }
+        
+        if (modalState.isBatchProcessing) {
+          setIsBatchProcessing(true);
+          if (modalState.batchData) {
+            setBatchData(modalState.batchData);
+          }
+          if (modalState.totalSceneCount) {
+            setTotalSceneCount(modalState.totalSceneCount);
+          }
+          // Pusher will be setup in the useEffect that watches isBatchProcessing
+        }
+      } catch (err) {
+        console.error("Error restoring modal state:", err);
+      }
+    }
+    
     // Note: We'll call handlePersonalInfoChange in a separate useEffect
   }, []);
 
@@ -440,22 +477,95 @@ export function PaymentPage() {
     handlePersonalInfoChange();
   }, [email, phoneNumber]);
 
-  // Polling batch status when batch processing is active
+  // Save modal state to localStorage for persistence across page refresh
+  useEffect(() => {
+    const modalState = {
+      isOptimizingPrompt,
+      isBatchProcessing,
+      sceneStatuses,
+      batchData,
+      totalSceneCount,
+    };
+
+    // Only save if there's an active modal
+    if (isOptimizingPrompt || isBatchProcessing) {
+      localStorage.setItem("payment-modal-state", JSON.stringify(modalState));
+      console.log("Saving modal state to localStorage:", modalState);
+    } else {
+      // Clear modal state when both are false
+      localStorage.removeItem("payment-modal-state");
+    }
+  }, [isOptimizingPrompt, isBatchProcessing, sceneStatuses, batchData, totalSceneCount]);
+
+  // Real-time batch status updates using Pusher
   useEffect(() => {
     if (!isBatchProcessing) return;
 
-    console.log("Starting batch status polling...");
+    console.log("Setting up Pusher for real-time batch updates...");
 
-    const batchInterval = setInterval(async () => {
-      await fetchBatchStatus();
+    // Get UUID from localStorage
+    const savedUuid = localStorage.getItem("generate-uuid");
+    if (!savedUuid) {
+      console.error("Generate UUID tidak ditemukan");
+      return;
+    }
 
-      // Check if all batches are successful to stop polling
-      // Note: This check happens after state update in fetchBatchStatus
-    }, 5000); // Poll every 5 seconds
+    // Initialize Pusher
+    const pusher = new Pusher('e5807c7a5b7e40f5c02c', {
+      cluster: 'ap1',
+    });
 
+    // Subscribe to batch channel
+    const channelName = `chat-batch.${savedUuid}`;
+    console.log("Subscribing to channel:", channelName);
+    const channel = pusher.subscribe(channelName);
+
+    // Listen to ChatBatchStatusUpdated event
+    channel.bind('ChatBatchStatusUpdated', (data: any) => {
+      console.log("Received batch update from Pusher:", data);
+
+      // Update batch data state
+      setBatchData((prevBatches) => {
+        return prevBatches.map((batch) => {
+          if (batch.id === data.id) {
+            return {
+              ...batch,
+              status: data.status,
+              batch_number: data.batch_number,
+            };
+          }
+          return batch;
+        });
+      });
+
+      // If status is success and all batches are done, we can stop
+      if (data.status === "success") {
+        console.log(`Batch ${data.batch_number} completed successfully`);
+        
+        // Check if all batches are successful
+        setBatchData((currentBatches) => {
+          const allSuccess = currentBatches.every((batch) => 
+            batch.id === data.id ? data.status === "success" : batch.status === "success"
+          );
+          
+          if (allSuccess) {
+            console.log("All batches completed! Ready to generate video.");
+          }
+          
+          return currentBatches;
+        });
+      }
+    });
+
+    // Initial fetch to load current batch status
+    fetchBatchStatus();
+
+    // Cleanup on unmount
     return () => {
-      console.log("Stopping batch status polling");
-      clearInterval(batchInterval);
+      console.log("Unsubscribing from Pusher channel:", channelName);
+      channel.unbind_all();
+      channel.unsubscribe();
+      pusher.disconnect();
     };
   }, [isBatchProcessing]);
 
@@ -578,16 +688,12 @@ export function PaymentPage() {
         throw new Error(result.message || "Gagal mengecek optimasi prompt");
       }
 
-      console.log("Prompt optimization response:", result);
       setOptimizationProgress(result.data);
 
       // If prompt_video is not null, optimization is complete
       if (result.data.prompt_video !== null) {
-        console.log("Prompt optimization complete!");
         return true;
       } else {
-        // Still optimizing, return false
-        console.log("Prompt still optimizing...");
         return false;
       }
     } catch (err) {
@@ -789,6 +895,8 @@ export function PaymentPage() {
 
   const handleRegenerateBatch = async (batchId: number) => {
     try {
+      setRegeneratingBatchId(batchId);
+      
       const xApiKey = localStorage.getItem("x-api-key");
       if (!xApiKey) {
         throw new Error("API key tidak ditemukan. Silakan login kembali.");
@@ -812,11 +920,21 @@ export function PaymentPage() {
       const result = await response.json();
       console.log("Regenerate batch result:", result);
 
-      // Refresh batch status
-      fetchBatchStatus();
+      // Update batch status to 'antri' immediately for better UX
+      setBatchData((prevBatches) =>
+        prevBatches.map((batch) =>
+          batch.id === batchId ? { ...batch, status: "antri" } : batch
+        )
+      );
+
+      // Pusher will handle the real-time status updates from here
+      console.log("Batch regeneration requested, waiting for Pusher updates...");
+      
     } catch (err) {
       console.error("Error regenerating batch:", err);
       alert(err instanceof Error ? err.message : "Gagal meregenerasi batch");
+    } finally {
+      setRegeneratingBatchId(null);
     }
   };
 
@@ -856,6 +974,9 @@ export function PaymentPage() {
       console.log("Redirecting to generate page...");
       setIsBatchProcessing(false);
       setGeneratingVideo(false);
+      
+      // Clear modal state from localStorage before redirect
+      localStorage.removeItem("payment-modal-state");
 
       // Redirect to generate page
       window.location.href = `/generate/${savedUuid}`;
@@ -1363,9 +1484,19 @@ export function PaymentPage() {
                               variant="ghost"
                               className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/30"
                               onClick={() => handleRegenerateBatch(batch.id)}
+                              disabled={regeneratingBatchId === batch.id}
                             >
-                              <RefreshCw className="w-4 h-4 mr-1" />
-                              {t.regenerateBatch}
+                              {regeneratingBatchId === batch.id ? (
+                                <>
+                                  <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                                  {selectedLanguage === "ID" ? "Antri..." : "Queuing..."}
+                                </>
+                              ) : (
+                                <>
+                                  <RefreshCw className="w-4 h-4 mr-1" />
+                                  {t.regenerateBatch}
+                                </>
+                              )}
                             </Button>
                           )}
                         </div>
