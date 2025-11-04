@@ -71,6 +71,7 @@ const translations = {
     completeInfo:
       "Lengkapi informasi pembayaran untuk melanjutkan proses pembuatan video AI Anda",
     fromConsultant: "Video dari Konsultan AI",
+    manualVideo: "Video Manual",
     scene: "Scene",
     verifiedAccount: "Akun Terverifikasi",
     videoAI: "Video AI",
@@ -129,6 +130,7 @@ const translations = {
     completeInfo:
       "Complete payment information to continue your AI video creation process",
     fromConsultant: "Video from AI Consultant",
+    manualVideo: "Manual Video",
     scene: "Scene",
     verifiedAccount: "Verified Account",
     videoAI: "AI Video",
@@ -183,6 +185,7 @@ const translations = {
     choosePayment: "选择付款方式继续您的 AI 视频制作过程",
     completeInfo: "完成付款信息以继续您的 AI 视频制作过程",
     fromConsultant: "来自 AI 顾问的视频",
+    manualVideo: "手动视频",
     scene: "场景",
     verifiedAccount: "已验证账户",
     videoAI: "AI 视频",
@@ -236,6 +239,7 @@ const translations = {
     choosePayment: "اختر طريقة الدفع لمتابعة عملية إنشاء فيديو AI الخاص بك",
     completeInfo: "أكمل معلومات الدفع لمتابعة عملية إنشاء فيديو AI الخاص بك",
     fromConsultant: "فيديو من مستشار AI",
+    manualVideo: "فيديو يدوي",
     scene: "مشهد",
     verifiedAccount: "حساب موثق",
     videoAI: "فيديو AI",
@@ -305,6 +309,8 @@ export function PaymentPage() {
   const [error, setError] = useState<string | null>(null);
   const [isKonsultanMode, setIsKonsultanMode] = useState(false);
   const [konsultanData, setKonsultanData] = useState<any>(null);
+  const [isManualMode, setIsManualMode] = useState(false);
+  const [manualData, setManualData] = useState<any>(null);
   const [hasExistingApiKey, setHasExistingApiKey] = useState(false);
   const [existingApiKey, setExistingApiKey] = useState<string | null>(null);
   const [isOptimizingPrompt, setIsOptimizingPrompt] = useState(false);
@@ -319,7 +325,9 @@ export function PaymentPage() {
   const [totalSceneCount, setTotalSceneCount] = useState<number>(0);
   const [isWaitingForBatch, setIsWaitingForBatch] = useState(false);
   const [generatingVideo, setGeneratingVideo] = useState(false);
-  const [regeneratingBatchId, setRegeneratingBatchId] = useState<number | null>(null);
+  const [regeneratingBatchId, setRegeneratingBatchId] = useState<number | null>(
+    null
+  );
 
   // Language state
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
@@ -398,16 +406,29 @@ export function PaymentPage() {
         console.error("Error parsing konsultan data:", err);
       }
     } else {
-      // Load regular video setup data
-      videoSetupStorage.debug();
-      const existingData = videoSetupStorage.load();
-      console.log("Loading existing data from localStorage:", existingData);
-      if (existingData) {
-        if (existingData.email) {
-          setEmail(existingData.email);
+      // Check if there's manual video data
+      const manualDataStr = localStorage.getItem("manual-video-data");
+      if (manualDataStr) {
+        try {
+          const parsedData = JSON.parse(manualDataStr);
+          console.log("Loading manual video data:", parsedData);
+          setIsManualMode(true);
+          setManualData(parsedData);
+        } catch (err) {
+          console.error("Error parsing manual video data:", err);
         }
-        if (existingData.no_wa) {
-          setPhoneNumber(existingData.no_wa);
+      } else {
+        // Load regular video setup data
+        videoSetupStorage.debug();
+        const existingData = videoSetupStorage.load();
+        console.log("Loading existing data from localStorage:", existingData);
+        if (existingData) {
+          if (existingData.email) {
+            setEmail(existingData.email);
+          }
+          if (existingData.no_wa) {
+            setPhoneNumber(existingData.no_wa);
+          }
         }
       }
     }
@@ -418,7 +439,7 @@ export function PaymentPage() {
       try {
         const modalState = JSON.parse(savedModalState);
         console.log("Restoring modal state:", modalState);
-        
+
         if (modalState.isOptimizingPrompt) {
           setIsOptimizingPrompt(true);
           if (modalState.sceneStatuses) {
@@ -430,7 +451,7 @@ export function PaymentPage() {
             waitForPromptOptimization(uuidChat, savedApiKey);
           }
         }
-        
+
         if (modalState.isBatchProcessing) {
           setIsBatchProcessing(true);
           if (modalState.batchData) {
@@ -445,7 +466,7 @@ export function PaymentPage() {
         console.error("Error restoring modal state:", err);
       }
     }
-    
+
     // Note: We'll call handlePersonalInfoChange in a separate useEffect
   }, []);
 
@@ -495,7 +516,13 @@ export function PaymentPage() {
       // Clear modal state when both are false
       localStorage.removeItem("payment-modal-state");
     }
-  }, [isOptimizingPrompt, isBatchProcessing, sceneStatuses, batchData, totalSceneCount]);
+  }, [
+    isOptimizingPrompt,
+    isBatchProcessing,
+    sceneStatuses,
+    batchData,
+    totalSceneCount,
+  ]);
 
   // Real-time batch status updates using Pusher
   useEffect(() => {
@@ -511,8 +538,8 @@ export function PaymentPage() {
     }
 
     // Initialize Pusher
-    const pusher = new Pusher('e5807c7a5b7e40f5c02c', {
-      cluster: 'ap1',
+    const pusher = new Pusher("e5807c7a5b7e40f5c02c", {
+      cluster: "ap1",
     });
 
     // Subscribe to batch channel
@@ -521,7 +548,7 @@ export function PaymentPage() {
     const channel = pusher.subscribe(channelName);
 
     // Listen to ChatBatchStatusUpdated event
-    channel.bind('ChatBatchStatusUpdated', (data: any) => {
+    channel.bind("ChatBatchStatusUpdated", (data: any) => {
       console.log("Received batch update from Pusher:", data);
 
       // Update batch data state
@@ -541,17 +568,19 @@ export function PaymentPage() {
       // If status is success and all batches are done, we can stop
       if (data.status === "success") {
         console.log(`Batch ${data.batch_number} completed successfully`);
-        
+
         // Check if all batches are successful
         setBatchData((currentBatches) => {
-          const allSuccess = currentBatches.every((batch) => 
-            batch.id === data.id ? data.status === "success" : batch.status === "success"
+          const allSuccess = currentBatches.every((batch) =>
+            batch.id === data.id
+              ? data.status === "success"
+              : batch.status === "success"
           );
-          
+
           if (allSuccess) {
             console.log("All batches completed! Ready to generate video.");
           }
-          
+
           return currentBatches;
         });
       }
@@ -896,7 +925,7 @@ export function PaymentPage() {
   const handleRegenerateBatch = async (batchId: number) => {
     try {
       setRegeneratingBatchId(batchId);
-      
+
       const xApiKey = localStorage.getItem("x-api-key");
       if (!xApiKey) {
         throw new Error("API key tidak ditemukan. Silakan login kembali.");
@@ -928,8 +957,9 @@ export function PaymentPage() {
       );
 
       // Pusher will handle the real-time status updates from here
-      console.log("Batch regeneration requested, waiting for Pusher updates...");
-      
+      console.log(
+        "Batch regeneration requested, waiting for Pusher updates..."
+      );
     } catch (err) {
       console.error("Error regenerating batch:", err);
       alert(err instanceof Error ? err.message : "Gagal meregenerasi batch");
@@ -974,7 +1004,7 @@ export function PaymentPage() {
       console.log("Redirecting to generate page...");
       setIsBatchProcessing(false);
       setGeneratingVideo(false);
-      
+
       // Clear modal state from localStorage before redirect
       localStorage.removeItem("payment-modal-state");
 
@@ -1030,8 +1060,70 @@ export function PaymentPage() {
           ? pricePerVideo * konsultanData.list.length
           : pricePerVideo;
 
-      // Check if this is konsultan mode
-      if (isKonsultanMode && konsultanData) {
+      // Check if this is manual mode
+      if (isManualMode && manualData) {
+        // Use store API for manual video with coins
+        const payload = {
+          prompt: manualData.prompt,
+          karakter_image: manualData.karakter_image || "",
+          aspek_rasio: manualData.aspek_rasio,
+          gaya_video: manualData.gaya_video,
+          metode_pengiriman: "kuota" as const,
+          metode: null,
+          jumlah: null,
+          email: email,
+          no_wa: phoneNumber || null,
+          is_share: manualData.is_share || "y",
+          affiliate_by: manualData.affiliate_by || "",
+        };
+
+        console.log(
+          "Sending manual video payload with coins to store:",
+          payload
+        );
+
+        const result = await videoStoreApi.storeVideoData(payload);
+
+        if (result.status) {
+          console.log(
+            "Manual video data stored successfully with coins:",
+            result.message
+          );
+
+          // Save x-api-key from response to localStorage
+          if (result.data && result.data["x-api-key"]) {
+            localStorage.setItem("x-api-key", result.data["x-api-key"]);
+            console.log(
+              "Saved x-api-key from store:",
+              result.data["x-api-key"]
+            );
+          }
+
+          // Redirect based on is_payment
+          if (result.data && result.data.is_payment === false) {
+            // No payment required, save UUID and redirect to generate page
+            if (result.data.uuid_konsultan) {
+              localStorage.setItem("generate-uuid", result.data.uuid_konsultan);
+              // Don't clear manual-video-data yet - GenerateVideoPage needs it for mode detection
+              window.location.href = `/generate/${result.data.uuid_konsultan}`;
+            } else {
+              localStorage.removeItem("manual-video-data");
+              alert("Video Anda sedang diproses!");
+              window.location.href = "/riwayat-video";
+            }
+          } else if (result.data && result.data.invoice) {
+            // Payment required, redirect to transaction page
+            // Don't clear manual-video-data yet - will be cleared after payment
+            window.location.href = `/transaksi/${result.data.invoice}`;
+          } else {
+            localStorage.removeItem("manual-video-data");
+            alert("Video berhasil dibuat dengan koin!");
+            window.location.href = "/riwayat-video";
+          }
+        } else {
+          throw new Error(result.message || "Gagal menyimpan data video");
+        }
+      } else if (isKonsultanMode && konsultanData) {
         // Use store-multiple API for konsultan with coins
         const payload = {
           uuid_chat: konsultanData.uuid_chat || null,
@@ -1123,8 +1215,71 @@ export function PaymentPage() {
       setIsProcessing(true);
       setError(null);
 
-      // Check if this is konsultan mode
-      if (isKonsultanMode && konsultanData) {
+      // Check if this is manual mode
+      if (isManualMode && manualData) {
+        // Use store API for manual video with payment
+        let metode = null;
+        if (selectedPaymentMethod === "gopay") {
+          metode = "gopay";
+        } else if (selectedPaymentMethod === "qris") {
+          metode = "other_qris";
+        } else if (selectedPaymentMethod === "credit-card") {
+          metode = "kreem";
+        }
+
+        const payload = {
+          prompt: manualData.prompt,
+          karakter_image: manualData.karakter_image || "",
+          aspek_rasio: manualData.aspek_rasio,
+          gaya_video: manualData.gaya_video,
+          metode_pengiriman: "pembayaran" as const,
+          metode: metode,
+          jumlah: 10000, // Fixed price for manual video
+          email: email,
+          no_wa: phoneNumber || null,
+          is_share: manualData.is_share || "y",
+          affiliate_by: manualData.affiliate_by || "",
+        };
+
+        console.log("Sending manual video payload to store:", payload);
+
+        const result = await videoStoreApi.storeVideoData(payload);
+
+        if (result.status) {
+          console.log("Manual video data stored successfully:", result.message);
+
+          // Save x-api-key from response to localStorage
+          if (result.data && result.data["x-api-key"]) {
+            localStorage.setItem("x-api-key", result.data["x-api-key"]);
+            console.log(
+              "Saved x-api-key from store:",
+              result.data["x-api-key"]
+            );
+          }
+
+          // Redirect to transaction detail page
+          if (result.data && result.data.invoice) {
+            // Don't clear manual-video-data yet - will be cleared after payment
+            window.location.href = `/transaksi/${result.data.invoice}`;
+          } else if (result.data && result.data.is_payment === false) {
+            // No payment required, save UUID and redirect to generate page
+            if (result.data.uuid_konsultan) {
+              localStorage.setItem("generate-uuid", result.data.uuid_konsultan);
+              // Don't clear manual-video-data yet - GenerateVideoPage needs it for mode detection
+              window.location.href = `/generate/${result.data.uuid_konsultan}`;
+            } else {
+              localStorage.removeItem("manual-video-data");
+              window.location.href = "/riwayat-video";
+            }
+          } else {
+            localStorage.removeItem("manual-video-data");
+            alert("Pembayaran berhasil! Video Anda sedang diproses.");
+            window.location.href = "/riwayat-video";
+          }
+        } else {
+          throw new Error(result.message || "Gagal menyimpan data video");
+        }
+      } else if (isKonsultanMode && konsultanData) {
         // Use store-multiple API for konsultan
         let metode = null;
         if (selectedPaymentMethod === "gopay") {
@@ -1489,7 +1644,9 @@ export function PaymentPage() {
                               {regeneratingBatchId === batch.id ? (
                                 <>
                                   <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                                  {selectedLanguage === "ID" ? "Antri..." : "Queuing..."}
+                                  {selectedLanguage === "ID"
+                                    ? "Antri..."
+                                    : "Queuing..."}
                                 </>
                               ) : (
                                 <>
@@ -1811,6 +1968,15 @@ export function PaymentPage() {
                   <span className="text-base font-semibold text-purple-200">
                     {t.fromConsultant} ({konsultanData?.list?.length || 0}{" "}
                     {t.scene})
+                  </span>
+                </div>
+              )}
+
+              {isManualMode && (
+                <div className="mt-6 inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-2xl backdrop-blur-sm">
+                  <Sparkles className="w-5 h-5 text-purple-400 mr-3" />
+                  <span className="text-base font-semibold text-purple-200">
+                    {t.manualVideo} (1 Video)
                   </span>
                 </div>
               )}

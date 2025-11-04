@@ -156,9 +156,10 @@ export const uploadApi = {
 // Video AI Store API
 export interface VideoStoreData {
   prompt: string;
-  karakter_image: string;
-  background_image: string;
+  karakter_image?: string;
+  background_image?: string;
   aspek_rasio: string;
+  gaya_video?: string;
   seeds?: string | null;
   model_ai?: string;
   metode_pengiriman?: string;
@@ -218,6 +219,7 @@ export const videoStoreApi = {
       is_payment: boolean;
       invoice: string;
       "x-api-key": string;
+      uuid_konsultan?: string;
     };
   }> {
     try {

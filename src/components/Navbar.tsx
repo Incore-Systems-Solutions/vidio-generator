@@ -15,6 +15,7 @@ import {
   X,
   Globe,
   ChevronDown,
+  Film,
 } from "lucide-react";
 
 // Translations for navbar
@@ -24,6 +25,7 @@ const translations = {
     tagline: "Pembuatan Video AI",
     videoGallery: "Lihat Video",
     consultant: "Buat Video Sekarang",
+    manualVideo: "Buat Video Manual",
     videoHistory: "video saya",
     language: "Bahasa",
   },
@@ -32,6 +34,7 @@ const translations = {
     tagline: "",
     videoGallery: "Explore Videos",
     consultant: "Create Video Now",
+    manualVideo: "Create Manual Video",
     videoHistory: "My Videos",
     language: "Language",
   },
@@ -40,6 +43,7 @@ const translations = {
     tagline: "AI 视频生成",
     videoGallery: "浏览视频",
     consultant: "立即制作视频",
+    manualVideo: "手动创建视频",
     videoHistory: "我的视频",
     language: "语言",
   },
@@ -48,6 +52,7 @@ const translations = {
     tagline: "إنشاء فيديو بالذكاء الاصطناعي",
     videoGallery: "معرض الفيديو الأني",
     consultant: "إنشاء فيديو الآن",
+    manualVideo: "إنشاء فيديو يدوي",
     videoHistory: "فيديوهاتي",
     language: "اللغة",
   },
@@ -176,6 +181,20 @@ export function Navbar() {
                 </Button>
               </div>
 
+              {/* Manual Video Button */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="group relative overflow-hidden bg-gradient-to-r from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 border border-orange-500/20 hover:border-orange-500/40 text-orange-300 hover:text-orange-200 transition-all duration-300 px-4"
+                onClick={() => (window.location.href = "/create-video")}
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <Film className="w-4 h-4 mr-2 relative z-10" />
+                <span className="relative z-10 text-sm font-medium">
+                  {t.manualVideo}
+                </span>
+              </Button>
+
               {/* Riwayat Video Button */}
               <Button
                 variant="ghost"
@@ -294,6 +313,20 @@ export function Navbar() {
                 <span className="text-sm">{t.consultant}</span>
               </Button>
             </div>
+
+            {/* Manual Video - Mobile */}
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start bg-gradient-to-r from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 border border-orange-500/20 text-orange-300 hover:text-orange-200"
+              onClick={() => {
+                window.location.href = "/create-video";
+                setMobileMenuOpen(false);
+              }}
+            >
+              <Film className="w-4 h-4 mr-3" />
+              <span className="text-sm font-medium">{t.manualVideo}</span>
+            </Button>
 
             {/* Riwayat Video - Mobile */}
             <Button

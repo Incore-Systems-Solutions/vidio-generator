@@ -26,6 +26,8 @@ const translations = {
     backToHome: "Kembali ke Beranda",
     aiVideoGeneration: "Video Menakjubkan untuk Anda",
     consultant: "Mari Membuat Video AI",
+    manualVideoTitle: "Video Anda Sedang Dibuat",
+    manualVideoDesc: "Video AI Anda sedang diproses dengan teknologi canggih",
     processing: "Video Anda sedang diproses dengan teknologi AI canggih",
     totalScenes: "Scene Total",
     completedScenes: "Scene Selesai",
@@ -77,6 +79,9 @@ const translations = {
     backToHome: "Back to Home",
     aiVideoGeneration: "Amazing Videos for You",
     consultant: "Let's Create AI Video",
+    manualVideoTitle: "Your Video is Being Created",
+    manualVideoDesc:
+      "Your AI video is being processed with advanced technology",
     processing: "Your video is being processed with advanced AI technology",
     totalScenes: "Total Scenes",
     completedScenes: "Completed Scenes",
@@ -127,6 +132,8 @@ const translations = {
     backToHome: "返回主页",
     aiVideoGeneration: "精彩影片推薦",
     consultant: "讓我們一起創作人工智慧視頻",
+    manualVideoTitle: "您的影片正在製作中",
+    manualVideoDesc: "您的人工智慧影片正在使用先進技術處理",
     processing: "您的视频正在使用先进的 AI 技术进行处理",
     totalScenes: "总场景",
     completedScenes: "已完成场景",
@@ -173,6 +180,8 @@ const translations = {
     backToHome: "العودة إلى الصفحة الرئيسية",
     aiVideoGeneration: "فيديوهات مذهلة لك",
     consultant: "دعونا ننشئ فيديو الذكاء الاصطناعي",
+    manualVideoTitle: "يتم إنشاء الفيديو الخاص بك",
+    manualVideoDesc: "يتم معالجة فيديو الذكاء الاصطناعي الخاص بك بتقنية متقدمة",
     processing: "يتم معالجة الفيديو الخاص بك باستخدام تقنية AI المتقدمة",
     totalScenes: "إجمالي المشاهد",
     completedScenes: "المشاهد المكتملة",
@@ -286,6 +295,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     null
   );
 
+  // Manual video mode detection
+  const [isManualVideoMode, setIsManualVideoMode] = useState(false);
+
   // Language state
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
 
@@ -297,6 +309,13 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       translations[savedLanguage as keyof typeof translations]
     ) {
       setSelectedLanguage(savedLanguage);
+    }
+
+    // Check if data came from manual video (check localStorage for manual-video-data flag)
+    const manualVideoData = localStorage.getItem("manual-video-data");
+    if (manualVideoData) {
+      setIsManualVideoMode(true);
+      console.log("Manual video mode detected");
     }
 
     // Check localStorage periodically (for same-window changes)
@@ -339,8 +358,8 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     }
 
     // Initialize Pusher
-    const pusher = new Pusher('e5807c7a5b7e40f5c02c', {
-      cluster: 'ap1',
+    const pusher = new Pusher("e5807c7a5b7e40f5c02c", {
+      cluster: "ap1",
     });
 
     // Subscribe to merge-video channel
@@ -349,7 +368,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
     const channel = pusher.subscribe(channelName);
 
     // Listen to VideoStatusUpdated event
-    channel.bind('VideoStatusUpdated', (data: any) => {
+    channel.bind("VideoStatusUpdated", (data: any) => {
       console.log("Received video update from Pusher:", data);
 
       const { payload } = data;
@@ -357,7 +376,7 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       if (payload.type === "video_progress") {
         // Update individual scene progress
         console.log("Scene progress update:", payload);
-        
+
         setGenerateData((prevData) => {
           if (!prevData) return prevData;
 
@@ -366,7 +385,10 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
             if (scene.task_id === payload.task_id) {
               return {
                 ...scene,
-                status_video: payload.status_video === "success" ? "completed" : payload.status_video,
+                status_video:
+                  payload.status_video === "success"
+                    ? "completed"
+                    : payload.status_video,
                 url_video: payload.url_video,
                 msg_err: payload.msg_err,
               };
@@ -400,11 +422,10 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
             },
           };
         });
-
       } else if (payload.type === "merge_completed") {
         // Final video is ready
         console.log("Merge completed:", payload);
-        
+
         if (payload.is_done && payload.final_url_merge_video) {
           setGenerateData((prevData) => {
             if (!prevData) return prevData;
@@ -421,6 +442,9 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
 
           // Clear localStorage except x-api-key and konsultan-email
           clearLocalStorageExceptKeys(["x-api-key", "konsultan-email"]);
+
+          // Clear manual video data flag
+          localStorage.removeItem("manual-video-data");
 
           // Disconnect Pusher since we're done
           console.log("Merge completed, disconnecting Pusher");
@@ -561,6 +585,8 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
       // If final video is ready, clear localStorage except x-api-key and konsultan-email
       if (transformedData.final_url_merge_video) {
         clearLocalStorageExceptKeys(["x-api-key", "konsultan-email"]);
+        // Clear manual video data flag
+        localStorage.removeItem("manual-video-data");
       }
     } catch (err) {
       console.error("Error fetching generate status:", err);
@@ -598,7 +624,12 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
 
   const handleCreateNewVideo = () => {
     clearLocalStorageExceptKeys(["x-api-key", "konsultan-email"]);
-    window.location.href = "/konsultan-video";
+    // Redirect based on mode
+    if (isManualVideoMode) {
+      window.location.href = "/create-video";
+    } else {
+      window.location.href = "/konsultan-video";
+    }
   };
 
   const handleViewHistory = () => {
@@ -836,141 +867,150 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
 
             <h1 className="text-5xl md:text-6xl font-bold mb-4 tracking-tight">
               <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                {t.consultant}
+                {isManualVideoMode ? t.manualVideoTitle : t.consultant}
               </span>
             </h1>
 
-            <p className="text-gray-400 text-lg mb-4">{t.processing}</p>
+            <p className="text-gray-400 text-lg mb-4">
+              {isManualVideoMode ? t.manualVideoDesc : t.processing}
+            </p>
 
-            <div className="flex items-center justify-center space-x-4">
-              <Badge className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-purple-200 px-4 py-2">
-                <Film className="w-4 h-4 mr-2" />
-                {generateData.total_scenes} {t.totalScenes}
-              </Badge>
-              <Badge className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 text-green-200 px-4 py-2">
-                <CheckCircle className="w-4 h-4 mr-2" />
-                {generateData.completed_scenes} {t.completedScenes}
-              </Badge>
-            </div>
+            {!isManualVideoMode && (
+              <div className="flex items-center justify-center space-x-4">
+                <Badge className="bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 text-purple-200 px-4 py-2">
+                  <Film className="w-4 h-4 mr-2" />
+                  {generateData.total_scenes} {t.totalScenes}
+                </Badge>
+                <Badge className="bg-gradient-to-r from-green-500/20 to-emerald-500/20 border border-green-500/30 text-green-200 px-4 py-2">
+                  <CheckCircle className="w-4 h-4 mr-2" />
+                  {generateData.completed_scenes} {t.completedScenes}
+                </Badge>
+              </div>
+            )}
           </div>
         </div>
       </div>
 
-      {/* Overall Progress Bar */}
-      <div className="mb-12">
-        <div className="relative">
-          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+      {/* Overall Progress Bar - Hide in manual mode */}
+      {!isManualVideoMode && (
+        <div className="mb-12">
+          <div className="relative">
+            <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
-          <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center space-x-3">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
-                    <Zap className="w-6 h-6 text-white" />
+            <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
+                    <div className="relative w-12 h-12 bg-gradient-to-br from-cyan-500 to-blue-500 rounded-lg flex items-center justify-center">
+                      <Zap className="w-6 h-6 text-white" />
+                    </div>
+                  </div>
+                  <div>
+                    <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
+                      {t.overallProgress}
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      {generateData.completed_scenes} {t.from}{" "}
+                      {generateData.total_scenes} {t.scenesCompleted}
+                    </p>
                   </div>
                 </div>
-                <div>
-                  <h3 className="text-xl font-bold bg-gradient-to-r from-cyan-400 to-blue-400 bg-clip-text text-transparent">
-                    {t.overallProgress}
-                  </h3>
-                  <p className="text-sm text-gray-400">
-                    {generateData.completed_scenes} {t.from}{" "}
-                    {generateData.total_scenes} {t.scenesCompleted}
-                  </p>
+
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="text-blue-300 hover:text-blue-200 hover:bg-blue-500/10 border border-blue-500/20"
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 mr-2 ${
+                      refreshing ? "animate-spin" : ""
+                    }`}
+                  />
+                  {t.refresh}
+                </Button>
+              </div>
+
+              <div className="relative h-6 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                <div
+                  className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-1000 ease-out relative overflow-hidden"
+                  style={{ width: `${overallProgress}%` }}
+                >
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shimmer"></div>
                 </div>
               </div>
 
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={refreshing}
-                className="text-blue-300 hover:text-blue-200 hover:bg-blue-500/10 border border-blue-500/20"
-              >
-                <RefreshCw
-                  className={`w-4 h-4 mr-2 ${refreshing ? "animate-spin" : ""}`}
-                />
-                {t.refresh}
-              </Button>
-            </div>
-
-            <div className="relative h-6 bg-slate-900 rounded-full overflow-hidden border border-white/5">
-              <div
-                className="h-full bg-gradient-to-r from-purple-500 via-blue-500 to-cyan-500 transition-all duration-1000 ease-out relative overflow-hidden"
-                style={{ width: `${overallProgress}%` }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 animate-shimmer"></div>
+              <div className="flex justify-between mt-2">
+                <span className="text-sm text-gray-400">{t.progress}</span>
+                <span className="text-sm font-bold text-cyan-300">
+                  {overallProgress}%
+                </span>
               </div>
-            </div>
-
-            <div className="flex justify-between mt-2">
-              <span className="text-sm text-gray-400">{t.progress}</span>
-              <span className="text-sm font-bold text-cyan-300">
-                {overallProgress}%
-              </span>
             </div>
           </div>
         </div>
-      </div>
+      )}
 
-      {/* Scene List */}
-      <div className="mb-12">
-        <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
-          <Film className="w-6 h-6 mr-3 text-purple-400" />
-          {t.sceneList}
-        </h2>
+      {/* Scene List - Hide in manual mode */}
+      {!isManualVideoMode && (
+        <div className="mb-12">
+          <h2 className="text-2xl font-bold text-white mb-6 flex items-center">
+            <Film className="w-6 h-6 mr-3 text-purple-400" />
+            {t.sceneList}
+          </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {generateData.estimated_scene.map((scene) => (
-            <div key={scene.scene} className="group relative">
-              {/* Outer Glow on Hover */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300"></div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {generateData.estimated_scene.map((scene) => (
+              <div key={scene.scene} className="group relative">
+                {/* Outer Glow on Hover */}
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-lg transition-opacity duration-300"></div>
 
-              <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl overflow-hidden hover:border-purple-500/30 transition-all duration-300">
-                {/* Video Preview or Placeholder */}
-                <div className="relative aspect-video bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden">
-                  {scene.url_video ? (
-                    <video
-                      className="w-full h-full object-cover"
-                      src={scene.url_video}
-                      controls
-                      preload="metadata"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <div className="text-center">
-                        {scene.status_video === "processing" ? (
-                          <>
-                            <Loader2 className="w-12 h-12 text-blue-400 animate-spin mx-auto mb-2" />
-                            <p className="text-sm text-blue-300">
-                              {t.processing2}
-                            </p>
-                          </>
-                        ) : scene.status_video === "pending" ? (
-                          <>
-                            <Clock className="w-12 h-12 text-yellow-400 mx-auto mb-2" />
-                            <p className="text-sm text-yellow-300">
-                              {t.waiting}
-                            </p>
-                          </>
-                        ) : (
-                          <>
-                            <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-2" />
-                            <p className="text-sm text-red-300">{t.failed}</p>
-                            {scene.msg_err && (
-                              <p className="text-xs text-red-200">
-                                {scene.msg_err}
+                <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-xl overflow-hidden hover:border-purple-500/30 transition-all duration-300">
+                  {/* Video Preview or Placeholder */}
+                  <div className="relative aspect-video bg-gradient-to-br from-slate-800 to-slate-900 overflow-hidden">
+                    {scene.url_video ? (
+                      <video
+                        className="w-full h-full object-cover"
+                        src={scene.url_video}
+                        controls
+                        preload="metadata"
+                      />
+                    ) : (
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <div className="text-center">
+                          {scene.status_video === "processing" ? (
+                            <>
+                              <Loader2 className="w-12 h-12 text-blue-400 animate-spin mx-auto mb-2" />
+                              <p className="text-sm text-blue-300">
+                                {t.processing2}
                               </p>
-                            )}
-                          </>
-                        )}
+                            </>
+                          ) : scene.status_video === "pending" ? (
+                            <>
+                              <Clock className="w-12 h-12 text-yellow-400 mx-auto mb-2" />
+                              <p className="text-sm text-yellow-300">
+                                {t.waiting}
+                              </p>
+                            </>
+                          ) : (
+                            <>
+                              <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-2" />
+                              <p className="text-sm text-red-300">{t.failed}</p>
+                              {scene.msg_err && (
+                                <p className="text-xs text-red-200">
+                                  {scene.msg_err}
+                                </p>
+                              )}
+                            </>
+                          )}
+                        </div>
                       </div>
-                    </div>
-                  )}
+                    )}
 
-                  {/* Status Badge */}
-                  {/* <div className="absolute top-3 right-3">
+                    {/* Status Badge */}
+                    {/* <div className="absolute top-3 right-3">
                     <Badge
                       className={`${getStatusColor(
                         scene.status_video
@@ -983,110 +1023,114 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                     </Badge>
                   </div> */}
 
-                  {/* Checkbox for manual merge - Only show if video is available and there are failed scenes */}
-                  {scene.url_video && hasFailedScenes && (
-                    <div className="absolute top-3 right-3">
-                      <label className="relative flex items-center cursor-pointer group/checkbox">
-                        {/* Glowing background effect on hover/checked */}
-                        <div
-                          className={`absolute -inset-1 rounded-lg transition-opacity duration-300 ${
-                            selectedVideos.has(scene.scene)
-                              ? "bg-gradient-to-r from-purple-500 to-pink-500 blur-md opacity-60"
-                              : "bg-gradient-to-r from-purple-500 to-blue-500 blur-md opacity-0 group-hover/checkbox:opacity-40"
-                          }`}
-                        ></div>
-
-                        {/* Checkbox container with animation */}
-                        <div
-                          className={`relative flex items-center space-x-2 px-3 py-2 rounded-lg backdrop-blur-xl border transition-all duration-300 ${
-                            selectedVideos.has(scene.scene)
-                              ? "bg-gradient-to-r from-purple-600/90 to-pink-600/90 border-purple-400/50 shadow-lg shadow-purple-500/50 scale-105"
-                              : "bg-slate-900/90 border-white/20 group-hover/checkbox:border-purple-400/50 group-hover/checkbox:bg-slate-800/90"
-                          }`}
-                        >
-                          {/* Custom checkbox */}
-                          <div className="relative">
-                            <input
-                              type="checkbox"
-                              checked={selectedVideos.has(scene.scene)}
-                              onChange={() => handleVideoCheckbox(scene.scene)}
-                              className="sr-only peer"
-                            />
-                            <div
-                              className={`w-5 h-5 rounded border-2 transition-all duration-300 flex items-center justify-center ${
-                                selectedVideos.has(scene.scene)
-                                  ? "bg-white border-white scale-110"
-                                  : "bg-transparent border-purple-400 group-hover/checkbox:border-purple-300 group-hover/checkbox:scale-110"
-                              }`}
-                            >
-                              {selectedVideos.has(scene.scene) && (
-                                <Check className="w-4 h-4 text-purple-600 animate-in zoom-in duration-200" />
-                              )}
-                            </div>
-                          </div>
-
-                          {/* Label text */}
-                          <span
-                            className={`text-xs font-semibold transition-all duration-300 whitespace-nowrap ${
+                    {/* Checkbox for manual merge - Only show if video is available and there are failed scenes */}
+                    {scene.url_video && hasFailedScenes && (
+                      <div className="absolute top-3 right-3">
+                        <label className="relative flex items-center cursor-pointer group/checkbox">
+                          {/* Glowing background effect on hover/checked */}
+                          <div
+                            className={`absolute -inset-1 rounded-lg transition-opacity duration-300 ${
                               selectedVideos.has(scene.scene)
-                                ? "text-white"
-                                : "text-gray-300 group-hover/checkbox:text-white"
+                                ? "bg-gradient-to-r from-purple-500 to-pink-500 blur-md opacity-60"
+                                : "bg-gradient-to-r from-purple-500 to-blue-500 blur-md opacity-0 group-hover/checkbox:opacity-40"
+                            }`}
+                          ></div>
+
+                          {/* Checkbox container with animation */}
+                          <div
+                            className={`relative flex items-center space-x-2 px-3 py-2 rounded-lg backdrop-blur-xl border transition-all duration-300 ${
+                              selectedVideos.has(scene.scene)
+                                ? "bg-gradient-to-r from-purple-600/90 to-pink-600/90 border-purple-400/50 shadow-lg shadow-purple-500/50 scale-105"
+                                : "bg-slate-900/90 border-white/20 group-hover/checkbox:border-purple-400/50 group-hover/checkbox:bg-slate-800/90"
                             }`}
                           >
-                            {selectedVideos.has(scene.scene)
-                              ? selectedLanguage === "ID"
-                                ? "Terpilih"
-                                : "Selected"
-                              : selectedLanguage === "ID"
-                              ? "Pilih"
-                              : "Select"}
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                  )}
+                            {/* Custom checkbox */}
+                            <div className="relative">
+                              <input
+                                type="checkbox"
+                                checked={selectedVideos.has(scene.scene)}
+                                onChange={() =>
+                                  handleVideoCheckbox(scene.scene)
+                                }
+                                className="sr-only peer"
+                              />
+                              <div
+                                className={`w-5 h-5 rounded border-2 transition-all duration-300 flex items-center justify-center ${
+                                  selectedVideos.has(scene.scene)
+                                    ? "bg-white border-white scale-110"
+                                    : "bg-transparent border-purple-400 group-hover/checkbox:border-purple-300 group-hover/checkbox:scale-110"
+                                }`}
+                              >
+                                {selectedVideos.has(scene.scene) && (
+                                  <Check className="w-4 h-4 text-purple-600 animate-in zoom-in duration-200" />
+                                )}
+                              </div>
+                            </div>
 
-                  {/* Scene Number */}
-                  <div className="absolute top-3 left-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-full flex items-center justify-center backdrop-blur-sm border border-purple-500/50">
-                      <span className="text-sm font-bold text-white">
-                        #{scene.scene}
-                      </span>
+                            {/* Label text */}
+                            <span
+                              className={`text-xs font-semibold transition-all duration-300 whitespace-nowrap ${
+                                selectedVideos.has(scene.scene)
+                                  ? "text-white"
+                                  : "text-gray-300 group-hover/checkbox:text-white"
+                              }`}
+                            >
+                              {selectedVideos.has(scene.scene)
+                                ? selectedLanguage === "ID"
+                                  ? "Terpilih"
+                                  : "Selected"
+                                : selectedLanguage === "ID"
+                                ? "Pilih"
+                                : "Select"}
+                            </span>
+                          </div>
+                        </label>
+                      </div>
+                    )}
+
+                    {/* Scene Number */}
+                    <div className="absolute top-3 left-3">
+                      <div className="w-10 h-10 bg-gradient-to-br from-purple-500/30 to-blue-500/30 rounded-full flex items-center justify-center backdrop-blur-sm border border-purple-500/50">
+                        <span className="text-sm font-bold text-white">
+                          #{scene.scene}
+                        </span>
+                      </div>
                     </div>
                   </div>
-                </div>
 
-                {/* Card Content */}
-                <div className="p-4">
-                  <p className="text-sm text-gray-300 line-clamp-2 mb-3">
-                    {scene.prompt}
-                  </p>
+                  {/* Card Content */}
+                  <div className="p-4">
+                    <p className="text-sm text-gray-300 line-clamp-2 mb-3">
+                      {scene.prompt}
+                    </p>
 
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-500 font-mono">
-                      {scene.task_id}
-                    </span>
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-500 font-mono">
+                        {scene.task_id}
+                      </span>
 
-                    {scene.url_video && (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className="text-purple-300 hover:text-purple-200 hover:bg-purple-500/10"
-                        onClick={() => handleDownload(scene.url_video!)}
-                      >
-                        <Download className="w-4 h-4" />
-                      </Button>
-                    )}
+                      {scene.url_video && (
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="text-purple-300 hover:text-purple-200 hover:bg-purple-500/10"
+                          onClick={() => handleDownload(scene.url_video!)}
+                        >
+                          <Download className="w-4 h-4" />
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
-      </div>
+      )}
 
-      {/* Manual Merge Section - Only show if there are completed videos and failed scenes exist */}
-      {hasFailedScenes &&
+      {/* Manual Merge Section - Only show if there are completed videos and failed scenes exist, and NOT in manual mode */}
+      {!isManualVideoMode &&
+        hasFailedScenes &&
         generateData.estimated_scene.some((s) => s.url_video) && (
           <div className="mb-12">
             <div className="relative">
@@ -1233,44 +1277,78 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
           </div>
         )}
 
-      {/* Merge Status & Final Video - Only show if no scenes have failed */}
-      {!hasFailedScenes && (
+      {/* Merge Status & Final Video - Show always in manual mode, or when no scenes have failed in konsultan mode */}
+      {(isManualVideoMode || !hasFailedScenes) && (
         <div className="relative">
           <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 via-emerald-500 to-cyan-500 rounded-3xl opacity-20 blur-xl"></div>
 
           <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden p-8">
-            <div className="flex items-center space-x-3 mb-6">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
-                <div className="relative w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
-                  <VideoIcon className="w-6 h-6 text-white" />
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center space-x-3">
+                <div className="relative">
+                  <div className="absolute inset-0 bg-gradient-to-r from-green-500 to-emerald-500 rounded-lg blur-md opacity-40 animate-pulse"></div>
+                  <div className="relative w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center">
+                    <VideoIcon className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div>
+                  <h3 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                    {t.finalVideoMerge}
+                  </h3>
+                  <p className="text-sm text-gray-400">
+                    {isManualVideoMode
+                      ? selectedLanguage === "ID"
+                        ? "Video Anda sedang diproses"
+                        : selectedLanguage === "EN"
+                        ? "Your video is being processed"
+                        : selectedLanguage === "ZH"
+                        ? "您的影片正在處理中"
+                        : "يتم معالجة الفيديو الخاص بك"
+                      : t.mergingAllScenes}
+                  </p>
                 </div>
               </div>
-              <div>
-                <h3 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
-                  {t.finalVideoMerge}
-                </h3>
-                <p className="text-sm text-gray-400">{t.mergingAllScenes}</p>
-              </div>
+
+              {/* Add refresh button for manual mode */}
+              {isManualVideoMode && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={handleRefresh}
+                  disabled={refreshing}
+                  className="text-blue-300 hover:text-blue-200 hover:bg-blue-500/10 border border-blue-500/20"
+                >
+                  <RefreshCw
+                    className={`w-4 h-4 mr-2 ${
+                      refreshing ? "animate-spin" : ""
+                    }`}
+                  />
+                  {t.refresh}
+                </Button>
+              )}
             </div>
 
-            {/* Merge Progress Bar */}
-            <div className="mb-6">
-              <div className="flex justify-between mb-2">
-                <span className="text-sm text-gray-400">Merge Progress</span>
-                <span className="text-sm font-bold text-green-300">
-                  {generateData.estimated_merge.progress}%
-                </span>
-              </div>
-              <div className="relative h-4 bg-slate-900 rounded-full overflow-hidden border border-white/5">
-                <div
-                  className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-1000 ease-out relative overflow-hidden"
-                  style={{ width: `${generateData.estimated_merge.progress}%` }}
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-shimmer"></div>
+            {/* Merge Progress Bar - Hide in manual mode (single video) */}
+            {!isManualVideoMode && (
+              <div className="mb-6">
+                <div className="flex justify-between mb-2">
+                  <span className="text-sm text-gray-400">Merge Progress</span>
+                  <span className="text-sm font-bold text-green-300">
+                    {generateData.estimated_merge.progress}%
+                  </span>
+                </div>
+                <div className="relative h-4 bg-slate-900 rounded-full overflow-hidden border border-white/5">
+                  <div
+                    className="h-full bg-gradient-to-r from-green-500 to-emerald-500 transition-all duration-1000 ease-out relative overflow-hidden"
+                    style={{
+                      width: `${generateData.estimated_merge.progress}%`,
+                    }}
+                  >
+                    <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 animate-shimmer"></div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
 
             {/* Final Video Player or Status */}
             {generateData.final_url_merge_video ? (
@@ -1324,7 +1402,15 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
                         {t.videoReady}
                       </p>
                       <p className="text-sm text-green-400/80">
-                        {t.allScenesMerged}
+                        {isManualVideoMode
+                          ? selectedLanguage === "ID"
+                            ? "Video AI Anda telah berhasil dibuat dengan kualitas HD."
+                            : selectedLanguage === "EN"
+                            ? "Your AI video has been successfully created in HD quality."
+                            : selectedLanguage === "ZH"
+                            ? "您的人工智慧影片已成功以高畫質建立。"
+                            : "تم إنشاء فيديو الذكاء الاصطناعي الخاص بك بنجاح بجودة عالية الدقة."
+                          : t.allScenesMerged}
                       </p>
                     </div>
                   </div>
@@ -1357,52 +1443,71 @@ export function GenerateVideoPage({ uuid }: GenerateVideoPageProps) {
               </div>
             ) : (
               <div className="space-y-4">
+                {/* Loading state - different message for manual mode */}
                 <div className="bg-gradient-to-r from-yellow-500/10 to-orange-500/10 border border-yellow-500/30 rounded-xl p-6 backdrop-blur-sm text-center">
                   <Loader2 className="w-8 h-8 text-yellow-400 animate-spin mx-auto mb-3" />
                   <p className="font-semibold text-yellow-300 mb-1">
-                    {generateData.estimated_merge.status === "merging"
+                    {isManualVideoMode
+                      ? selectedLanguage === "ID"
+                        ? "Sedang memproses video..."
+                        : selectedLanguage === "EN"
+                        ? "Processing video..."
+                        : selectedLanguage === "ZH"
+                        ? "正在處理影片..."
+                        : "جارٍ معالجة الفيديو..."
+                      : generateData.estimated_merge.status === "merging"
                       ? t.mergingScenes
                       : t.waitingAll}
                   </p>
                   <p className="text-sm text-yellow-400/80 mb-4">
-                    {t.takesTime}
+                    {isManualVideoMode
+                      ? selectedLanguage === "ID"
+                        ? "AI sedang membuat video Anda. Ini hanya memakan waktu beberapa saat..."
+                        : selectedLanguage === "EN"
+                        ? "AI is creating your video. This will only take a few moments..."
+                        : selectedLanguage === "ZH"
+                        ? "人工智慧正在創建您的影片。這只需要一點時間..."
+                        : "الذكاء الاصطناعي ينشئ الفيديو الخاص بك. هذا سيستغرق بضع لحظات فقط..."
+                      : t.takesTime}
                   </p>
                 </div>
 
-                {/* Info box - dapat melihat di riwayat */}
-                <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
-                  <div className="text-center mb-3">
-                    <p className="text-sm text-blue-300 mb-2">
-                      {t.dontWantWait}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                      <Button
-                        variant="outline"
-                        className="relative w-full bg-slate-800/50 border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 hover:border-purple-500/50"
-                        onClick={handleCreateNewVideo}
-                      >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        {t.createNewVideo}
-                      </Button>
+                {/* Info box - dapat melihat di riwayat (hide in manual mode for cleaner UI) */}
+                {!isManualVideoMode && (
+                  <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-4 backdrop-blur-sm">
+                    <div className="text-center mb-3">
+                      <p className="text-sm text-blue-300 mb-2">
+                        {t.dontWantWait}
+                      </p>
                     </div>
 
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
-                      <Button
-                        variant="outline"
-                        className="relative w-full bg-slate-800/50 border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10 hover:border-cyan-500/50"
-                        onClick={handleViewHistory}
-                      >
-                        <Film className="w-4 h-4 mr-2" />
-                        {t.viewHistory}
-                      </Button>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                      <div className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                        <Button
+                          variant="outline"
+                          className="relative w-full bg-slate-800/50 border-purple-500/30 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 hover:border-purple-500/50"
+                          onClick={handleCreateNewVideo}
+                        >
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          {t.createNewVideo}
+                        </Button>
+                      </div>
+
+                      <div className="relative group">
+                        <div className="absolute -inset-0.5 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-30 group-hover:opacity-50 transition-opacity"></div>
+                        <Button
+                          variant="outline"
+                          className="relative w-full bg-slate-800/50 border-cyan-500/30 text-cyan-300 hover:text-cyan-200 hover:bg-cyan-500/10 hover:border-cyan-500/50"
+                          onClick={handleViewHistory}
+                        >
+                          <Film className="w-4 h-4 mr-2" />
+                          {t.viewHistory}
+                        </Button>
+                      </div>
                     </div>
                   </div>
-                </div>
+                )}
               </div>
             )}
           </div>
