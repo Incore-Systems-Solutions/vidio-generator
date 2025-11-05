@@ -11,11 +11,11 @@ import {
   Download,
   CheckCircle2,
   History,
-  MessageCircle,
   X,
   Globe,
   ChevronDown,
   Film,
+  TvMinimal,
 } from "lucide-react";
 
 // Translations for navbar
@@ -190,7 +190,7 @@ export function Navbar() {
                   }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-400/20 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                  <MessageCircle className="w-5 h-5 mr-2 relative z-10" />
+                  <TvMinimal className="w-5 h-5 mr-2 relative z-10" />
                   <span className="relative z-10 text-sm">{t.consultant}</span>
                   <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
                 </Button>
@@ -339,7 +339,7 @@ export function Navbar() {
                 <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-20 blur-md animate-pulse"></div>
                 <div className="relative bg-gradient-to-r from-purple-500/30 to-pink-500/30 border-2 border-purple-400/50 rounded-lg overflow-hidden">
                   <div className="px-4 py-2 flex items-center border-b border-purple-400/30">
-                    <MessageCircle className="w-5 h-5 mr-2 text-white" />
+                    <TvMinimal className="w-5 h-5 mr-2 text-white" />
                     <span className="text-sm font-semibold text-white">
                       {t.consultant}
                     </span>
