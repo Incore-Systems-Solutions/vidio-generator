@@ -25,8 +25,9 @@ const translations = {
     tagline: "Pembuatan Video AI",
     videoGallery: "Lihat Video",
     consultant: "Buat Video Sekarang",
-    manualVideo: "Buat Video Manual",
-    videoHistory: "video saya",
+    autoAI: "Auto AI - Tanpa Prompt",
+    manual: "Manual - Dengan Prompt",
+    videoHistory: "Video Saya",
     language: "Bahasa",
   },
   EN: {
@@ -34,7 +35,8 @@ const translations = {
     tagline: "",
     videoGallery: "Explore Videos",
     consultant: "Create Video Now",
-    manualVideo: "Create Manual Video",
+    autoAI: "Auto AI - Without Prompt",
+    manual: "Manual - With Prompt",
     videoHistory: "My Videos",
     language: "Language",
   },
@@ -43,7 +45,8 @@ const translations = {
     tagline: "AI 视频生成",
     videoGallery: "浏览视频",
     consultant: "立即制作视频",
-    manualVideo: "手动创建视频",
+    autoAI: "自动AI - 无提示",
+    manual: "手动 - 带提示",
     videoHistory: "我的视频",
     language: "语言",
   },
@@ -52,7 +55,8 @@ const translations = {
     tagline: "إنشاء فيديو بالذكاء الاصطناعي",
     videoGallery: "معرض الفيديو الأني",
     consultant: "إنشاء فيديو الآن",
-    manualVideo: "إنشاء فيديو يدوي",
+    autoAI: "الذكاء الاصطناعي التلقائي - بدون موجه",
+    manual: "يدوي - مع موجه",
     videoHistory: "فيديوهاتي",
     language: "اللغة",
   },
@@ -61,6 +65,7 @@ const translations = {
 export function Navbar() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [languageDropdownOpen, setLanguageDropdownOpen] = useState(false);
+  const [consultantDropdownOpen, setConsultantDropdownOpen] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
 
   const languages = [
@@ -91,16 +96,22 @@ export function Navbar() {
       ) {
         setLanguageDropdownOpen(false);
       }
+      if (
+        consultantDropdownOpen &&
+        !target.closest(".consultant-dropdown-container")
+      ) {
+        setConsultantDropdownOpen(false);
+      }
     };
 
-    if (languageDropdownOpen) {
+    if (languageDropdownOpen || consultantDropdownOpen) {
       document.addEventListener("mousedown", handleClickOutside);
     }
 
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [languageDropdownOpen]);
+  }, [languageDropdownOpen, consultantDropdownOpen]);
 
   // Handler to change language and save to localStorage
   const handleLanguageChange = (langCode: string) => {
@@ -164,8 +175,8 @@ export function Navbar() {
                 </span>
               </Button>
 
-              {/* Video Making Consultant Button - PROMINENT/CORE */}
-              <div className="relative">
+              {/* Video Making Consultant Button with Dropdown - PROMINENT/CORE */}
+              <div className="relative consultant-dropdown-container">
                 {/* Outer Glow Effect for Prominence */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-xl opacity-30 blur-lg group-hover:opacity-50 animate-pulse"></div>
 
@@ -173,27 +184,52 @@ export function Navbar() {
                   variant="ghost"
                   size="sm"
                   className="group relative overflow-hidden bg-gradient-to-r from-purple-500/30 to-pink-500/30 hover:from-purple-500/40 hover:to-pink-500/40 border-2 border-purple-400/50 hover:border-purple-400/70 text-white hover:text-white transition-all duration-300 px-5 py-2.5 font-semibold shadow-lg shadow-purple-500/30"
-                  onClick={() => (window.location.href = "/konsultan-video")}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setConsultantDropdownOpen(!consultantDropdownOpen);
+                  }}
                 >
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-400/20 to-purple-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   <MessageCircle className="w-5 h-5 mr-2 relative z-10" />
                   <span className="relative z-10 text-sm">{t.consultant}</span>
+                  <ChevronDown className="w-4 h-4 ml-1 relative z-10" />
                 </Button>
-              </div>
 
-              {/* Manual Video Button */}
-              <Button
-                variant="ghost"
-                size="sm"
-                className="group relative overflow-hidden bg-gradient-to-r from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 border border-orange-500/20 hover:border-orange-500/40 text-orange-300 hover:text-orange-200 transition-all duration-300 px-4"
-                onClick={() => (window.location.href = "/create-video")}
-              >
-                <div className="absolute inset-0 bg-gradient-to-r from-orange-500/0 via-orange-500/10 to-orange-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                <Film className="w-4 h-4 mr-2 relative z-10" />
-                <span className="relative z-10 text-sm font-medium">
-                  {t.manualVideo}
-                </span>
-              </Button>
+                {/* Dropdown Menu */}
+                {consultantDropdownOpen && (
+                  <div
+                    className="absolute left-0 mt-2 w-64 bg-slate-900/95 backdrop-blur-xl border border-purple-500/20 rounded-lg shadow-xl overflow-hidden z-[110]"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <button
+                      type="button"
+                      className="w-full px-4 py-3 text-left text-sm transition-colors duration-200 hover:bg-purple-500/20 text-white border-b border-purple-500/10"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = "/konsultan-video";
+                      }}
+                    >
+                      <div className="font-medium">{t.autoAI}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">
+                        AI akan memandu Anda
+                      </div>
+                    </button>
+                    <button
+                      type="button"
+                      className="w-full px-4 py-3 text-left text-sm transition-colors duration-200 hover:bg-purple-500/20 text-white"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        window.location.href = "/create-video";
+                      }}
+                    >
+                      <div className="font-medium">{t.manual}</div>
+                      <div className="text-xs text-gray-400 mt-0.5">
+                        Buat dengan prompt Anda
+                      </div>
+                    </button>
+                  </div>
+                )}
+              </div>
 
               {/* Riwayat Video Button */}
               <Button
@@ -297,36 +333,46 @@ export function Navbar() {
               <span className="text-sm font-medium">{t.videoGallery}</span>
             </Button>
 
-            {/* AI Consultant - Mobile (PROMINENT) */}
-            <div className="relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-20 blur-md animate-pulse"></div>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="relative w-full justify-start bg-gradient-to-r from-purple-500/30 to-pink-500/30 hover:from-purple-500/40 hover:to-pink-500/40 border-2 border-purple-400/50 text-white hover:text-white font-semibold shadow-lg shadow-purple-500/20"
-                onClick={() => {
-                  window.location.href = "/konsultan-video";
-                  setMobileMenuOpen(false);
-                }}
-              >
-                <MessageCircle className="w-5 h-5 mr-3" />
-                <span className="text-sm">{t.consultant}</span>
-              </Button>
+            {/* Buat Video Sekarang Section - Mobile (PROMINENT) */}
+            <div className="space-y-1">
+              <div className="relative">
+                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-pink-500 rounded-xl opacity-20 blur-md animate-pulse"></div>
+                <div className="relative bg-gradient-to-r from-purple-500/30 to-pink-500/30 border-2 border-purple-400/50 rounded-lg overflow-hidden">
+                  <div className="px-4 py-2 flex items-center border-b border-purple-400/30">
+                    <MessageCircle className="w-5 h-5 mr-2 text-white" />
+                    <span className="text-sm font-semibold text-white">
+                      {t.consultant}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2.5 text-left text-sm transition-colors duration-200 hover:bg-purple-500/30 text-white border-b border-purple-400/10"
+                    onClick={() => {
+                      window.location.href = "/konsultan-video";
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <div className="font-medium">{t.autoAI}</div>
+                    <div className="text-xs text-gray-300 mt-0.5">
+                      AI akan memandu Anda
+                    </div>
+                  </button>
+                  <button
+                    type="button"
+                    className="w-full px-4 py-2.5 text-left text-sm transition-colors duration-200 hover:bg-purple-500/30 text-white"
+                    onClick={() => {
+                      window.location.href = "/create-video";
+                      setMobileMenuOpen(false);
+                    }}
+                  >
+                    <div className="font-medium">{t.manual}</div>
+                    <div className="text-xs text-gray-300 mt-0.5">
+                      Buat dengan prompt Anda
+                    </div>
+                  </button>
+                </div>
+              </div>
             </div>
-
-            {/* Manual Video - Mobile */}
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full justify-start bg-gradient-to-r from-orange-500/10 to-amber-500/10 hover:from-orange-500/20 hover:to-amber-500/20 border border-orange-500/20 text-orange-300 hover:text-orange-200"
-              onClick={() => {
-                window.location.href = "/create-video";
-                setMobileMenuOpen(false);
-              }}
-            >
-              <Film className="w-4 h-4 mr-3" />
-              <span className="text-sm font-medium">{t.manualVideo}</span>
-            </Button>
 
             {/* Riwayat Video - Mobile */}
             <Button
