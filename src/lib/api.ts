@@ -913,6 +913,42 @@ export const videoHistoryApi = {
     }
   },
 
+  async mergeVideos(
+    xApiKey: string,
+    videoUrls: string[]
+  ): Promise<ApiResponse<VideoHistoryItem>> {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/api/video-ai/merge-riwayat-video`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-api-key": xApiKey,
+          },
+          body: JSON.stringify({
+            url: videoUrls,
+          }),
+        }
+      );
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        const error: any = new Error(
+          result.message || "Failed to merge videos"
+        );
+        error.status = response.status;
+        throw error;
+      }
+
+      return result;
+    } catch (error) {
+      console.error("Error merging videos:", error);
+      throw error;
+    }
+  },
+
   async getCoinBalance(xApiKey: string): Promise<CoinResponse> {
     try {
       const response = await fetch(`${BASE_URL}/api/video-ai/check-koin`, {

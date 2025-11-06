@@ -18,6 +18,7 @@ import {
   Sparkles,
   Calendar,
   Film,
+  X,
 } from "lucide-react";
 import {
   videoHistoryApi,
@@ -70,6 +71,17 @@ const translations = {
     videoProcessing: "Video sedang diproses atau tidak tersedia",
     detailVideo: "Detail Video",
     close: "✕ Close",
+    selectVideos: "Pilih Video untuk Digabung",
+    mergeVideos: "Gabungkan Video",
+    merging: "Menggabungkan...",
+    cancelSelection: "Batal",
+    videosSelected: "video dipilih",
+    selectAtLeast2: "Pilih minimal 2 video untuk digabung",
+    mergeSuccess: "Video berhasil digabung!",
+    mergeFailed: "Gagal menggabungkan video",
+    mergedVideo: "Video Hasil Gabungan",
+    viewMergedVideo: "Lihat Video",
+    downloadMerged: "Download Video Gabungan",
   },
   EN: {
     back: "Back",
@@ -114,6 +126,17 @@ const translations = {
     videoProcessing: "Video is being processed or unavailable",
     detailVideo: "Video Detail",
     close: "✕ Close",
+    selectVideos: "Select Videos to Merge",
+    mergeVideos: "Merge Videos",
+    merging: "Merging...",
+    cancelSelection: "Cancel",
+    videosSelected: "videos selected",
+    selectAtLeast2: "Select at least 2 videos to merge",
+    mergeSuccess: "Videos merged successfully!",
+    mergeFailed: "Failed to merge videos",
+    mergedVideo: "Merged Video Result",
+    viewMergedVideo: "View Video",
+    downloadMerged: "Download Merged Video",
   },
   ZH: {
     back: "返回",
@@ -157,6 +180,17 @@ const translations = {
     videoProcessing: "视频正在处理或不可用",
     detailVideo: "视频详情",
     close: "✕ 关闭",
+    selectVideos: "选择要合并的视频",
+    mergeVideos: "合并视频",
+    merging: "合并中...",
+    cancelSelection: "取消",
+    videosSelected: "个视频已选择",
+    selectAtLeast2: "至少选择2个视频进行合并",
+    mergeSuccess: "视频合并成功！",
+    mergeFailed: "合并视频失败",
+    mergedVideo: "合并视频结果",
+    viewMergedVideo: "查看视频",
+    downloadMerged: "下载合并视频",
   },
   AR: {
     back: "رجوع",
@@ -200,6 +234,17 @@ const translations = {
     videoProcessing: "الفيديو قيد المعالجة أو غير متوفر",
     detailVideo: "تفاصيل الفيديو",
     close: "✕ إغلاق",
+    selectVideos: "حدد مقاطع الفيديو للدمج",
+    mergeVideos: "دمج مقاطع الفيديو",
+    merging: "جارٍ الدمج...",
+    cancelSelection: "إلغاء",
+    videosSelected: "مقاطع فيديو محددة",
+    selectAtLeast2: "حدد مقطعي فيديو على الأقل للدمج",
+    mergeSuccess: "تم دمج مقاطع الفيديو بنجاح!",
+    mergeFailed: "فشل دمج مقاطع الفيديو",
+    mergedVideo: "نتيجة دمج الفيديو",
+    viewMergedVideo: "عرض الفيديو",
+    downloadMerged: "تنزيل الفيديو المدمج",
   },
 };
 
@@ -238,6 +283,13 @@ export function VideoHistory() {
   const [selectedVideo, setSelectedVideo] = useState<VideoHistoryItem | null>(
     null
   );
+
+  // Merge states
+  const [isMergeMode, setIsMergeMode] = useState(false);
+  const [selectedVideoIds, setSelectedVideoIds] = useState<number[]>([]);
+  const [isMerging, setIsMerging] = useState(false);
+  const [mergedVideo, setMergedVideo] = useState<VideoHistoryItem | null>(null);
+  const [showMergeResult, setShowMergeResult] = useState(false);
 
   // Language state
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
@@ -387,6 +439,66 @@ export function VideoHistory() {
     setEmail("");
     setOtp("");
     setVideos([]);
+  };
+
+  const toggleMergeMode = () => {
+    setIsMergeMode(!isMergeMode);
+    setSelectedVideoIds([]);
+    setError(null);
+  };
+
+  const toggleVideoSelection = (videoId: number) => {
+    setSelectedVideoIds((prev) => {
+      if (prev.includes(videoId)) {
+        return prev.filter((id) => id !== videoId);
+      } else {
+        return [...prev, videoId];
+      }
+    });
+  };
+
+  const handleMergeVideos = async () => {
+    if (selectedVideoIds.length < 2) {
+      setError(t.selectAtLeast2);
+      return;
+    }
+
+    if (!xApiKey) return;
+
+    try {
+      setIsMerging(true);
+      setError(null);
+
+      // Get URLs from selected videos
+      const selectedVideosData = videos.filter((v) =>
+        selectedVideoIds.includes(v.id)
+      );
+      const videoUrls = selectedVideosData
+        .map((v) => v.final_url_merge_video)
+        .filter((url): url is string => url !== null);
+
+      if (videoUrls.length < 2) {
+        setError("Selected videos do not have valid URLs");
+        return;
+      }
+
+      // Call merge API
+      const result = await videoHistoryApi.mergeVideos(xApiKey, videoUrls);
+
+      // Show result in modal
+      setMergedVideo(result.data);
+      setShowMergeResult(true);
+      setIsMergeMode(false);
+      setSelectedVideoIds([]);
+
+      // Refresh video list to include the new merged video
+      await fetchVideos();
+    } catch (err) {
+      console.error("Error merging videos:", err);
+      setError(err instanceof Error ? err.message : t.mergeFailed);
+    } finally {
+      setIsMerging(false);
+    }
   };
 
   const formatDate = (dateString: string) => {
@@ -729,6 +841,54 @@ export function VideoHistory() {
             ) : (
               // Video Grid
               <>
+                {/* Merge Toolbar */}
+                <div className="mb-6 flex items-center justify-between bg-gradient-to-r from-slate-900/50 to-slate-950/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
+                  <div className="flex items-center space-x-4">
+                    {!isMergeMode ? (
+                      <Button
+                        onClick={toggleMergeMode}
+                        className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-purple-500/20"
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        {t.selectVideos}
+                      </Button>
+                    ) : (
+                      <>
+                        <div className="flex items-center space-x-2">
+                          <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
+                          <span className="text-purple-300 text-sm font-medium">
+                            {selectedVideoIds.length} {t.videosSelected}
+                          </span>
+                        </div>
+                        <Button
+                          onClick={handleMergeVideos}
+                          disabled={selectedVideoIds.length < 2 || isMerging}
+                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          {isMerging ? (
+                            <>
+                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                              {t.merging}
+                            </>
+                          ) : (
+                            <>
+                              <Film className="w-4 h-4 mr-2" />
+                              {t.mergeVideos}
+                            </>
+                          )}
+                        </Button>
+                        <Button
+                          onClick={toggleMergeMode}
+                          variant="ghost"
+                          className="text-gray-400 hover:text-white hover:bg-slate-800/50 border border-white/10"
+                        >
+                          {t.cancelSelection}
+                        </Button>
+                      </>
+                    )}
+                  </div>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
                   {videos.map((videoGroup) => {
                     // Get the merged video or first video from list
@@ -737,17 +897,57 @@ export function VideoHistory() {
                     const status = firstVideo?.status_video || "processing";
                     const prompt = firstVideo?.prompt || "No description";
 
+                    const isSelected = selectedVideoIds.includes(videoGroup.id);
+                    const canSelect = displayVideo !== null;
+
                     return (
                       <div
                         key={videoGroup.id}
-                        className="group cursor-pointer relative"
-                        onClick={() => setSelectedVideo(videoGroup)}
+                        className={`group cursor-pointer relative ${
+                          isMergeMode && isSelected
+                            ? "ring-2 ring-purple-500 ring-offset-2 ring-offset-slate-950"
+                            : ""
+                        }`}
+                        onClick={() => {
+                          if (isMergeMode && canSelect) {
+                            toggleVideoSelection(videoGroup.id);
+                          } else if (!isMergeMode) {
+                            setSelectedVideo(videoGroup);
+                          }
+                        }}
                       >
                         {/* Glow Effect */}
-                        <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 rounded-2xl opacity-0 group-hover:opacity-20 blur-lg transition-all duration-500"></div>
+                        <div
+                          className={`absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 rounded-2xl opacity-0 blur-lg transition-all duration-500 ${
+                            isSelected ? "opacity-30" : "group-hover:opacity-20"
+                          }`}
+                        ></div>
+
+                        {/* Selection Checkbox - Top Left */}
+                        {isMergeMode && canSelect && (
+                          <div className="absolute top-3 left-3 z-20">
+                            <div
+                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                                isSelected
+                                  ? "bg-purple-500 border-purple-500"
+                                  : "bg-slate-900/80 border-white/30 backdrop-blur-sm"
+                              }`}
+                            >
+                              {isSelected && (
+                                <CheckCircle className="w-4 h-4 text-white" />
+                              )}
+                            </div>
+                          </div>
+                        )}
 
                         {/* Card */}
-                        <div className="relative overflow-hidden rounded-2xl border border-slate-800/50 bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-sm aspect-video transition-all duration-300 group-hover:border-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/10">
+                        <div
+                          className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-sm aspect-video transition-all duration-300 ${
+                            isSelected
+                              ? "border-purple-500/50 shadow-2xl shadow-purple-500/20"
+                              : "border-slate-800/50 group-hover:border-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/10"
+                          }`}
+                        >
                           <div className="relative w-full h-full">
                             {displayVideo ? (
                               <video
@@ -819,6 +1019,18 @@ export function VideoHistory() {
         <VideoDetailModal
           video={selectedVideo}
           onClose={() => setSelectedVideo(null)}
+          t={t}
+        />
+      )}
+
+      {/* Merge Result Modal */}
+      {showMergeResult && mergedVideo && (
+        <MergeResultModal
+          video={mergedVideo}
+          onClose={() => {
+            setShowMergeResult(false);
+            setMergedVideo(null);
+          }}
           t={t}
         />
       )}
@@ -1011,6 +1223,141 @@ function VideoDetailModal({ video, onClose, t }: VideoDetailModalProps) {
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Merge Result Modal Component
+interface MergeResultModalProps {
+  video: VideoHistoryItem;
+  onClose: () => void;
+  t: any;
+}
+
+function MergeResultModal({ video, onClose, t }: MergeResultModalProps) {
+  const displayVideo = video.final_url_merge_video;
+
+  return (
+    <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 sm:p-6 animate-fade-in">
+      {/* Backdrop */}
+      <div
+        className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl"
+        onClick={onClose}
+      />
+
+      {/* Modal Content */}
+      <div className="relative w-full max-w-4xl bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 border border-green-500/30 shadow-2xl shadow-green-500/20 rounded-3xl overflow-hidden animate-scale-in">
+        {/* Success Header */}
+        <div className="bg-gradient-to-r from-green-500/10 via-emerald-500/10 to-green-500/10 border-b border-green-500/20 p-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <div className="relative">
+                <div className="absolute inset-0 bg-green-500 rounded-full blur-xl opacity-40 animate-pulse"></div>
+                <div className="relative w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                  <CheckCircle className="w-6 h-6 text-white" />
+                </div>
+              </div>
+              <div>
+                <h2 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-emerald-400 bg-clip-text text-transparent">
+                  {t.mergeSuccess}
+                </h2>
+                <p className="text-gray-400 text-sm">{t.mergedVideo}</p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="text-gray-400 hover:text-white hover:bg-slate-800/50 border border-white/10 rounded-full p-2 transition-all duration-300"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+        </div>
+
+        {/* Video Player */}
+        <div className="p-6">
+          {displayVideo ? (
+            <div className="relative">
+              {/* Glow Effect */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-green-500/20 via-emerald-500/20 to-green-500/20 rounded-2xl blur-2xl" />
+
+              <video
+                controls
+                autoPlay
+                className="relative w-full rounded-xl border border-green-500/30 shadow-2xl shadow-green-500/20 bg-black"
+              >
+                <source src={displayVideo} type="video/mp4" />
+                Your browser does not support the video tag.
+              </video>
+            </div>
+          ) : (
+            <div className="aspect-video bg-gradient-to-br from-slate-900 to-slate-950 rounded-xl border border-white/10 flex items-center justify-center">
+              <div className="text-center">
+                <Loader2 className="w-12 h-12 mx-auto mb-4 text-green-500 animate-spin" />
+                <p className="text-gray-400">{t.videoProcessing}</p>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Actions */}
+        <div className="p-6 bg-gradient-to-r from-slate-950/50 to-slate-900/50 border-t border-white/10">
+          <div className="flex items-center justify-between space-x-4">
+            <div className="flex-1">
+              <p className="text-sm text-gray-400 mb-1">{t.createdOn}</p>
+              <p className="text-white font-medium">
+                {new Date(video.created_at).toLocaleString("id-ID")}
+              </p>
+            </div>
+            {displayVideo && (
+              <div className="flex items-center space-x-3">
+                <a
+                  href={displayVideo}
+                  download
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold rounded-xl transition-all duration-300 shadow-lg shadow-green-500/30 hover:scale-105"
+                >
+                  <Download className="w-5 h-5 mr-2" />
+                  {t.downloadMerged}
+                </a>
+                <button
+                  onClick={onClose}
+                  className="px-6 py-3 bg-slate-800/50 hover:bg-slate-700/50 border border-white/10 text-white font-medium rounded-xl transition-all duration-300"
+                >
+                  {t.close}
+                </button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* CSS for animations */}
+      <style>{`
+        @keyframes fade-in {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        .animate-fade-in {
+          animation: fade-in 0.3s ease-out;
+        }
+
+        @keyframes scale-in {
+          from {
+            opacity: 0;
+            transform: scale(0.95) translateY(10px);
+          }
+          to {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+          }
+        }
+        .animate-scale-in {
+          animation: scale-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+      `}</style>
     </div>
   );
 }
