@@ -151,6 +151,34 @@ export const uploadApi = {
       throw error;
     }
   },
+
+  async uploadMultipleImages(
+    imagesBase64: string[]
+  ): Promise<{ urls: string[]; file_names: string[] }> {
+    try {
+      const response = await fetch(`${BASE_URL}/api/v1/upload-multiple-image`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          image: imagesBase64,
+        }),
+      });
+
+      const result: ApiResponse<{ file_names: string[]; urls: string[] }> =
+        await response.json();
+
+      if (!result.status) {
+        throw new Error(result.message || "Upload failed");
+      }
+
+      return result.data;
+    } catch (error) {
+      console.error("Error uploading multiple images:", error);
+      throw error;
+    }
+  },
 };
 
 // Video AI Store API
@@ -546,6 +574,7 @@ export interface PublicVideoItem {
   user_video_id: number;
   user_id: string;
   uuid_flag: string;
+  aspect_ratio?: string; // "9:16" or "16:9"
   final_url_merge_video: string | null;
   list_merge_video: string | null;
   created_at: string;

@@ -55,8 +55,11 @@ const translations = {
       "Buat video AI secara manual dengan kontrol penuh atas setiap detail",
     uploadCharacter: "Upload Gambar yang Kamu Mau",
     uploadDescription: "Klik untuk upload atau drag & drop gambar di sini",
-    supportedFormats: "Format: JPG, PNG, WEBP (Max 5MB)",
+    supportedFormats:
+      "Format: JPG, PNG, WEBP (Max 5MB per gambar, Max 5 gambar)",
     removeImage: "Hapus Gambar",
+    maxImagesReached: "Maksimal 5 gambar",
+    imagesSelected: "gambar dipilih",
     promptTitle: "Detail Prompt Kamu",
     promptPlaceholder:
       'Contoh detail prompt: "Medium shot, seorang samurai berpakaian kimono hitam berjalan perlahan di tengah hutan bambu lebat, cahaya matahari pagi menyinari dedaunan menciptakan efek god rays, ekspresi wajah tenang dan fokus, angin sepoi-sepoi menggerakkan daun bambu, sinematik 8K, atmosfer damai dan mistis"',
@@ -96,10 +99,13 @@ const translations = {
     pageTitle: "Create Manual Video",
     pageDescription:
       "Create AI videos manually with full control over every detail",
-    uploadCharacter: "Upload Your Desired Image",
-    uploadDescription: "Click to upload or drag & drop image here",
-    supportedFormats: "Formats: JPG, PNG, WEBP (Max 5MB)",
+    uploadCharacter: "Upload Your Desired Images",
+    uploadDescription: "Click to upload or drag & drop images here",
+    supportedFormats:
+      "Formats: JPG, PNG, WEBP (Max 5MB per image, Max 5 images)",
     removeImage: "Remove Image",
+    maxImagesReached: "Maximum 5 images",
+    imagesSelected: "images selected",
     promptTitle: "Your Detailed Prompt",
     promptPlaceholder:
       'Detailed prompt example: "Medium shot, a samurai wearing black kimono walking slowly through dense bamboo forest, morning sunlight illuminating leaves creating god rays effect, calm and focused facial expression, gentle breeze moving bamboo leaves, cinematic 8K, peaceful and mystical atmosphere"',
@@ -139,8 +145,10 @@ const translations = {
     pageDescription: "手动创建AI视频，完全控制每个细节",
     uploadCharacter: "上传您想要的图片",
     uploadDescription: "点击上传或拖放图片到这里",
-    supportedFormats: "格式：JPG, PNG, WEBP（最大5MB）",
+    supportedFormats: "格式：JPG, PNG, WEBP（每张最大5MB，最多5张）",
     removeImage: "删除图片",
+    maxImagesReached: "最多5张图片",
+    imagesSelected: "张图片已选择",
     promptTitle: "您的详细提示",
     promptPlaceholder:
       "详细提示示例：中景，一个穿着黑色和服的武士缓慢地走过茂密的竹林，清晨的阳光照亮树叶形成神光效果，平静而专注的面部表情，轻柔的微风吹动竹叶，电影8K，宁静而神秘的氛围",
@@ -180,10 +188,13 @@ const translations = {
     pageTitle: "إنشاء فيديو يدويًا",
     pageDescription:
       "أنشئ مقاطع فيديو بالذكاء الاصطناعي يدويًا مع التحكم الكامل في كل التفاصيل",
-    uploadCharacter: "تحميل الصورة المطلوبة",
-    uploadDescription: "انقر للتحميل أو اسحب وأفلت الصورة هنا",
-    supportedFormats: "التنسيقات: JPG, PNG, WEBP (الحد الأقصى 5 ميجابايت)",
+    uploadCharacter: "تحميل الصور المطلوبة",
+    uploadDescription: "انقر للتحميل أو اسحب وأفلت الصور هنا",
+    supportedFormats:
+      "التنسيقات: JPG, PNG, WEBP (الحد الأقصى 5 ميجابايت لكل صورة، 5 صور كحد أقصى)",
     removeImage: "إزالة الصورة",
+    maxImagesReached: "الحد الأقصى 5 صور",
+    imagesSelected: "صور محددة",
     promptTitle: "التفاصيل المطلوبة",
     promptPlaceholder:
       'مثال تفصيلي: "لقطة متوسطة، ساموراي يرتدي كيمونو أسود يسير ببطء عبر غابة خيزران كثيفة، ضوء الشمس الصباحي ينير الأوراق مما يخلق تأثير أشعة الإله، تعبير وجه هادئ ومركز، نسيم لطيف يحرك أوراق الخيزران، سينمائي 8K، جو هادئ وصوفي"',
@@ -215,14 +226,15 @@ export function ManualVideoPage() {
   const [authLoading, setAuthLoading] = useState(false);
 
   // Form states
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
-  const [uploadedImageUrl, setUploadedImageUrl] = useState<string>("");
+  const [uploadedImages, setUploadedImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
+  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
   const [selectedVisualStyle, setSelectedVisualStyle] = useState<string>("");
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<string>("");
   const [isProcessing, setIsProcessing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const MAX_IMAGES = 5;
 
   // Check for existing x-api-key on mount
   React.useEffect(() => {
@@ -330,37 +342,59 @@ export function ManualVideoPage() {
     }
   };
 
-  // Handle image upload
+  // Handle multiple image upload
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
+    const files = Array.from(e.target.files || []);
+    const t = translations[selectedLanguage as keyof typeof translations];
+
+    if (files.length === 0) return;
+
+    // Check if adding these files would exceed max limit
+    if (uploadedImages.length + files.length > MAX_IMAGES) {
+      setError(`${t.maxImagesReached} (${MAX_IMAGES})`);
+      return;
+    }
+
+    // Validate each file
+    const validFiles: File[] = [];
+    for (const file of files) {
       // Validate file type
       if (!file.type.startsWith("image/")) {
-        alert("Please upload an image file");
-        return;
+        setError(`${file.name}: Please upload an image file`);
+        continue;
       }
 
       // Validate file size (5MB)
       if (file.size > 5 * 1024 * 1024) {
-        alert("File size must be less than 5MB");
-        return;
+        setError(`${file.name}: File size must be less than 5MB`);
+        continue;
       }
 
-      setUploadedImage(file);
+      validFiles.push(file);
+    }
 
-      // Create preview
+    if (validFiles.length === 0) return;
+
+    // Add valid files to state
+    setUploadedImages((prev) => [...prev, ...validFiles]);
+
+    // Create previews for valid files
+    validFiles.forEach((file) => {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setImagePreview(reader.result as string);
+        setImagePreviews((prev) => [...prev, reader.result as string]);
       };
       reader.readAsDataURL(file);
-    }
+    });
+
+    // Clear error if upload successful
+    setError(null);
   };
 
-  // Handle remove image
-  const handleRemoveImage = () => {
-    setUploadedImage(null);
-    setImagePreview(null);
+  // Handle remove single image
+  const handleRemoveImage = (index: number) => {
+    setUploadedImages((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
   // Handle image compression and resize
@@ -416,15 +450,18 @@ export function ManualVideoPage() {
     });
   };
 
-  // Handle image upload to server
-  const handleUploadImage = async (file: File): Promise<string> => {
+  // Handle multiple images upload to server
+  const handleUploadMultipleImages = async (
+    files: File[]
+  ): Promise<string[]> => {
     try {
-      // Compress image before upload (max 2MB after compression)
-      const base64String = await compressImage(file, 2);
+      // Compress all images before upload (max 2MB after compression)
+      const base64Promises = files.map((file) => compressImage(file, 2));
+      const base64Strings = await Promise.all(base64Promises);
 
-      // Call upload API with full base64 string (includes "data:image/jpeg;base64,..." prefix)
-      const result = await uploadApi.uploadImage(base64String);
-      return result.url;
+      // Call upload multiple images API
+      const result = await uploadApi.uploadMultipleImages(base64Strings);
+      return result.urls;
     } catch (error) {
       throw error;
     }
@@ -444,19 +481,22 @@ export function ManualVideoPage() {
       setIsProcessing(true);
       setError(null);
 
-      let imageUrl = "";
+      let imageUrls: string[] = [];
 
-      // Upload image if provided
-      if (uploadedImage) {
-        imageUrl = await handleUploadImage(uploadedImage);
-        setUploadedImageUrl(imageUrl);
+      // Upload images if provided
+      if (uploadedImages.length > 0) {
+        imageUrls = await handleUploadMultipleImages(uploadedImages);
+        setUploadedImageUrls(imageUrls);
       }
 
       // Prepare data for payment page
+      // For backward compatibility, we'll use the first image as karakter_image
+      // and store all images in a new field
       const manualVideoData = {
         type: "manual",
         prompt: prompt,
-        karakter_image: imageUrl,
+        karakter_image: imageUrls[0] || "",
+        karakter_images: imageUrls, // New field for multiple images
         aspek_rasio: selectedAspectRatio,
         gaya_video: selectedVisualStyle,
         is_share: "y",
@@ -890,25 +930,34 @@ export function ManualVideoPage() {
             <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-10 blur-xl"></div>
 
             <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl p-8 space-y-8">
-              {/* 1. Upload Character Image */}
+              {/* 1. Upload Character Images */}
               <div className="space-y-4">
-                <h3 className="text-xl font-semibold text-white flex items-center">
-                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30">
-                    <ImageIcon className="w-4 h-4 text-purple-400" />
+                <h3 className="text-xl font-semibold text-white flex items-center justify-between">
+                  <div className="flex items-center">
+                    <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30">
+                      <ImageIcon className="w-4 h-4 text-purple-400" />
+                    </div>
+                    {t.uploadCharacter}
                   </div>
-                  {t.uploadCharacter}
+                  {uploadedImages.length > 0 && (
+                    <span className="text-sm text-purple-400">
+                      {uploadedImages.length} {t.imagesSelected}
+                    </span>
+                  )}
                 </h3>
 
-                {!imagePreview ? (
+                {/* Upload Area - Always visible if under max limit */}
+                {uploadedImages.length < MAX_IMAGES && (
                   <label className="block">
                     <input
                       type="file"
                       accept="image/*"
+                      multiple
                       onChange={handleImageUpload}
                       className="hidden"
                     />
-                    <div className="border-2 border-dashed border-purple-500/30 hover:border-purple-500/60 rounded-2xl p-12 text-center cursor-pointer transition-all duration-300 bg-slate-800/30 hover:bg-slate-800/50">
-                      <Upload className="w-12 h-12 text-purple-400 mx-auto mb-4" />
+                    <div className="border-2 border-dashed border-purple-500/30 hover:border-purple-500/60 rounded-2xl p-8 text-center cursor-pointer transition-all duration-300 bg-slate-800/30 hover:bg-slate-800/50">
+                      <Upload className="w-10 h-10 text-purple-400 mx-auto mb-3" />
                       <p className="text-gray-300 font-medium mb-2">
                         {t.uploadDescription}
                       </p>
@@ -917,25 +966,35 @@ export function ManualVideoPage() {
                       </p>
                     </div>
                   </label>
-                ) : (
-                  <div className="relative rounded-2xl overflow-hidden border border-purple-500/30 bg-slate-800/30">
-                    <img
-                      src={imagePreview}
-                      alt="Preview"
-                      className="w-full h-64 object-cover"
-                    />
-                    <button
-                      onClick={handleRemoveImage}
-                      className="absolute top-4 right-4 p-2 bg-red-500/80 hover:bg-red-600 rounded-full transition-colors"
-                    >
-                      <X className="w-5 h-5 text-white" />
-                    </button>
-                    <div className="absolute bottom-4 left-4 px-3 py-1.5 bg-green-500/80 rounded-lg flex items-center space-x-2">
-                      <CheckCircle className="w-4 h-4 text-white" />
-                      <span className="text-sm text-white font-medium">
-                        {uploadedImage?.name}
-                      </span>
-                    </div>
+                )}
+
+                {/* Image Previews Grid */}
+                {imagePreviews.length > 0 && (
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                    {imagePreviews.map((preview, index) => (
+                      <div
+                        key={index}
+                        className="relative rounded-xl overflow-hidden border border-purple-500/30 bg-slate-800/30 group"
+                      >
+                        <img
+                          src={preview}
+                          alt={`Preview ${index + 1}`}
+                          className="w-full h-40 object-cover"
+                        />
+                        <button
+                          onClick={() => handleRemoveImage(index)}
+                          className="absolute top-2 right-2 p-1.5 bg-red-500/90 hover:bg-red-600 rounded-full transition-all opacity-0 group-hover:opacity-100"
+                        >
+                          <X className="w-4 h-4 text-white" />
+                        </button>
+                        <div className="absolute bottom-2 left-2 px-2 py-1 bg-green-500/90 rounded-md flex items-center space-x-1.5">
+                          <CheckCircle className="w-3 h-3 text-white" />
+                          <span className="text-xs text-white font-medium truncate max-w-[120px]">
+                            {uploadedImages[index]?.name}
+                          </span>
+                        </div>
+                      </div>
+                    ))}
                   </div>
                 )}
               </div>

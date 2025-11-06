@@ -578,6 +578,37 @@ interface VideoModalProps {
   currentVideoUser: { email: string; whatsapp_number: string | null } | null;
 }
 
+// Animation keyframes for modal
+const modalAnimationStyles = `
+  @keyframes modalFadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes modalScaleIn {
+    from {
+      opacity: 0;
+      transform: scale(0.95) translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  .modal-backdrop {
+    animation: modalFadeIn 0.3s ease-out;
+  }
+
+  .modal-content {
+    animation: modalScaleIn 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+`;
+
 function VideoModal({
   video,
   onClose,
@@ -597,6 +628,11 @@ function VideoModal({
   const [orientation, setOrientation] = useState(0);
   const videoRef = useRef<HTMLVideoElement>(null);
   const modalRef = useRef<HTMLDivElement>(null);
+
+  // Detect aspect ratio from video data
+  const aspectRatio = video.aspect_ratio || "16:9"; // Default to 16:9 if not specified
+  const isPortrait = aspectRatio === "9:16";
+  const isLandscape = aspectRatio === "16:9";
 
   const toggleMute = () => {
     if (videoRef.current) {
@@ -667,22 +703,26 @@ function VideoModal({
     <div
       ref={modalRef}
       className={`fixed inset-0 z-[9999] flex items-center justify-center ${
-        isFullscreen ? "p-0" : "p-4"
+        isFullscreen ? "p-0" : "p-4 sm:p-6 md:p-8"
       }`}
     >
-      {/* Enhanced Backdrop with Blur */}
+      {/* Enhanced Backdrop with Blur and Animation */}
       <div
-        className="absolute inset-0 bg-slate-950/95 backdrop-blur-xl"
+        className="modal-backdrop absolute inset-0 bg-slate-950/95 backdrop-blur-xl"
         onClick={onClose}
       />
 
-      {/* Modal Content - 16:9 Video Style */}
+      {/* Modal Content - Responsive Container based on Aspect Ratio */}
       <div
-        className={`relative w-full mx-auto ${
-          isFullscreen ? "h-full max-w-none" : "max-w-4xl"
+        className={`modal-content relative mx-auto ${
+          isFullscreen
+            ? "w-full h-full max-w-none"
+            : isPortrait
+            ? "w-full max-w-md sm:max-w-lg" // Portrait: narrower container
+            : "w-full max-w-4xl xl:max-w-5xl" // Landscape: wider container
         }`}
       >
-        {/* Outer Glow */}
+        {/* Outer Glow Effect */}
         <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-30 blur-2xl" />
 
         <div
@@ -690,30 +730,41 @@ function VideoModal({
             isFullscreen ? "h-full rounded-none" : "rounded-2xl"
           }`}
         >
-          {/* Close Button - Top Right */}
-          <button
-            onClick={onClose}
-            className="absolute top-4 right-4 z-20 text-white hover:text-red-400 hover:bg-red-500/20 border border-red-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm"
-          >
-            <X className="w-5 h-5" />
-          </button>
+          {/* Control Buttons - Top Right */}
+          <div className="absolute top-4 right-4 z-20 flex items-center space-x-2">
+            {/* Fullscreen Toggle Button */}
+            <button
+              onClick={toggleFullscreen}
+              className="group relative text-white hover:text-purple-400 border border-white/20 hover:border-purple-400/50 rounded-full p-2.5 transition-all duration-300 hover:scale-110 bg-black/70 backdrop-blur-md shadow-lg hover:shadow-purple-500/30"
+              title={isFullscreen ? "Exit Fullscreen" : "Enter Fullscreen"}
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 to-blue-500/0 group-hover:from-purple-500/20 group-hover:to-blue-500/20 rounded-full transition-all duration-300" />
+              {isFullscreen ? (
+                <Minimize className="w-5 h-5 relative z-10" />
+              ) : (
+                <Maximize className="w-5 h-5 relative z-10" />
+              )}
+            </button>
 
-          {/* Fullscreen Toggle Button */}
-          <button
-            onClick={toggleFullscreen}
-            className="absolute top-4 right-16 z-20 text-white hover:text-purple-400 hover:bg-purple-500/20 border border-purple-500/30 rounded-full p-2 transition-all duration-300 hover:scale-110 bg-black/50 backdrop-blur-sm"
-          >
-            {isFullscreen ? (
-              <Minimize className="w-5 h-5" />
-            ) : (
-              <Maximize className="w-5 h-5" />
-            )}
-          </button>
+            {/* Close Button */}
+            <button
+              onClick={onClose}
+              className="group relative text-white hover:text-red-400 border border-white/20 hover:border-red-400/50 rounded-full p-2.5 transition-all duration-300 hover:scale-110 hover:rotate-90 bg-black/70 backdrop-blur-md shadow-lg hover:shadow-red-500/30"
+              title="Close"
+            >
+              <div className="absolute inset-0 bg-gradient-to-r from-red-500/0 to-orange-500/0 group-hover:from-red-500/20 group-hover:to-orange-500/20 rounded-full transition-all duration-300" />
+              <X className="w-5 h-5 relative z-10" />
+            </button>
+          </div>
 
-          {/* Video Player Container */}
+          {/* Video Player Container - Responsive Aspect Ratio */}
           <div
             className={`relative bg-black ${
-              isFullscreen ? "h-full" : "aspect-video"
+              isFullscreen
+                ? "h-full"
+                : isPortrait
+                ? "aspect-[9/16]" // Portrait: 9:16 ratio (TikTok/Reels style)
+                : "aspect-video" // Landscape: 16:9 ratio (YouTube style)
             }`}
           >
             {displayVideo ? (
@@ -776,9 +827,32 @@ function VideoModal({
                   {/* Gradient Overlay for Text Readability */}
                   <div className="absolute bottom-0 left-0 right-0 h-1/3 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
 
-                  {/* Custom Video Controls - Top Left */}
+                  {/* Format Badge - Top Left Corner */}
                   <div
-                    className={`absolute top-4 left-4 flex items-center space-x-2 pointer-events-auto ${
+                    className={`absolute top-4 left-4 pointer-events-none z-10 ${
+                      isFullscreen
+                        ? "opacity-0 hover:opacity-100 transition-opacity duration-300"
+                        : ""
+                    }`}
+                  >
+                    <div className="flex items-center space-x-1.5 sm:space-x-2 bg-black/70 backdrop-blur-md border border-white/20 rounded-full px-2 sm:px-3 py-1 sm:py-1.5 shadow-lg">
+                      <Video className="w-3 sm:w-3.5 h-3 sm:h-3.5 text-purple-400" />
+                      <span className="text-[10px] sm:text-xs font-semibold text-white hidden sm:inline">
+                        {isPortrait ? "Portrait" : "Landscape"}
+                      </span>
+                      <span className="text-[10px] sm:text-xs text-purple-300 font-mono">
+                        {aspectRatio}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Custom Video Controls - Floating Right Side for Portrait, Bottom for Landscape */}
+                  <div
+                    className={`absolute pointer-events-auto z-10 ${
+                      isPortrait
+                        ? "right-2 sm:right-4 top-1/2 -translate-y-1/2 flex-col space-y-2 sm:space-y-3"
+                        : "bottom-4 left-4 flex-row space-x-2"
+                    } flex ${
                       isFullscreen
                         ? "opacity-0 hover:opacity-100 transition-opacity duration-300"
                         : ""
@@ -787,24 +861,26 @@ function VideoModal({
                     {/* Play/Pause Button */}
                     <button
                       onClick={togglePlayPause}
-                      className="bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110"
+                      className="group bg-black/70 backdrop-blur-md rounded-full p-2 sm:p-3 border border-white/20 hover:border-purple-400/50 hover:bg-purple-500/20 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
+                      title={isPlaying ? "Pause" : "Play"}
                     >
                       {isPlaying ? (
-                        <Pause className="w-4 h-4 text-white" />
+                        <Pause className="w-4 sm:w-5 h-4 sm:h-5 text-white group-hover:text-purple-300" />
                       ) : (
-                        <Play className="w-4 h-4 text-white" />
+                        <Play className="w-4 sm:w-5 h-4 sm:h-5 text-white group-hover:text-purple-300" />
                       )}
                     </button>
 
                     {/* Mute/Unmute Button */}
                     <button
                       onClick={toggleMute}
-                      className="bg-black/50 backdrop-blur-sm rounded-full p-2 border border-white/20 hover:bg-white/10 transition-all duration-300 hover:scale-110"
+                      className="group bg-black/70 backdrop-blur-md rounded-full p-2 sm:p-3 border border-white/20 hover:border-blue-400/50 hover:bg-blue-500/20 transition-all duration-300 hover:scale-110 active:scale-95 shadow-lg"
+                      title={isMuted ? "Unmute" : "Mute"}
                     >
                       {isMuted ? (
-                        <VolumeX className="w-4 h-4 text-white" />
+                        <VolumeX className="w-4 sm:w-5 h-4 sm:h-5 text-white group-hover:text-blue-300" />
                       ) : (
-                        <Volume2 className="w-4 h-4 text-white" />
+                        <Volume2 className="w-4 sm:w-5 h-4 sm:h-5 text-white group-hover:text-blue-300" />
                       )}
                     </button>
                   </div>
@@ -821,18 +897,22 @@ function VideoModal({
                     </div>
                   )} */}
 
-                  {/* Creator Info - Bottom Left */}
+                  {/* Creator Info - Bottom, adjusted for aspect ratio */}
                   <div
-                    className={`absolute bottom-4 left-4 right-4 space-y-3 max-w-md ${
+                    className={`absolute bottom-3 sm:bottom-4 left-3 sm:left-4 space-y-2 sm:space-y-3 ${
+                      isPortrait
+                        ? "right-16 sm:right-20"
+                        : "right-3 sm:right-4 max-w-md"
+                    } ${
                       isFullscreen
                         ? "opacity-0 hover:opacity-100 transition-opacity duration-300"
                         : ""
                     }`}
                   >
-                    {/* Creator Name */}
-                    <div className="flex items-center space-x-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
-                        <span className="text-white text-sm font-bold">
+                    {/* Creator Name & Video Info */}
+                    <div className="flex items-center space-x-2 sm:space-x-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg flex-shrink-0">
+                        <span className="text-white text-xs sm:text-sm font-bold">
                           {currentVideoUser?.email
                             ? currentVideoUser.email.charAt(0).toUpperCase()
                             : userEmails[video.user_id]
@@ -841,30 +921,38 @@ function VideoModal({
                         </span>
                       </div>
                       <div className="flex-1 min-w-0">
-                        <p className="text-white font-semibold text-sm truncate">
+                        <p className="text-white font-semibold text-xs sm:text-sm truncate">
                           {currentVideoUser?.email
                             ? censorEmail(currentVideoUser.email)
                             : userEmails[video.user_id]
                             ? censorEmail(userEmails[video.user_id])
                             : "Loading..."}
                         </p>
-                        <p className="text-gray-300 text-xs">
-                          {formatDate(video.created_at)}
-                        </p>
+                        <div className="flex items-center space-x-1.5 sm:space-x-2 text-[10px] sm:text-xs">
+                          <span className="text-gray-300 truncate">
+                            {formatDate(video.created_at)}
+                          </span>
+                          <span className="text-gray-500 hidden sm:inline">
+                            •
+                          </span>
+                          <span className="px-1.5 sm:px-2 py-0.5 bg-gradient-to-r from-purple-500/20 to-blue-500/20 border border-purple-500/30 rounded-full text-purple-300 font-medium hidden sm:inline">
+                            {aspectRatio}
+                          </span>
+                        </div>
                       </div>
                     </div>
 
                     {/* Video Description */}
-                    <div className="space-y-2">
+                    <div className="space-y-1 sm:space-y-2">
                       {loadingDetail ? (
                         <div className="flex items-center space-x-2">
-                          <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                          <span className="text-white/70 text-sm">
+                          <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                          <span className="text-white/70 text-xs sm:text-sm">
                             Loading description...
                           </span>
                         </div>
                       ) : (
-                        <p className="text-white text-sm leading-relaxed line-clamp-3">
+                        <p className="text-white text-xs sm:text-sm leading-relaxed line-clamp-2 sm:line-clamp-3">
                           {getVideoDescription(video)}
                         </p>
                       )}
@@ -901,13 +989,43 @@ function VideoModal({
         </div>
       </div>
 
-      {/* CSS for line clamp */}
+      {/* CSS for animations and styles */}
       <style>{`
+        ${modalAnimationStyles}
+
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+
         .line-clamp-3 {
           display: -webkit-box;
           -webkit-line-clamp: 3;
           -webkit-box-orient: vertical;
           overflow: hidden;
+        }
+
+        /* Smooth transitions for aspect ratio changes */
+        .aspect-video,
+        .aspect-\[9\/16\] {
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Enhance backdrop blur on supported browsers */
+        @supports (backdrop-filter: blur(20px)) {
+          .modal-backdrop {
+            backdrop-filter: blur(20px);
+          }
+        }
+
+        /* Smooth scrolling for mobile */
+        @media (max-width: 640px) {
+          .modal-content {
+            max-height: 100vh;
+            overflow-y: auto;
+          }
         }
       `}</style>
     </div>
