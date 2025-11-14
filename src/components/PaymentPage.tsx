@@ -1426,8 +1426,8 @@ export function PaymentPage() {
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
       {/* Batch Processing Overlay */}
       {isBatchProcessing && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="max-w-4xl w-full">
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="max-w-4xl w-full my-8">
             <div className="relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
@@ -1766,8 +1766,8 @@ export function PaymentPage() {
 
       {/* Prompt Optimization Overlay */}
       {isOptimizingPrompt && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4">
-          <div className="max-w-3xl w-full">
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
+          <div className="max-w-3xl w-full my-8">
             <div className="relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
