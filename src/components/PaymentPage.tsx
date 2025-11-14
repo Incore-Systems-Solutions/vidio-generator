@@ -1426,8 +1426,9 @@ export function PaymentPage() {
     <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
       {/* Batch Processing Overlay */}
       {isBatchProcessing && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="max-w-4xl w-full my-8">
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 overflow-y-auto">
+          <div className="min-h-full flex items-center justify-center p-4 py-8">
+            <div className="max-w-4xl w-full">
             <div className="relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
@@ -1492,12 +1493,13 @@ export function PaymentPage() {
 
                 {/* Batch Progress List */}
                 {batchData.length > 0 && (
-                  <div className="space-y-3 mb-6">
+                  <div className="mb-6">
                     <h4 className="text-sm font-semibold text-gray-400 mb-3">
                       {selectedLanguage === "ID"
                         ? "Progress Pembuatan Batch:"
                         : "Batch Creation Progress:"}
                     </h4>
+                    <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-slate-800/50">
                     {batchData.map((batch) => (
                       <div
                         key={batch.id}
@@ -1659,6 +1661,7 @@ export function PaymentPage() {
                         </div>
                       </div>
                     ))}
+                    </div>
                   </div>
                 )}
 
@@ -1760,14 +1763,16 @@ export function PaymentPage() {
                 )}
               </div>
             </div>
+            </div>
           </div>
         </div>
       )}
 
       {/* Prompt Optimization Overlay */}
       {isOptimizingPrompt && (
-        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 flex items-center justify-center p-4 overflow-y-auto">
-          <div className="max-w-3xl w-full my-8">
+        <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-md z-50 overflow-y-auto">
+          <div className="min-h-full flex items-center justify-center p-4 py-8">
+            <div className="max-w-3xl w-full">
             <div className="relative">
               <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
 
@@ -1826,12 +1831,13 @@ export function PaymentPage() {
                 </div>
 
                 {/* Scene Progress List */}
-                <div className="space-y-3 mb-6 max-h-64 overflow-y-auto">
+                <div className="mb-6">
                   <h4 className="text-sm font-semibold text-gray-400 mb-3">
                     {selectedLanguage === "ID"
                       ? "Progress Pembuatan:"
                       : "Creation Progress:"}
                   </h4>
+                  <div className="space-y-3 max-h-[400px] overflow-y-auto pr-2 scrollbar-thin scrollbar-thumb-purple-500/50 scrollbar-track-slate-800/50">
                   {sceneStatuses.map((sceneStatus) => (
                     <div
                       key={sceneStatus.scene}
@@ -1871,6 +1877,7 @@ export function PaymentPage() {
                       </Badge>
                     </div>
                   ))}
+                  </div>
                 </div>
 
                 {/* Info Message */}
@@ -1906,6 +1913,7 @@ export function PaymentPage() {
                   %
                 </div>
               </div>
+            </div>
             </div>
           </div>
         </div>
@@ -2614,6 +2622,21 @@ export function PaymentPage() {
         }
         .animate-shimmer-slow {
           animation: shimmer-slow 3s ease-in-out infinite;
+        }
+        /* Custom scrollbar styles */
+        .scrollbar-thin::-webkit-scrollbar {
+          width: 6px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-track {
+          background: rgba(30, 41, 59, 0.5);
+          border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb {
+          background: rgba(168, 85, 247, 0.5);
+          border-radius: 10px;
+        }
+        .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+          background: rgba(168, 85, 247, 0.7);
         }
       `}</style>
     </div>
