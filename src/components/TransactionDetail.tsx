@@ -80,6 +80,8 @@ export function TransactionDetail({
   const [isKonsultanMode, setIsKonsultanMode] = useState(false);
   const [konsultanData, setKonsultanData] = useState<any>(null);
   const [collectionData, setCollectionData] = useState<any>(null);
+  const [isManualMode, setIsManualMode] = useState(false);
+  const [manualData, setManualData] = useState<any>(null);
   const [isOptimizingPrompt, setIsOptimizingPrompt] = useState(false);
   const [optimizationProgress, setOptimizationProgress] = useState<any>(null);
   const [sceneStatuses, setSceneStatuses] = useState<
@@ -103,6 +105,15 @@ export function TransactionDetail({
       if (response.status) {
         setTransaction(response.data);
 
+        // Debug: Log entire transaction response to see available fields
+        console.log("Transaction API Response:", response.data);
+        console.log("Available UUID fields:", {
+          uuid_konsultan: (response.data as any).uuid_konsultan,
+          chat_uuid: (response.data as any).chat_uuid,
+          uuid_video: (response.data as any).uuid_video,
+          uuid: (response.data as any).uuid,
+        });
+
         // Save x-api-key if available in response
         if (response.data && (response.data as any)["x-api-key"]) {
           localStorage.setItem(
@@ -117,18 +128,25 @@ export function TransactionDetail({
 
         // If payment is successful, handle localStorage
         if (response.data.transaction_status === "success") {
-          // Clear konsultan chat data
+          // Clear konsultan chat data (but keep manual video data)
           localStorage.removeItem("konsultan-chat-messages");
           localStorage.removeItem("konsultan-video-data");
           console.log("Cleared konsultan chat data after successful payment");
 
-          // Save uuid_konsultan for generate page (prioritize uuid_konsultan, fallback to chat_uuid)
+          // Save uuid_konsultan for generate page (check multiple fields)
           const uuidKonsultan =
             (response.data as any).uuid_konsultan ||
-            (response.data as any).chat_uuid;
+            (response.data as any).chat_uuid ||
+            (response.data as any).uuid_video ||
+            (response.data as any).uuid;
           if (uuidKonsultan) {
             localStorage.setItem("generate-uuid", uuidKonsultan);
-            console.log("Saved generate-uuid:", uuidKonsultan);
+            console.log("Saved generate-uuid from transaction:", uuidKonsultan);
+          } else {
+            console.warn(
+              "No UUID found in transaction response:",
+              response.data
+            );
           }
         }
       } else {
@@ -524,6 +542,43 @@ export function TransactionDetail({
   // Handle Generate Video button click
   const handleGenerateVideo = async () => {
     try {
+      // Check if this is manual mode
+      if (isManualMode) {
+        console.log(
+          "Manual mode detected, redirecting to generate page directly"
+        );
+
+        // Try to get UUID from multiple sources
+        let generateUuid = localStorage.getItem("generate-uuid");
+
+        // If not in localStorage, try to get from transaction data
+        if (!generateUuid && transaction) {
+          generateUuid =
+            (transaction as any).uuid_konsultan ||
+            (transaction as any).chat_uuid ||
+            (transaction as any).uuid_video ||
+            (transaction as any).uuid;
+
+          if (generateUuid) {
+            console.log("Found UUID in transaction data:", generateUuid);
+            localStorage.setItem("generate-uuid", generateUuid);
+          }
+        }
+
+        if (generateUuid) {
+          console.log("Redirecting to generate page with UUID:", generateUuid);
+          // Clear manual-video-data since we're starting generation
+          localStorage.removeItem("manual-video-data");
+          window.location.href = `/generate/${generateUuid}`;
+        } else {
+          console.error("UUID not found. Transaction data:", transaction);
+          throw new Error(
+            "Generate UUID tidak ditemukan untuk video manual. Silakan coba lagi atau hubungi support."
+          );
+        }
+        return;
+      }
+
       // Get konsultan-chat-uuid from localStorage
       const konsultanChatUuid = localStorage.getItem("konsultan-chat-uuid");
       const xApiKey = localStorage.getItem("x-api-key");
@@ -588,9 +643,25 @@ export function TransactionDetail({
         console.error("Error parsing konsultan data:", err);
       }
     } else {
-      // Load regular video setup data
-      const storedVideoData = videoSetupStorage.load();
-      setVideoData(storedVideoData);
+      // Check if there's manual video data
+      const manualDataStr = localStorage.getItem("manual-video-data");
+      if (manualDataStr) {
+        try {
+          const parsedData = JSON.parse(manualDataStr);
+          console.log(
+            "Loading manual video data in transaction detail:",
+            parsedData
+          );
+          setIsManualMode(true);
+          setManualData(parsedData);
+        } catch (err) {
+          console.error("Error parsing manual video data:", err);
+        }
+      } else {
+        // Load regular video setup data
+        const storedVideoData = videoSetupStorage.load();
+        setVideoData(storedVideoData);
+      }
     }
 
     // Load collection data from localStorage (from Video Consultant)
@@ -1327,6 +1398,12 @@ export function TransactionDetail({
                     Video Konsultan AI
                   </Badge>
                 )}
+                {isManualMode && (
+                  <Badge className="bg-gradient-to-r from-orange-500/20 to-red-500/20 border border-orange-500/30 text-orange-200 px-4 py-2">
+                    <Video className="w-4 h-4 mr-2" />
+                    Video Manual
+                  </Badge>
+                )}
                 {collectionData && (
                   <Badge className="bg-gradient-to-r from-cyan-500/20 to-blue-500/20 border border-cyan-500/30 text-cyan-200 px-4 py-2">
                     <FileText className="w-4 h-4 mr-2" />
@@ -1987,6 +2064,55 @@ export function TransactionDetail({
                             </div>
                           )}
                         </div>
+                      </div>
+                    </>
+                  ) : isManualMode && manualData ? (
+                    <>
+                      {/* Manual Mode - Show manual video details */}
+                      <div className="space-y-4">
+                        <div className="bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                          <p className="text-sm text-gray-400 mb-2">Prompt</p>
+                          <p className="text-sm text-white">
+                            {manualData.prompt || "Tidak ada prompt"}
+                          </p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                            <p className="text-sm text-gray-400 mb-2">
+                              Aspek Rasio
+                            </p>
+                            <Badge
+                              variant="outline"
+                              className="border-purple-500/30 text-purple-300"
+                            >
+                              {manualData.aspek_rasio}
+                            </Badge>
+                          </div>
+                          <div className="bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                            <p className="text-sm text-gray-400 mb-2">
+                              Gaya Video
+                            </p>
+                            <Badge
+                              variant="outline"
+                              className="border-blue-500/30 text-blue-300"
+                            >
+                              {manualData.gaya_video}
+                            </Badge>
+                          </div>
+                        </div>
+                        {manualData.karakter_image && (
+                          <div className="bg-slate-800/50 rounded-xl p-4 border border-white/5">
+                            <p className="text-sm text-gray-400 mb-2">
+                              Karakter Custom
+                            </p>
+                            <div className="flex items-center space-x-2">
+                              <CheckCircle className="w-4 h-4 text-green-400" />
+                              <span className="text-sm text-green-300">
+                                Karakter image tersedia
+                              </span>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </>
                   ) : videoData ? (
