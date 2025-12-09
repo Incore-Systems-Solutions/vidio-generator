@@ -1,0 +1,217 @@
+---
+import { Navbar } from "@/components/Navbar"
+import "../styles/global.css"
+---
+
+<html lang="id" class="scroll-smooth">
+	<head>
+		<meta charset="utf-8" />
+		<meta name="viewport" content="width=device-width" />
+		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+		<meta name="generator" content={Astro.generator} />
+		<title>Kebijakan Privasi - Instant Video App</title>
+		<meta name="description" content="Kebijakan Privasi Instant Video App - Pelajari bagaimana kami mengumpulkan, menggunakan, dan melindungi data pribadi Anda." />
+	</head>
+
+	<body class="min-h-screen bg-background antialiased">
+		<!-- Navigation -->
+		<Navbar client:load currentStep={0} totalSteps={4} />
+
+		<!-- Main Content -->
+		<main class="flex-1">
+			<div class="container mx-auto px-4 py-12 max-w-4xl">
+				<!-- Header -->
+				<div class="mb-12">
+					<h1 class="text-4xl font-bold text-foreground mb-4">Kebijakan Privasi</h1>
+					<p class="text-muted-foreground">Terakhir diperbarui: Desember 2025</p>
+				</div>
+
+				<!-- Content -->
+				<div class="prose prose-slate dark:prose-invert max-w-none">
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">1. Pendahuluan</h2>
+						<p class="text-muted-foreground mb-4">
+							Selamat datang di Instant Video App ("kami", "kita", atau "aplikasi"). Kami menghargai privasi Anda dan berkomitmen untuk melindungi data pribadi Anda. Kebijakan Privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, menyimpan, dan melindungi informasi Anda saat menggunakan layanan kami.
+						</p>
+						<p class="text-muted-foreground">
+							Dengan menggunakan Instant Video App, Anda menyetujui pengumpulan dan penggunaan informasi sesuai dengan kebijakan ini.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">2. Informasi yang Kami Kumpulkan</h2>
+
+						<h3 class="text-xl font-semibold text-foreground mb-3 mt-6">2.1 Informasi yang Anda Berikan</h3>
+						<ul class="list-disc list-inside text-muted-foreground space-y-2 mb-4">
+							<li><strong>Informasi Akun:</strong> Nama, alamat email, nomor telepon saat Anda mendaftar</li>
+							<li><strong>Informasi Pembayaran:</strong> Detail transaksi dan metode pembayaran (diproses melalui gateway pembayaran pihak ketiga yang aman)</li>
+							<li><strong>Konten yang Dibuat:</strong> Video, gambar, teks, dan konten lain yang Anda upload atau buat menggunakan aplikasi kami</li>
+							<li><strong>Komunikasi:</strong> Pesan yang Anda kirim melalui fitur konsultan video AI atau dukungan pelanggan</li>
+						</ul>
+
+						<h3 class="text-xl font-semibold text-foreground mb-3 mt-6">2.2 Informasi yang Dikumpulkan Secara Otomatis</h3>
+						<ul class="list-disc list-inside text-muted-foreground space-y-2 mb-4">
+							<li><strong>Data Penggunaan:</strong> Informasi tentang bagaimana Anda menggunakan aplikasi, fitur yang diakses, dan waktu penggunaan</li>
+							<li><strong>Data Perangkat:</strong> Jenis perangkat, sistem operasi, versi aplikasi, dan pengidentifikasi unik perangkat</li>
+							<li><strong>Data Lokasi:</strong> Lokasi umum berdasarkan alamat IP (bukan lokasi GPS yang tepat)</li>
+							<li><strong>Log dan Data Teknis:</strong> Alamat IP, browser, waktu akses, dan halaman yang dikunjungi</li>
+						</ul>
+
+						<h3 class="text-xl font-semibold text-foreground mb-3 mt-6">2.3 Cookies dan Teknologi Pelacakan</h3>
+						<p class="text-muted-foreground mb-4">
+							Kami menggunakan cookies dan teknologi serupa untuk meningkatkan pengalaman Anda, menganalisis penggunaan aplikasi, dan menyediakan konten yang dipersonalisasi.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">3. Bagaimana Kami Menggunakan Informasi Anda</h2>
+						<p class="text-muted-foreground mb-4">Kami menggunakan informasi yang dikumpulkan untuk:</p>
+						<ul class="list-disc list-inside text-muted-foreground space-y-2">
+							<li>Menyediakan, mengoperasikan, dan memelihara layanan kami</li>
+							<li>Memproses transaksi dan mengirimkan konfirmasi pembayaran</li>
+							<li>Menghasilkan video AI sesuai permintaan Anda</li>
+							<li>Memberikan dukungan pelanggan dan merespons pertanyaan Anda</li>
+							<li>Mengirimkan pembaruan, notifikasi, dan informasi terkait layanan</li>
+							<li>Menganalisis penggunaan untuk meningkatkan fitur dan pengalaman pengguna</li>
+							<li>Mendeteksi, mencegah, dan mengatasi masalah teknis atau keamanan</li>
+							<li>Mematuhi kewajiban hukum dan peraturan yang berlaku</li>
+							<li>Melindungi hak, properti, dan keamanan kami serta pengguna lain</li>
+						</ul>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">4. Berbagi Informasi</h2>
+						<p class="text-muted-foreground mb-4">
+							Kami tidak menjual atau menyewakan informasi pribadi Anda kepada pihak ketiga. Kami hanya membagikan informasi Anda dalam situasi berikut:
+						</p>
+						<ul class="list-disc list-inside text-muted-foreground space-y-2">
+							<li><strong>Penyedia Layanan:</strong> Dengan pihak ketiga yang membantu kami mengoperasikan layanan (misalnya, gateway pembayaran, hosting, analitik)</li>
+							<li><strong>Kepatuhan Hukum:</strong> Jika diwajibkan oleh hukum atau untuk merespons proses hukum yang sah</li>
+							<li><strong>Perlindungan Hak:</strong> Untuk melindungi hak, properti, atau keamanan kami, pengguna kami, atau publik</li>
+							<li><strong>Persetujuan Anda:</strong> Dengan persetujuan eksplisit Anda untuk tujuan tertentu</li>
+							<li><strong>Transfer Bisnis:</strong> Dalam hal merger, akuisisi, atau penjualan aset</li>
+						</ul>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">5. Penyimpanan dan Keamanan Data</h2>
+
+						<h3 class="text-xl font-semibold text-foreground mb-3 mt-6">5.1 Keamanan</h3>
+						<p class="text-muted-foreground mb-4">
+							Kami menerapkan langkah-langkah keamanan teknis dan organisasi yang sesuai untuk melindungi data Anda dari akses, penggunaan, atau pengungkapan yang tidak sah, termasuk:
+						</p>
+						<ul class="list-disc list-inside text-muted-foreground space-y-2 mb-4">
+							<li>Enkripsi data saat transit dan saat disimpan</li>
+							<li>Kontrol akses yang ketat dan autentikasi</li>
+							<li>Pemantauan keamanan dan audit rutin</li>
+							<li>Pelatihan keamanan untuk karyawan</li>
+						</ul>
+
+						<h3 class="text-xl font-semibold text-foreground mb-3 mt-6">5.2 Penyimpanan Data</h3>
+						<p class="text-muted-foreground mb-4">
+							Kami menyimpan informasi pribadi Anda selama diperlukan untuk menyediakan layanan atau sesuai dengan kewajiban hukum kami. Video dan konten yang Anda buat akan disimpan selama akun Anda aktif atau sesuai dengan paket layanan yang Anda pilih.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">6. Hak Anda</h2>
+						<p class="text-muted-foreground mb-4">Anda memiliki hak untuk:</p>
+						<ul class="list-disc list-inside text-muted-foreground space-y-2">
+							<li><strong>Akses:</strong> Meminta salinan data pribadi yang kami miliki tentang Anda</li>
+							<li><strong>Koreksi:</strong> Memperbarui atau memperbaiki informasi yang tidak akurat</li>
+							<li><strong>Penghapusan:</strong> Meminta penghapusan data pribadi Anda (dengan pengecualian tertentu)</li>
+							<li><strong>Pembatasan:</strong> Membatasi pemrosesan data Anda dalam situasi tertentu</li>
+							<li><strong>Portabilitas:</strong> Menerima data Anda dalam format yang dapat dibaca mesin</li>
+							<li><strong>Keberatan:</strong> Menolak pemrosesan data Anda untuk tujuan tertentu</li>
+							<li><strong>Penarikan Persetujuan:</strong> Menarik persetujuan Anda kapan saja (tanpa mempengaruhi legalitas pemrosesan sebelumnya)</li>
+						</ul>
+						<p class="text-muted-foreground mt-4">
+							Untuk menggunakan hak-hak ini, silakan hubungi kami melalui informasi kontak di bawah.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">7. Privasi Anak-anak</h2>
+						<p class="text-muted-foreground">
+							Layanan kami tidak ditujukan untuk anak-anak di bawah usia 13 tahun. Kami tidak secara sengaja mengumpulkan informasi pribadi dari anak-anak di bawah 13 tahun. Jika Anda adalah orang tua atau wali dan mengetahui bahwa anak Anda telah memberikan informasi pribadi kepada kami, silakan hubungi kami agar kami dapat mengambil tindakan yang diperlukan.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">8. Transfer Data Internasional</h2>
+						<p class="text-muted-foreground">
+							Data Anda mungkin ditransfer ke dan diproses di server yang berlokasi di luar negara Anda, di mana undang-undang perlindungan data mungkin berbeda. Kami memastikan bahwa transfer tersebut dilakukan sesuai dengan hukum yang berlaku dan dengan perlindungan yang memadai.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">9. Tautan ke Situs Pihak Ketiga</h2>
+						<p class="text-muted-foreground">
+							Aplikasi kami mungkin berisi tautan ke situs web atau layanan pihak ketiga. Kami tidak bertanggung jawab atas praktik privasi atau konten situs tersebut. Kami mendorong Anda untuk membaca kebijakan privasi setiap situs yang Anda kunjungi.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">10. Perubahan Kebijakan Privasi</h2>
+						<p class="text-muted-foreground mb-4">
+							Kami dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu untuk mencerminkan perubahan dalam praktik kami atau untuk alasan operasional, hukum, atau peraturan lainnya. Kami akan memberi tahu Anda tentang perubahan material dengan:
+						</p>
+						<ul class="list-disc list-inside text-muted-foreground space-y-2">
+							<li>Memposting kebijakan yang diperbarui di aplikasi dengan tanggal "Terakhir diperbarui" yang baru</li>
+							<li>Mengirimkan notifikasi melalui email atau aplikasi</li>
+						</ul>
+						<p class="text-muted-foreground mt-4">
+							Penggunaan layanan kami yang berkelanjutan setelah perubahan tersebut menunjukkan penerimaan Anda terhadap kebijakan yang diperbarui.
+						</p>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">11. Hubungi Kami</h2>
+						<p class="text-muted-foreground mb-4">
+							Jika Anda memiliki pertanyaan, kekhawatiran, atau permintaan terkait Kebijakan Privasi ini atau praktik privasi kami, silakan hubungi kami:
+						</p>
+						<div class="bg-muted/50 p-6 rounded-lg">
+							<p class="text-foreground mb-2"><strong>Instant Video App</strong></p>
+							<p class="text-muted-foreground mb-1">Email: support@instantvideoapp.com</p>
+							<p class="text-muted-foreground mb-1">Website: www.instantvideoapp.com</p>
+						</div>
+					</section>
+
+					<section class="mb-8">
+						<h2 class="text-2xl font-semibold text-foreground mb-4">12. Persetujuan</h2>
+						<p class="text-muted-foreground">
+							Dengan menggunakan Instant Video App, Anda mengakui bahwa Anda telah membaca, memahami, dan menyetujui Kebijakan Privasi ini. Jika Anda tidak setuju dengan kebijakan ini, harap jangan menggunakan layanan kami.
+						</p>
+					</section>
+				</div>
+
+				<!-- Back Button -->
+				<div class="mt-12 pt-8 border-t">
+					<a
+						href="/"
+						class="inline-flex items-center text-primary hover:text-primary/80 transition-colors"
+					>
+						<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+							<path fill-rule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clip-rule="evenodd" />
+						</svg>
+						Kembali ke Beranda
+					</a>
+				</div>
+			</div>
+		</main>
+
+		<!-- Footer -->
+		<footer class="border-t py-12 mt-12">
+			<div class="container mx-auto px-4">
+				<div class="text-center text-muted-foreground">
+					<p>&copy; 2025 Instant Video App. All rights reserved.</p>
+					<div class="mt-4 space-x-4">
+						<a href="/kebijakan-privasi" class="hover:text-foreground transition-colors">Kebijakan Privasi</a>
+						<span>•</span>
+						<a href="/syarat-ketentuan" class="hover:text-foreground transition-colors">Syarat & Ketentuan</a>
+					</div>
+				</div>
+			</div>
+		</footer>
+	</body>
+</html>
