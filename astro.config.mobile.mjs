@@ -5,20 +5,13 @@ import react from "@astrojs/react";
 
 import tailwindcss from "@tailwindcss/vite";
 
-import node from "@astrojs/node";
-
 // https://astro.build/config
+// Configuration for mobile build (Capacitor)
 export default defineConfig({
-  output: "hybrid", // Hybrid mode: static by default, opt-in SSR
+  output: "static",
   vite: {
     plugins: [tailwindcss()],
-    server: {
-      host: true,
-      allowedHosts: ["www.instantvideoapp.com", "instantvideoapp.com"],
-    },
   },
-
-  adapter: node({ mode: "standalone" }),
 
   integrations: [react()],
 });

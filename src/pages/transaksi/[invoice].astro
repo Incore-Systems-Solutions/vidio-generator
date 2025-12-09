@@ -5,11 +5,13 @@ import "../../styles/global.css";
 
 
 // On-demand dynamic routes - render at request time
-export const prerender = false;
+// export const prerender = false; // Commented for mobile build
 
-// Alternative approach: empty getStaticPaths for on-demand rendering
+// For static build, generate sample paths
 export async function getStaticPaths() {
-  return [];
+  return [
+    { params: { invoice: 'sample' } }
+  ];
 }
 ---
 

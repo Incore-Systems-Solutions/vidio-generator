@@ -3,13 +3,12 @@ import Layout from "@/layouts/main.astro";
 import { VideoDownload } from "@/components/VideoDownload";
 import { NavbarWithModal } from "@/components/NavbarWithModal";
 
-export const prerender = false;
+// export const prerender = false; // Commented for mobile build
 
-const url = Astro.url.searchParams.get('url') || '';
-const taskId = Astro.url.searchParams.get('taskId') || '';
-
-// Decode the video URL
-const videoUrl = url ? decodeURIComponent(url) : '';
+// For static build, we'll handle URL params on client side
+const url = '';
+const taskId = '';
+const videoUrl = '';
 ---
 
 <Layout content={{ title: "Download Video" }}>

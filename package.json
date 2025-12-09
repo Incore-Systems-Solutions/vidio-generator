@@ -1,17 +1,26 @@
 {
-  "name": "astro-app",
+  "name": "instant-video-app",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "description": "AI Video Generator App - Web & Mobile",
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:mobile": "astro build --config astro.config.mobile.mjs",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "cap:add:android": "cap add android",
+    "cap:sync": "npm run build:mobile && cap sync",
+    "cap:open:android": "cap open android",
+    "android": "npm run cap:sync && cap open android"
   },
   "dependencies": {
     "@astrojs/mdx": "^4.3.5",
     "@astrojs/node": "^9.4.4",
     "@astrojs/react": "^4.3.1",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
