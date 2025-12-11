@@ -228,7 +228,6 @@ export function ManualVideoPage() {
   // Form states
   const [uploadedImages, setUploadedImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
-  const [uploadedImageUrls, setUploadedImageUrls] = useState<string[]>([]);
   const [prompt, setPrompt] = useState("");
   const [selectedVisualStyle, setSelectedVisualStyle] = useState<string>("");
   const [selectedAspectRatio, setSelectedAspectRatio] = useState<string>("");
@@ -451,9 +450,7 @@ export function ManualVideoPage() {
   };
 
   // Handle multiple images upload to server
-  const handleUploadMultipleImages = async (
-    files: File[]
-  ): Promise<string[]> => {
+  const handleUploadMultipleImages = async (files: File[]): Promise<string> => {
     try {
       // Compress all images before upload (max 2MB after compression)
       const base64Promises = files.map((file) => compressImage(file, 2));
@@ -461,8 +458,22 @@ export function ManualVideoPage() {
 
       // Call upload multiple images API
       const result = await uploadApi.uploadMultipleImages(base64Strings);
-      return result.urls;
+
+      console.log("Upload API response:", result);
+
+      // API returns merged image URL in result.data.url
+      if (result.data && result.data.url) {
+        return result.data.url;
+      }
+
+      // Fallback if structure is different
+      if (result.url) {
+        return result.url;
+      }
+
+      throw new Error("Invalid API response: missing image URL");
     } catch (error) {
+      console.error("Upload error:", error);
       throw error;
     }
   };
@@ -481,22 +492,19 @@ export function ManualVideoPage() {
       setIsProcessing(true);
       setError(null);
 
-      let imageUrls: string[] = [];
+      let mergedImageUrl = "";
 
       // Upload images if provided
       if (uploadedImages.length > 0) {
-        imageUrls = await handleUploadMultipleImages(uploadedImages);
-        setUploadedImageUrls(imageUrls);
+        mergedImageUrl = await handleUploadMultipleImages(uploadedImages);
+        console.log("Merged image URL:", mergedImageUrl);
       }
 
       // Prepare data for payment page
-      // For backward compatibility, we'll use the first image as karakter_image
-      // and store all images in a new field
       const manualVideoData = {
         type: "manual",
         prompt: prompt,
-        karakter_image: imageUrls[0] || "",
-        karakter_images: imageUrls, // New field for multiple images
+        karakter_image: mergedImageUrl, // Single merged image URL
         aspek_rasio: selectedAspectRatio,
         gaya_video: selectedVisualStyle,
         is_share: "y",
