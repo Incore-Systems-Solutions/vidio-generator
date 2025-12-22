@@ -354,7 +354,7 @@ export function VideoGallery() {
   const t = translations[selectedLanguage as keyof typeof translations];
 
   return (
-    <div className="w-full">
+    <div className="w-full video-gallery-section">
       {/* Futuristic Header */}
       <div className="text-center mb-16 relative">
         {/* Gradient Glow Background */}

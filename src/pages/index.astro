@@ -1,7 +1,8 @@
 ---
 import { NavbarWithModal } from "@/components/NavbarWithModal.tsx"
 import { VideoGallery } from "@/components/VideoGallery"
-import { AIAssistantBubble } from "@/components/AIAssistantBubble"
+// import { AIAssistantBubble } from "@/components/AIAssistantBubble"
+import { HomeTourGuide } from "@/components/HomeTourGuide"
 import "../styles/global.css"
 ---
 
@@ -54,7 +55,10 @@ import "../styles/global.css"
 		</footer>
 
 		<!-- AI Assistant Bubble -->
-		<AIAssistantBubble client:load />
+		<!-- <AIAssistantBubble client:load /> -->
+
+		<!-- Home Tour Guide - Client Only -->
+		<HomeTourGuide client:only="react" />
 
 		<script>
 			function updateStep(step: number) {

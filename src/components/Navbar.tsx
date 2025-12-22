@@ -16,6 +16,7 @@ import {
   ChevronDown,
   Film,
   TvMinimal,
+  HelpCircle,
 } from "lucide-react";
 
 // Translations for navbar
@@ -127,7 +128,7 @@ export function Navbar() {
   const t = translations[selectedLanguage as keyof typeof translations];
 
   return (
-    <nav className="sticky top-0 z-[100] w-full border-b border-white/10 bg-gradient-to-r from-slate-950/90 via-indigo-950/90 to-slate-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-opacity-80">
+    <nav className="navbar-container sticky top-0 z-[100] w-full border-b border-white/10 bg-gradient-to-r from-slate-950/90 via-indigo-950/90 to-slate-950/90 backdrop-blur-xl supports-[backdrop-filter]:bg-opacity-80">
       {/* Subtle Glow Effect */}
       <div className="absolute inset-0 bg-gradient-to-r from-purple-500/5 via-blue-500/5 to-purple-500/5 pointer-events-none" />
 
@@ -176,7 +177,7 @@ export function Navbar() {
               </Button>
 
               {/* Video Making Consultant Button with Dropdown - PROMINENT/CORE */}
-              <div className="relative consultant-dropdown-container">
+              <div className="relative consultant-dropdown-container menu-ai-consultant">
                 {/* Outer Glow Effect for Prominence */}
                 <div className="absolute -inset-1 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-xl opacity-30 blur-lg group-hover:opacity-50 animate-pulse"></div>
 
@@ -216,7 +217,7 @@ export function Navbar() {
                     </button>
                     <button
                       type="button"
-                      className="w-full px-4 py-3 text-left text-sm transition-colors duration-200 hover:bg-purple-500/20 text-white"
+                      className="menu-create-manual w-full px-4 py-3 text-left text-sm transition-colors duration-200 hover:bg-purple-500/20 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
                         window.location.href = "/create-video";
@@ -235,7 +236,7 @@ export function Navbar() {
               <Button
                 variant="ghost"
                 size="sm"
-                className="group relative overflow-hidden bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 hover:border-blue-500/40 text-blue-300 hover:text-blue-200 transition-all duration-300 px-4"
+                className="menu-video-history group relative overflow-hidden bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 hover:border-blue-500/40 text-blue-300 hover:text-blue-200 transition-all duration-300 px-4"
                 onClick={() => (window.location.href = "/riwayat-video")}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
@@ -293,6 +294,20 @@ export function Navbar() {
                   </div>
                 )}
               </div>
+
+              {/* Help Button - Trigger Tour */}
+              <Button
+                variant="ghost"
+                size="sm"
+                className="group relative overflow-hidden bg-gradient-to-r from-amber-500/10 to-orange-500/10 hover:from-amber-500/20 hover:to-orange-500/20 border border-amber-500/20 hover:border-amber-500/40 text-amber-300 hover:text-amber-200 transition-all duration-300 px-3"
+                onClick={() => {
+                  window.dispatchEvent(new Event("startHomeTour"));
+                }}
+                title="Panduan Penggunaan"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-amber-500/0 via-amber-500/10 to-amber-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <HelpCircle className="w-4 h-4 relative z-10" />
+              </Button>
             </div>
 
             {/* Mobile Menu Button */}
