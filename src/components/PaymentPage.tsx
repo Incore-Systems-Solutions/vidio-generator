@@ -329,8 +329,42 @@ export function PaymentPage() {
     null
   );
 
+  // Price state
+  const [pricePerVideo, setPricePerVideo] = useState<number>(10000); // Default 10000
+  const [loadingPrice, setLoadingPrice] = useState<boolean>(true);
+
   // Language state
   const [selectedLanguage, setSelectedLanguage] = useState("ID");
+
+  // Fetch dynamic price from API
+  useEffect(() => {
+    const fetchPrice = async () => {
+      try {
+        setLoadingPrice(true);
+        const response = await fetch(`${BASE_URL}/api/video-ai/current-price`);
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.status && result.data && result.data.price_video_ai) {
+          setPricePerVideo(result.data.price_video_ai);
+          console.log("Price fetched from API:", result.data.price_video_ai);
+        } else {
+          console.warn("Invalid price response, using default 10000");
+        }
+      } catch (err) {
+        console.error("Error fetching price:", err);
+        // Keep default price 10000 on error
+      } finally {
+        setLoadingPrice(false);
+      }
+    };
+
+    fetchPrice();
+  }, []);
 
   // Load language from localStorage and listen for changes
   useEffect(() => {
@@ -613,8 +647,7 @@ export function PaymentPage() {
     setIsOTPVerified(true);
     setIsOTPModalOpen(false);
 
-    // Calculate price based on mode
-    const pricePerVideo = 10000;
+    // Calculate price based on mode (use state pricePerVideo)
     const totalPrice =
       isKonsultanMode && konsultanData?.list
         ? pricePerVideo * konsultanData.list.length
@@ -644,8 +677,7 @@ export function PaymentPage() {
   const handlePaymentMethodSelect = async (methodId: string) => {
     setSelectedPaymentMethod(methodId);
 
-    // Calculate price based on mode
-    const pricePerVideo = 10000;
+    // Calculate price based on mode (use state pricePerVideo)
     const totalPrice =
       isKonsultanMode && konsultanData?.list
         ? pricePerVideo * konsultanData.list.length
@@ -1053,8 +1085,7 @@ export function PaymentPage() {
       setIsProcessing(true);
       setError(null);
 
-      // Calculate price based on mode
-      const pricePerVideo = 10000;
+      // Calculate price based on mode (use state pricePerVideo)
       const totalPrice =
         isKonsultanMode && konsultanData?.list
           ? pricePerVideo * konsultanData.list.length
@@ -1242,7 +1273,7 @@ export function PaymentPage() {
           gaya_video: manualData.gaya_video,
           metode_pengiriman: "pembayaran" as const,
           metode: metode,
-          jumlah: 10000, // Fixed price for manual video
+          jumlah: pricePerVideo, // Use dynamic price from API
           email: email,
           no_wa: phoneNumber || null,
           is_share: manualData.is_share || "y",
@@ -1371,9 +1402,6 @@ export function PaymentPage() {
     }
   };
 
-  // Calculate dynamic pricing
-  const pricePerVideo = 10000;
-
   // Get videoCount from collection_data in localStorage
   const getVideoCount = () => {
     try {
@@ -1389,9 +1417,19 @@ export function PaymentPage() {
   };
 
   const videoCount = getVideoCount();
-  const totalPrice = pricePerVideo * videoCount;
-  const productionCost = 7500 * videoCount;
-  const bonusCoins = 2500 * videoCount;
+
+  // Minimal transaction is always 10,000
+  const minTransaction = 10000;
+
+  // Production cost per video comes from API (pricePerVideo)
+  const productionCostPerVideo = pricePerVideo;
+  const totalProductionCost = productionCostPerVideo * videoCount;
+
+  // Total price is the greater of minTransaction or totalProductionCost
+  const totalPrice = Math.max(minTransaction, totalProductionCost);
+
+  // Bonus coins is the difference (only if totalPrice > totalProductionCost)
+  const bonusCoins = totalPrice - totalProductionCost;
 
   // Format currency helper
   const formatCurrency = (amount: number) => {
@@ -1413,7 +1451,8 @@ export function PaymentPage() {
       icon: <Coins className="w-6 h-6" />,
       balance: userQuota ? `${userQuota.toLocaleString()} Koin` : "0 Koin",
       disabled:
-        !isOTPVerified || (userQuota !== null && userQuota < productionCost),
+        !isOTPVerified ||
+        (userQuota !== null && userQuota < totalProductionCost),
     },
     {
       id: "gopay",
@@ -2038,16 +2077,30 @@ export function PaymentPage() {
                   <div>
                     <h2 className="text-3xl font-bold">{t.videoAI}</h2>
                     <p className="text-white/90 text-lg">
-                      {isKonsultanMode
-                        ? `${videoCount} Video x Rp ${formatCurrency(
-                            productionCost / videoCount
-                          )}`
-                        : t.fixedPrice}
+                      {loadingPrice ? (
+                        <span className="flex items-center">
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Loading price...
+                        </span>
+                      ) : isKonsultanMode ? (
+                        `${videoCount} Video x Rp ${formatCurrency(
+                          productionCostPerVideo
+                        )}`
+                      ) : (
+                        t.fixedPrice
+                      )}
                     </p>
                   </div>
                 </div>
                 <div className="relative z-10 text-5xl font-extrabold mb-2 w-full text-center">
-                  Rp {formatCurrency(productionCost)}
+                  {loadingPrice ? (
+                    <span className="flex items-center justify-center">
+                      <Loader2 className="w-8 h-8 mr-3 animate-spin" />
+                      Loading...
+                    </span>
+                  ) : (
+                    `Rp ${formatCurrency(totalProductionCost)}`
+                  )}
                 </div>
                 <p className="relative z-10 text-white/90 text-lg w-full text-center">
                   {isKonsultanMode
@@ -2111,21 +2164,26 @@ export function PaymentPage() {
                         {isKonsultanMode ? (
                           <>
                             • Jumlah Video: <strong>{videoCount}</strong>
-                            {totalPrice > 10000 ? (
+                            {totalPrice > minTransaction ? (
                               <>
-                                <br />• Biaya produksi: <strong>7.500</strong> x{" "}
-                                <strong>{videoCount}</strong> video ={" "}
+                                <br />• Biaya produksi:{" "}
                                 <strong>
-                                  {formatCurrency(productionCost)}
+                                  {formatCurrency(productionCostPerVideo)}
+                                </strong>{" "}
+                                x <strong>{videoCount}</strong> video ={" "}
+                                <strong>
+                                  {formatCurrency(totalProductionCost)}
                                 </strong>
                               </>
                             ) : (
                               <>
                                 <br />• Minimal Transaksi:{" "}
-                                <strong>{formatCurrency(totalPrice)}</strong>
+                                <strong>
+                                  {formatCurrency(minTransaction)}
+                                </strong>
                                 <br />• Biaya produksi video:{" "}
                                 <strong>
-                                  {formatCurrency(productionCost)}
+                                  {formatCurrency(totalProductionCost)}
                                 </strong>
                                 <br />• Sisa{" "}
                                 <strong>{formatCurrency(bonusCoins)}</strong>{" "}
@@ -2135,10 +2193,15 @@ export function PaymentPage() {
                           </>
                         ) : (
                           <>
-                            • Minimal Transaksi: <strong>10.000</strong>
-                            <br />• Biaya produksi video: <strong>7.500</strong>
-                            <br />• Sisa <strong>2.500</strong> dikonversi
-                            menjadi koin untuk video berikutnya
+                            • Minimal Transaksi:{" "}
+                            <strong>{formatCurrency(minTransaction)}</strong>
+                            <br />• Biaya produksi video:{" "}
+                            <strong>
+                              {formatCurrency(productionCostPerVideo)}
+                            </strong>
+                            <br />• Sisa{" "}
+                            <strong>{formatCurrency(bonusCoins)}</strong>{" "}
+                            dikonversi menjadi koin untuk video berikutnya
                           </>
                         )}
                       </p>
@@ -2563,9 +2626,10 @@ export function PaymentPage() {
               }`}
               disabled={
                 !selectedPaymentMethod ||
+                loadingPrice ||
                 (selectedPaymentMethod === "coins" &&
                   (!isOTPVerified ||
-                    (userQuota !== null && userQuota < productionCost))) ||
+                    (userQuota !== null && userQuota < totalProductionCost))) ||
                 (selectedPaymentMethod !== "coins" && !isOTPVerified) ||
                 isProcessing
               }
