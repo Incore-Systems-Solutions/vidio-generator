@@ -87,6 +87,7 @@ export function TransactionDetail({
   const [sceneStatuses, setSceneStatuses] = useState<
     Array<{ scene: number; status: "Antri" | "Proses" | "Selesai" }>
   >([]);
+  const [isPolling, setIsPolling] = useState(false);
 
   // Batch processing states
   const [batchData, setBatchData] = useState<BatchData[]>([]);
@@ -128,9 +129,16 @@ export function TransactionDetail({
 
         // If payment is successful, handle localStorage
         if (response.data.transaction_status === "success") {
+          // Stop polling if it's running
+          if (isPolling) {
+            console.log("Payment successful! Stopping polling...");
+            stopPolling();
+          }
+
           // Clear konsultan chat data (but keep manual video data)
           localStorage.removeItem("konsultan-chat-messages");
           localStorage.removeItem("konsultan-video-data");
+          localStorage.removeItem("manual-video-data");
           console.log("Cleared konsultan chat data after successful payment");
 
           // Save uuid_konsultan for generate page (check multiple fields)
@@ -165,6 +173,18 @@ export function TransactionDetail({
   const handleRefresh = async () => {
     setRefreshing(true);
     await fetchTransaction();
+  };
+
+  // Start polling transaction status
+  const startPolling = () => {
+    console.log("Starting transaction polling...");
+    setIsPolling(true);
+  };
+
+  // Stop polling transaction status
+  const stopPolling = () => {
+    console.log("Stopping transaction polling...");
+    setIsPolling(false);
   };
 
   // Check prompt optimization status
@@ -679,6 +699,28 @@ export function TransactionDetail({
       }
     }
   }, [invoiceNumber]);
+
+  // Polling transaction status when payment window is opened
+  useEffect(() => {
+    if (!isPolling) return;
+
+    console.log("Polling enabled, checking transaction every 3 seconds...");
+
+    // Check immediately
+    fetchTransaction();
+
+    // Then check every 3 seconds
+    const pollingInterval = setInterval(() => {
+      console.log("Polling transaction status...");
+      fetchTransaction();
+    }, 3000);
+
+    // Cleanup
+    return () => {
+      console.log("Cleaning up polling interval");
+      clearInterval(pollingInterval);
+    };
+  }, [isPolling]);
 
   // Real-time batch status updates using Pusher
   useEffect(() => {
@@ -1559,19 +1601,56 @@ export function TransactionDetail({
                           size="sm"
                           className="relative w-full bg-gradient-to-r from-orange-500/10 to-red-500/10 border border-orange-500/30 text-orange-300 hover:text-orange-200 hover:border-orange-500/50"
                           onClick={() => {
+                            // Calculate center position for popup
+                            const width = 900;
+                            const height = 700;
+                            const left = (window.screen.width - width) / 2;
+                            const top = (window.screen.height - height) / 2;
+
                             const popup = window.open(
                               transaction.payment_url,
-                              "payment",
-                              "width=800,height=600,scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no"
+                              "PaymentWindow",
+                              `width=${width},height=${height},left=${left},top=${top},scrollbars=yes,resizable=yes,menubar=no,toolbar=no,location=no,status=no`
                             );
+
                             if (popup) {
                               popup.focus();
+                              // Start polling transaction status
+                              startPolling();
+                            } else {
+                              alert(
+                                "Gagal membuka window pembayaran. Pastikan popup tidak diblokir oleh browser."
+                              );
                             }
                           }}
                         >
                           <ExternalLink className="w-4 h-4 mr-2" />
                           Buka Halaman Pembayaran
                         </Button>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Polling Indicator */}
+                  {isPolling && (
+                    <div className="pt-2">
+                      <div className="bg-gradient-to-r from-blue-500/10 to-cyan-500/10 border border-blue-500/30 rounded-xl p-3">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center space-x-2">
+                            <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
+                            <span className="text-sm text-blue-300">
+                              Mengecek status pembayaran...
+                            </span>
+                          </div>
+                          {/* <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={stopPolling}
+                            className="text-xs text-gray-400 hover:text-gray-300"
+                          >
+                            Stop
+                          </Button> */}
+                        </div>
                       </div>
                     </div>
                   )}
