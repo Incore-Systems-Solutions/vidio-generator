@@ -631,6 +631,8 @@ export function VideoConsultant() {
       localStorage.removeItem("konsultan-chat-messages");
       localStorage.removeItem("collection_data");
       localStorage.removeItem("batch_scene");
+      localStorage.removeItem("generate-uuid");
+      localStorage.removeItem("manual-video-data");
 
       const response = await chatAIApi.initChat(xApiKey, selectedLanguage);
 
