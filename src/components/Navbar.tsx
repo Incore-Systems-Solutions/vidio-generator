@@ -167,7 +167,7 @@ export function Navbar() {
                 variant="ghost"
                 size="sm"
                 className="group relative overflow-hidden bg-gradient-to-r from-slate-500/10 to-gray-500/10 hover:from-slate-500/20 hover:to-gray-500/20 border border-slate-500/20 hover:border-slate-500/40 text-slate-300 hover:text-slate-200 transition-all duration-300 px-4"
-                onClick={() => (window.location.href = "/")}
+                onClick={() => (window.location.href = "/index.html")}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-slate-500/0 via-slate-500/10 to-slate-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <Sparkles className="w-4 h-4 mr-2 relative z-10" />
@@ -207,7 +207,7 @@ export function Navbar() {
                       className="w-full px-4 py-3 text-left text-sm transition-colors duration-200 hover:bg-purple-500/20 text-white border-b border-purple-500/10"
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.location.href = "/konsultan-video";
+                        window.location.href = "/konsultan-video.html";
                       }}
                     >
                       <div className="font-medium">{t.autoAI}</div>
@@ -220,7 +220,7 @@ export function Navbar() {
                       className="menu-create-manual w-full px-4 py-3 text-left text-sm transition-colors duration-200 hover:bg-purple-500/20 text-white"
                       onClick={(e) => {
                         e.stopPropagation();
-                        window.location.href = "/create-video";
+                        window.location.href = "/create-video.html";
                       }}
                     >
                       <div className="font-medium">{t.manual}</div>
@@ -237,7 +237,7 @@ export function Navbar() {
                 variant="ghost"
                 size="sm"
                 className="menu-video-history group relative overflow-hidden bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 hover:border-blue-500/40 text-blue-300 hover:text-blue-200 transition-all duration-300 px-4"
-                onClick={() => (window.location.href = "/riwayat-video")}
+                onClick={() => (window.location.href = "/riwayat-video.html")}
               >
                 <div className="absolute inset-0 bg-gradient-to-r from-blue-500/0 via-blue-500/10 to-blue-500/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                 <History className="w-4 h-4 mr-2 relative z-10" />
@@ -340,7 +340,7 @@ export function Navbar() {
               size="sm"
               className="w-full justify-start bg-gradient-to-r from-slate-500/10 to-gray-500/10 hover:from-slate-500/20 hover:to-gray-500/20 border border-slate-500/20 text-slate-300 hover:text-slate-200"
               onClick={() => {
-                window.location.href = "/";
+                window.location.href = "/index.html";
                 setMobileMenuOpen(false);
               }}
             >
@@ -363,7 +363,7 @@ export function Navbar() {
                     type="button"
                     className="w-full px-4 py-2.5 text-left text-sm transition-colors duration-200 hover:bg-purple-500/30 text-white border-b border-purple-400/10"
                     onClick={() => {
-                      window.location.href = "/konsultan-video";
+                      window.location.href = "/konsultan-video.html";
                       setMobileMenuOpen(false);
                     }}
                   >
@@ -376,7 +376,7 @@ export function Navbar() {
                     type="button"
                     className="w-full px-4 py-2.5 text-left text-sm transition-colors duration-200 hover:bg-purple-500/30 text-white"
                     onClick={() => {
-                      window.location.href = "/create-video";
+                      window.location.href = "/create-video.html";
                       setMobileMenuOpen(false);
                     }}
                   >
@@ -395,7 +395,7 @@ export function Navbar() {
               size="sm"
               className="w-full justify-start bg-gradient-to-r from-blue-500/10 to-cyan-500/10 hover:from-blue-500/20 hover:to-cyan-500/20 border border-blue-500/20 text-blue-300 hover:text-blue-200"
               onClick={() => {
-                window.location.href = "/riwayat-video";
+                window.location.href = "/riwayat-video.html";
                 setMobileMenuOpen(false);
               }}
             >
