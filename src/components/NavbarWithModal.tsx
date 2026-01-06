@@ -19,11 +19,15 @@ export function NavbarWithModal({
 
   return (
     <>
-      <Navbar
-        currentStep={currentStep}
-        totalSteps={totalSteps}
-        onVideoHistoryClick={handleVideoHistoryClick}
-      />
+      {/* Native-style Top Bar */}
+      <div className="bg-slate-950 border-b border-slate-800/50">
+        <Navbar
+          currentStep={currentStep}
+          totalSteps={totalSteps}
+          onVideoHistoryClick={handleVideoHistoryClick}
+        />
+      </div>
+
       <VideoHistoryModal
         isOpen={isVideoHistoryOpen}
         onClose={() => setIsVideoHistoryOpen(false)}

@@ -1,73 +1,95 @@
 ---
 import { NavbarWithModal } from "@/components/NavbarWithModal.tsx"
 import { VideoGallery } from "@/components/VideoGallery"
-// import { AIAssistantBubble } from "@/components/AIAssistantBubble"
-import { HomeTourGuide } from "@/components/HomeTourGuide"
 import "../styles/global.css"
 ---
 
 <html lang="en" class="scroll-smooth">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="theme-color" content="#0f172a" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
-		<title>Video Generator - Create Amazing Videos</title>
-		<meta name="description" content="Create professional videos with our easy-to-use video generator. Follow simple steps to generate, customize, and download your videos." />
+		<title>InstantVideoApp</title>
+		<meta name="description" content="Create professional AI videos instantly" />
 	</head>
 
-	<body class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased relative overflow-x-hidden">
-		<!-- Animated Background Effects -->
-		<div class="fixed inset-0 overflow-hidden pointer-events-none">
-			<!-- Gradient Orbs -->
-			<div class="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-			<div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse" style="animation-delay: 2s;"></div>
-			<div class="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse" style="animation-delay: 4s;"></div>
-		</div>
+	<body class="min-h-screen bg-slate-950 antialiased relative overflow-x-hidden overscroll-none">
+		<!-- Native App Container -->
+		<div class="fixed inset-0 flex flex-col bg-slate-950">
+			<!-- Status Bar Spacer (for iOS notch) -->
+			<div class="safe-area-top bg-slate-950"></div>
 
-		<!-- Navigation with Integrated Stepper -->
-		<div class="relative z-[100]">
-			<NavbarWithModal client:load currentStep={1} totalSteps={4} />
-		</div>
-
-		<!-- Main Content -->
-		<main class="flex-1 relative">
-			<!-- Video Gallery Section -->
-			<section class="py-16">
-				<div class="container mx-auto px-4 sm:px-6 lg:px-8">
-					<VideoGallery client:load />
-				</div>
-			</section>
-		</main>
-
-		<!-- Futuristic Footer -->
-		<footer class="relative z-10 border-t border-white/10 py-12 mt-24 bg-slate-950/50 backdrop-blur-sm">
-			<div class="container mx-auto px-4">
-				<div class="text-center">
-					<p class="text-gray-400 text-sm mb-2">
-						&copy; 2025<span class="bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent font-semibold">InstanVideoApp</span>. All rights reserved.
-					</p>
-					<p class="text-gray-500 text-xs">
-						Powered by AI Video Generation Technology
-					</p>
-				</div>
+			<!-- Top Navigation Bar (Native Style) -->
+			<div class="relative z-50 flex-shrink-0">
+				<NavbarWithModal client:load currentStep={1} totalSteps={4} />
 			</div>
-		</footer>
 
-		<!-- AI Assistant Bubble -->
-		<!-- <AIAssistantBubble client:load /> -->
+			<!-- Main Scrollable Content -->
+			<main class="flex-1 relative overflow-y-auto overscroll-contain">
+				<!-- Subtle Background Pattern -->
+				<div class="fixed inset-0 pointer-events-none opacity-30">
+					<div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(139, 92, 246, 0.15) 1px, transparent 0); background-size: 40px 40px;"></div>
+				</div>
 
-		<!-- Home Tour Guide - Client Only -->
-		<HomeTourGuide client:only="react" />
+				<!-- Video Gallery Section -->
+				<section class="relative pb-20">
+					<VideoGallery client:load />
+				</section>
+			</main>
 
-		<script>
-			function updateStep(step: number) {
-				// This is just for demo purposes
-				// In a real app, you would update the component state
-				console.log(`Moving to step ${step}`);
-				// You could trigger a page reload with the new step or use a state management solution
-				window.location.href = `?step=${step}`;
+			<!-- Bottom Safe Area (for iOS home indicator) -->
+			<div class="safe-area-bottom bg-slate-950"></div>
+		</div>
+
+		<!-- Home Tour Guide -->
+		<!-- <HomeTourGuide client:only="react" /> -->
+
+		<!-- Native App Styles -->
+		<style>
+			/* iOS Safe Area Support */
+			.safe-area-top {
+				height: env(safe-area-inset-top);
 			}
-		</script>
+			.safe-area-bottom {
+				height: env(safe-area-inset-bottom);
+			}
+
+			/* Disable overscroll bounce effect */
+			body {
+				overscroll-behavior: none;
+				-webkit-overflow-scrolling: touch;
+			}
+
+			/* Hide scrollbar for cleaner native look */
+			main::-webkit-scrollbar {
+				display: none;
+			}
+			main {
+				-ms-overflow-style: none;
+				scrollbar-width: none;
+			}
+
+			/* Prevent text selection for native feel */
+			* {
+				-webkit-tap-highlight-color: transparent;
+				-webkit-touch-callout: none;
+			}
+
+			/* Allow text selection only in specific areas */
+			p, span, div[contenteditable] {
+				-webkit-user-select: text;
+				user-select: text;
+			}
+
+			/* Smooth momentum scrolling */
+			main {
+				-webkit-overflow-scrolling: touch;
+			}
+		</style>
 	</body>
 </html>

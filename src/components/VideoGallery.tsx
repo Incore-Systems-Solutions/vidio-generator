@@ -115,6 +115,11 @@ export function VideoGallery() {
     whatsapp_number: string | null;
   } | null>(null);
 
+  // Pull-to-refresh states
+  const [isPulling, setIsPulling] = useState(false);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [startY, setStartY] = useState(0);
+
   // Load language from localStorage and listen for changes
   useEffect(() => {
     const savedLanguage = localStorage.getItem("preferredLanguage");
@@ -353,68 +358,91 @@ export function VideoGallery() {
   // Get current translations
   const t = translations[selectedLanguage as keyof typeof translations];
 
+  // Pull-to-refresh handlers
+  const handleTouchStart = (e: React.TouchEvent) => {
+    const scrollTop = (e.currentTarget as HTMLElement).scrollTop;
+    if (scrollTop === 0) {
+      setStartY(e.touches[0].clientY);
+    }
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const scrollTop = (e.currentTarget as HTMLElement).scrollTop;
+    if (scrollTop === 0 && startY > 0) {
+      const currentY = e.touches[0].clientY;
+      const distance = currentY - startY;
+      if (distance > 0 && distance < 150) {
+        setIsPulling(true);
+        setPullDistance(distance);
+      }
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (pullDistance > 80) {
+      // Trigger refresh
+      handleRefresh();
+    }
+    setIsPulling(false);
+    setPullDistance(0);
+    setStartY(0);
+  };
+
   return (
-    <div className="w-full video-gallery-section">
-      {/* Futuristic Header */}
-      <div className="text-center mb-16 relative">
-        {/* Gradient Glow Background */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-purple-500/10 via-blue-500/10 to-purple-500/10 rounded-full blur-3xl pointer-events-none" />
-
-        <div className="relative z-10">
-          {/* Badge with Icon */}
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-4 py-2 mb-6">
-            <Sparkles className="w-4 h-4 text-purple-400" />
-            <span className="text-sm font-medium text-purple-300">
-              {t.badge}
-            </span>
-          </div>
-
-          {/* Main Title with Gradient */}
-          <h2 className="text-5xl md:text-6xl font-bold mb-6 tracking-tight">
-            <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-              {t.title}
-            </span>
-          </h2>
-
-          {/* Description */}
-          <p className="text-gray-400 max-w-2xl mx-auto text-lg leading-relaxed">
-            {t.description}
-          </p>
-        </div>
-      </div>
-
-      {/* Loading State - Futuristic */}
-      {loading && (
-        <div className="flex justify-center items-center py-24">
-          <div className="relative">
-            {/* Glowing Ring */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-20 animate-pulse" />
-
-            {/* Loading Content */}
-            <div className="relative flex flex-col items-center space-y-4 bg-slate-900/50 border border-purple-500/20 rounded-2xl px-12 py-8 backdrop-blur-sm">
-              <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
-              <div className="text-center">
-                <p className="text-gray-300 text-sm font-medium">
-                  {t.loadingTitle}
-                </p>
-                <p className="text-gray-500 text-xs mt-1">{t.loadingDesc}</p>
-              </div>
-            </div>
+    <div
+      className="w-full video-gallery-section px-4 pt-6 pb-4"
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+    >
+      {/* Pull-to-refresh indicator */}
+      {isPulling && (
+        <div
+          className="fixed top-16 left-1/2 transform -translate-x-1/2 z-50 transition-all duration-200"
+          style={{
+            opacity: Math.min(pullDistance / 80, 1),
+            transform: `translate(-50%, ${Math.min(pullDistance - 20, 60)}px)`,
+          }}
+        >
+          <div className="bg-slate-900/90 backdrop-blur-md rounded-full p-3 border border-purple-500/30 shadow-lg">
+            <Loader2
+              className={`w-5 h-5 text-purple-400 ${
+                pullDistance > 80 ? "animate-spin" : ""
+              }`}
+            />
           </div>
         </div>
       )}
 
-      {/* Error State - Futuristic */}
+      {/* Native App Header - Compact */}
+      <div className="mb-6">
+        <div className="flex items-center space-x-2 mb-3">
+          <div className="w-1 h-6 bg-gradient-to-b from-purple-500 to-blue-500 rounded-full"></div>
+          <h2 className="text-2xl font-bold text-white">{t.title}</h2>
+        </div>
+        <p className="text-gray-400 text-sm leading-relaxed">{t.description}</p>
+      </div>
+
+      {/* Loading State - Native Style */}
+      {loading && (
+        <div className="flex justify-center items-center py-20">
+          <div className="flex flex-col items-center space-y-3">
+            <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+            <p className="text-gray-400 text-sm">{t.loadingTitle}</p>
+          </div>
+        </div>
+      )}
+
+      {/* Error State - Native Style */}
       {error && (
-        <div className="text-center py-24">
-          <div className="max-w-md mx-auto bg-gradient-to-br from-red-500/5 to-orange-500/5 border border-red-500/20 rounded-2xl p-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full flex items-center justify-center">
-              <Video className="w-8 h-8 text-red-400" />
-            </div>
-            <p className="text-gray-300 mb-6 text-sm">{t.errorMessage}</p>
+        <div className="text-center py-20">
+          <div className="max-w-sm mx-auto bg-slate-900/50 border border-red-500/20 rounded-2xl p-6">
+            <Video className="w-12 h-12 mx-auto mb-3 text-red-400" />
+            <p className="text-gray-300 mb-4 text-sm">{t.errorMessage}</p>
             <Button
               onClick={handleRefresh}
-              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-purple-500/20"
+              size="sm"
+              className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white"
             >
               {t.retryButton}
             </Button>
@@ -422,9 +450,9 @@ export function VideoGallery() {
         </div>
       )}
 
-      {/* Video Grid */}
+      {/* Video Grid - Native Style */}
       {!loading && !error && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        <div className="grid grid-cols-2 gap-3 mb-4">
           {videos.map((videoGroup, index) => {
             const displayVideo = videoGroup.final_url_merge_video;
 
@@ -433,26 +461,31 @@ export function VideoGallery() {
             return (
               <div
                 key={`${videoGroup.id}-${index}`}
-                className="group cursor-pointer relative"
+                className="group cursor-pointer active:scale-95 transition-transform duration-200"
                 onClick={() => handleVideoClick(videoGroup)}
               >
-                {/* Glow Effect on Hover */}
-                <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-2xl opacity-0 group-hover:opacity-30 blur-xl transition-all duration-500 group-hover:duration-200" />
-
-                {/* Card */}
-                <div className="relative overflow-hidden rounded-2xl border border-slate-800/50 bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-sm aspect-video transition-all duration-300 group-hover:border-purple-500/50 group-hover:shadow-2xl group-hover:shadow-purple-500/20 group-hover:scale-[1.02]">
-                  <div className="relative w-full h-full">
+                {/* Native Card Style */}
+                <div className="relative overflow-hidden rounded-xl bg-slate-900/50 border border-slate-800/50 aspect-video">
+                  <div className="relative w-full h-full bg-gradient-to-br from-slate-800 to-slate-900">
                     {/* Video Thumbnail */}
                     <video
-                      className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                      className="w-full h-full object-cover"
                       muted
                       loop
                       playsInline
                       preload="metadata"
+                      poster={displayVideo + "#t=0.1"}
+                      onLoadedMetadata={(e) => {
+                        // Capture first frame as poster
+                        const video = e.currentTarget;
+                        video.currentTime = 0.1;
+                      }}
                       onMouseEnter={(e) => {
+                        // Play preview on hover (desktop)
                         e.currentTarget.play();
                       }}
                       onMouseLeave={(e) => {
+                        // Pause on mouse leave (desktop)
                         e.currentTarget.pause();
                         e.currentTarget.currentTime = 0;
                       }}
@@ -460,20 +493,20 @@ export function VideoGallery() {
                       <source src={displayVideo} type="video/mp4" />
                     </video>
 
-                    {/* Gradient Overlay on Hover */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                    {/* Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
 
-                    {/* Play Icon Overlay */}
-                    <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
-                      <div className="bg-gradient-to-r from-purple-500 to-blue-500 rounded-full p-6 shadow-2xl shadow-purple-500/50">
-                        <Play className="w-8 h-8 text-white fill-current" />
+                    {/* Play Icon */}
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 group-hover:bg-white/30 transition-colors">
+                        <Play className="w-6 h-6 text-white fill-current" />
                       </div>
                     </div>
 
-                    {/* Date Badge - Bottom Left */}
-                    <div className="absolute bottom-4 left-4 flex items-center space-x-2 bg-slate-900/80 backdrop-blur-sm rounded-full px-3 py-1.5 border border-white/10 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                    {/* Date Badge */}
+                    <div className="absolute bottom-2 left-2 flex items-center space-x-1 bg-black/60 backdrop-blur-sm rounded-full px-2 py-1">
                       <Calendar className="w-3 h-3 text-purple-400" />
-                      <span className="text-xs text-gray-300 font-medium">
+                      <span className="text-[10px] text-white font-medium">
                         {formatDate(videoGroup.created_at)}
                       </span>
                     </div>
@@ -485,41 +518,36 @@ export function VideoGallery() {
         </div>
       )}
 
-      {/* Load More Button - Futuristic */}
+      {/* Load More Button - Native Style */}
       {!loading && !error && currentPage < totalPages && (
-        <div className="text-center mt-16">
-          <div className="relative inline-block">
-            {/* Glow Effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-20" />
-
-            <Button
-              onClick={handleLoadMore}
-              size="lg"
-              disabled={loadingMore}
-              className="relative bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-xl shadow-purple-500/30 px-8 py-6 text-base font-medium transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
-            >
-              {loadingMore ? (
-                <>
-                  <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                  {t.loadingButton}
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5 mr-2" />
-                  {t.loadMoreButton}
-                </>
-              )}
-            </Button>
-          </div>
+        <div className="text-center mt-6 mb-4">
+          <Button
+            onClick={handleLoadMore}
+            size="lg"
+            disabled={loadingMore}
+            className="w-full bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white active:scale-95 transition-transform"
+          >
+            {loadingMore ? (
+              <>
+                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                {t.loadingButton}
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-5 h-5 mr-2" />
+                {t.loadMoreButton}
+              </>
+            )}
+          </Button>
         </div>
       )}
 
       {/* End of Results */}
       {!loading && !error && currentPage >= totalPages && videos.length > 0 && (
-        <div className="text-center mt-16">
-          <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/20 rounded-full px-6 py-3">
-            <div className="w-2 h-2 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full animate-pulse" />
-            <p className="text-gray-400 text-sm font-medium">{t.endMessage}</p>
+        <div className="text-center mt-6 mb-4">
+          <div className="inline-flex items-center space-x-2 bg-slate-900/50 border border-slate-800/50 rounded-full px-4 py-2">
+            <div className="w-2 h-2 bg-purple-500 rounded-full" />
+            <p className="text-gray-400 text-sm">{t.endMessage}</p>
           </div>
         </div>
       )}

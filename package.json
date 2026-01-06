@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
+    "build:mobile": "astro build --config astro.config.mobile.mjs",
     "preview": "astro preview",
     "astro": "astro"
   },
@@ -12,6 +13,9 @@
     "@astrojs/mdx": "^4.3.5",
     "@astrojs/node": "^9.4.4",
     "@astrojs/react": "^4.3.1",
+    "@capacitor/android": "^8.0.0",
+    "@capacitor/cli": "^8.0.0",
+    "@capacitor/core": "^8.0.0",
     "@radix-ui/react-select": "^2.2.6",
     "@radix-ui/react-separator": "^1.1.7",
     "@radix-ui/react-slot": "^1.2.3",
@@ -30,7 +34,8 @@
     "react-dom": "^19.1.1",
     "react-joyride": "^2.9.3",
     "tailwind-merge": "^3.3.1",
-    "tailwindcss": "^4.1.13"
+    "tailwindcss": "^4.1.13",
+    "vite": "^7.3.0"
   },
   "devDependencies": {
     "tw-animate-css": "^1.3.8"

@@ -3,12 +3,7 @@ import Layout from "@/layouts/main.astro";
 import { TransactionDetail } from "@/components/TransactionDetail";
 import "../../styles/global.css";
 
-
-// On-demand dynamic routes - render at request time
-export const prerender = false;
-
-// Alternative approach: empty getStaticPaths for on-demand rendering
-export async function getStaticPaths() {
+export function getStaticPaths() {
   return [];
 }
 ---
