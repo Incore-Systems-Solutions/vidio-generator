@@ -1,5 +1,4 @@
 ---
-import { Navbar } from "@/components/Navbar"
 import { ManualVideoPage } from "@/components/ManualVideoPage"
 import "../styles/global.css"
 ---
@@ -7,30 +6,67 @@ import "../styles/global.css"
 <html lang="en" class="scroll-smooth">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+		<meta name="mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-capable" content="yes" />
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+		<meta name="theme-color" content="#0f172a" />
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>Buat Video Manual - Video Generator</title>
 		<meta name="description" content="Buat video AI secara manual dengan kontrol penuh atas setiap detail. Upload karakter, pilih gaya visual, dan aspek rasio sesuai kebutuhan Anda." />
 	</head>
 
-	<body class="min-h-screen bg-background antialiased">
-		<!-- Navigation -->
-		<!-- <Navbar client:load currentStep={0} totalSteps={4} /> -->
+	<body class="min-h-screen bg-slate-950 antialiased relative overflow-x-hidden overscroll-none">
+		<!-- Native App Container -->
+		<div class="fixed inset-0 flex flex-col bg-slate-950">
+			<!-- Main Content -->
+			<main class="flex-1 relative overflow-hidden">
+				<ManualVideoPage client:load />
+			</main>
+		</div>
 
-		<!-- Main Content -->
-		<main class="flex-1">
-			<ManualVideoPage client:load />
-		</main>
+		<!-- Native App Styles -->
+		<style>
+			/* iOS Safe Area Support */
+			.safe-area-top {
+				height: env(safe-area-inset-top);
+			}
+			.safe-area-bottom {
+				height: env(safe-area-inset-bottom);
+			}
 
-		<!-- Footer -->
-		<!-- <footer class="border-t py-12 mt-12">
-			<div class="container mx-auto px-4">
-				<div class="text-center text-muted-foreground">
-					<p>&copy; 2024 Video Generator. All rights reserved.</p>
-				</div>
-			</div>
-		</footer> -->
+			/* Disable overscroll bounce effect */
+			body {
+				overscroll-behavior: none;
+				-webkit-overflow-scrolling: touch;
+			}
+
+			/* Hide scrollbar for cleaner native look */
+			main::-webkit-scrollbar {
+				display: none;
+			}
+			main {
+				-ms-overflow-style: none;
+				scrollbar-width: none;
+			}
+
+			/* Prevent text selection for native feel */
+			* {
+				-webkit-tap-highlight-color: transparent;
+				-webkit-touch-callout: none;
+			}
+
+			/* Allow text selection only in specific areas */
+			p, span, div[contenteditable], input, textarea {
+				-webkit-user-select: text;
+				user-select: text;
+			}
+
+			/* Smooth momentum scrolling */
+			main {
+				-webkit-overflow-scrolling: touch;
+			}
+		</style>
 	</body>
 </html>
-

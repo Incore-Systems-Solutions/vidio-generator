@@ -24,26 +24,26 @@ import "../styles/global.css"
 			<!-- Status Bar Spacer (for iOS notch) -->
 			<div class="safe-area-top bg-slate-950"></div>
 
-			<!-- Top Navigation Bar (Native Style) -->
+			<!-- Top Bar (Logo Only) -->
 			<div class="relative z-50 flex-shrink-0">
 				<NavbarWithModal client:load currentStep={1} totalSteps={4} />
 			</div>
 
-			<!-- Main Scrollable Content -->
-			<main class="flex-1 relative overflow-y-auto overscroll-contain">
+			<!-- Main Scrollable Content with Bottom Padding -->
+			<main class="flex-1 relative overflow-y-auto overscroll-contain pb-20">
 				<!-- Subtle Background Pattern -->
 				<div class="fixed inset-0 pointer-events-none opacity-30">
 					<div class="absolute inset-0" style="background-image: radial-gradient(circle at 2px 2px, rgba(139, 92, 246, 0.15) 1px, transparent 0); background-size: 40px 40px;"></div>
 				</div>
 
 				<!-- Video Gallery Section -->
-				<section class="relative pb-20">
+				<section class="relative">
 					<VideoGallery client:load />
 				</section>
-			</main>
 
-			<!-- Bottom Safe Area (for iOS home indicator) -->
-			<div class="safe-area-bottom bg-slate-950"></div>
+				<!-- Extra Bottom Padding for Bottom Nav -->
+				<div class="h-4"></div>
+			</main>
 		</div>
 
 		<!-- Home Tour Guide -->
@@ -56,7 +56,7 @@ import "../styles/global.css"
 				height: env(safe-area-inset-top);
 			}
 			.safe-area-bottom {
-				height: env(safe-area-inset-bottom);
+				padding-bottom: env(safe-area-inset-bottom);
 			}
 
 			/* Disable overscroll bounce effect */
@@ -89,6 +89,13 @@ import "../styles/global.css"
 			/* Smooth momentum scrolling */
 			main {
 				-webkit-overflow-scrolling: touch;
+			}
+
+			/* Bottom Navigation Safe Area */
+			@supports (padding-bottom: env(safe-area-inset-bottom)) {
+				.safe-area-bottom {
+					padding-bottom: calc(env(safe-area-inset-bottom) + 0.5rem);
+				}
 			}
 		</style>
 	</body>

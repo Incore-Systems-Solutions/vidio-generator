@@ -6,7 +6,10 @@ import "../styles/global.css";
 <html lang="en" class="scroll-smooth">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
     <title>Riwayat Video - InstanVideo</title>
@@ -16,9 +19,7 @@ import "../styles/global.css";
     />
   </head>
 
-  <body
-    class="min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 antialiased"
-  >
+  <body class="min-h-screen bg-slate-950 antialiased safe-area">
     <VideoHistory client:load />
   </body>
 </html>

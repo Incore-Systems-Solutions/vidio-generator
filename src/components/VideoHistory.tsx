@@ -1,7 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import {
   ArrowLeft,
   Mail,
@@ -10,7 +7,6 @@ import {
   AlertCircle,
   RefreshCw,
   Clock,
-  Play,
   Download,
   Eye,
   Loader2,
@@ -19,6 +15,7 @@ import {
   Calendar,
   Film,
   X,
+  User,
 } from "lucide-react";
 import {
   videoHistoryApi,
@@ -516,286 +513,204 @@ export function VideoHistory() {
   const t = translations[selectedLanguage as keyof typeof translations];
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
-      {/* Futuristic Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
-        <div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "4s" }}
-        ></div>
-      </div>
-
-      <div className="max-w-7xl mx-auto px-4 py-8 relative z-10">
-        {/* Futuristic Header */}
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mb-6 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 border border-purple-500/20"
-            onClick={() => (window.location.href = "/")}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t.back}
-          </Button>
-
-          {step !== "history" && (
-            <div className="text-center mb-8">
-              {/* Logo with Glow */}
-              <div className="relative inline-block mb-6">
-                <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                <div className="relative w-20 h-20 mx-auto bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center border-2 border-blue-400/50">
-                  <Film className="w-10 h-10 text-white" />
-                </div>
+    <div className="w-full min-h-screen bg-slate-950 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Native Mobile Header */}
+        <div className="sticky top-0 z-50 bg-slate-900 border-b border-slate-800 safe-area-top">
+          <div className="px-4 py-3">
+            {step !== "history" ? (
+              <div className="flex items-center justify-between">
+                <button
+                  onClick={() => (window.location.href = "/index.html")}
+                  className="p-2 hover:bg-slate-800 rounded-lg transition-colors"
+                >
+                  <ArrowLeft className="w-5 h-5 text-gray-400" />
+                </button>
+                <h1 className="text-base font-semibold text-white">
+                  {step === "email" && "Riwayat Video"}
+                  {step === "otp" && "Verifikasi OTP"}
+                </h1>
+                <div className="w-9"></div>
               </div>
-
-              {/* Title */}
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-blue-400 via-cyan-400 to-blue-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                  {t.videoHistory}
-                </span>
-              </h1>
-
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                {step === "email" && t.enterEmail}
-                {step === "otp" && t.otpTitle}
-              </p>
-            </div>
-          )}
-
-          {step === "history" && (
-            <div className="flex items-center justify-between bg-gradient-to-r from-slate-900/50 to-slate-950/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-md opacity-40 animate-pulse"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-blue-500 to-cyan-500 rounded-full flex items-center justify-center border-2 border-blue-400/50">
-                    <Film className="w-6 h-6 text-white" />
+            ) : (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                    <Film className="w-4 h-4 text-white" />
                   </div>
-                </div>
-                <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-cyan-400 bg-clip-text text-transparent">
-                    {t.videoHistory}
-                  </h1>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <p className="text-sm text-gray-400">
+                  <div>
+                    <h1 className="text-sm font-semibold text-white">
+                      Riwayat Video
+                    </h1>
+                    <p className="text-xs text-gray-400">
                       {totalVideos} {t.videoCount}
                     </p>
                   </div>
                 </div>
+                <button
+                  onClick={handleLogout}
+                  className="px-3 py-1.5 bg-red-500/10 hover:bg-red-500/20 border border-red-500/30 text-red-400 text-xs font-medium rounded-lg transition-colors"
+                >
+                  {t.logout}
+                </button>
               </div>
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={handleLogout}
-                className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/20"
-              >
-                {t.logout}
-              </Button>
-            </div>
-          )}
+            )}
+          </div>
         </div>
 
-        {/* Step 1: Email Input */}
+        {/* Step 1: Email Input - Native Style */}
         {step === "email" && (
-          <div className="max-w-md mx-auto">
-            <div className="relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 rounded-3xl opacity-20 blur-xl"></div>
-
-              <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl mb-4 border border-blue-500/30">
-                    <Mail className="w-7 h-7 text-blue-300" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    {t.accessPortal}
-                  </h2>
-                  <p className="text-gray-400 text-sm">{t.enterEmail}</p>
-                </div>
-
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      {t.emailAddress}
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
-
-                      <div className="relative flex items-center">
-                        <Mail className="absolute left-3 w-5 h-5 text-gray-400" />
-                        <input
-                          type="email"
-                          placeholder={t.emailPlaceholder}
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          onKeyPress={(e) =>
-                            e.key === "Enter" && handleRequestOTP()
-                          }
-                          className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-blue-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {error && (
-                    <div className="flex items-start p-3 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm animate-in fade-in slide-in-from-top duration-300">
-                      <AlertCircle className="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-red-300">{error}</span>
-                    </div>
-                  )}
-
-                  <div className="relative pt-2">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-
-                    <button
-                      onClick={handleRequestOTP}
-                      disabled={authLoading || !email.trim()}
-                      className="relative w-full py-3.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/30"
-                    >
-                      {authLoading ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>{t.sendingOTP}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          <span>{t.accessHistory}</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                <p className="text-center text-xs text-gray-500 mt-6">
-                  {t.verificationCodeSent}
-                </p>
+          <div className="px-4 py-6">
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center">
+                <Film className="w-8 h-8 text-white" />
               </div>
+              <h2 className="text-xl font-bold text-white mb-2">
+                {t.accessPortal}
+              </h2>
+              <p className="text-sm text-gray-400">{t.enterEmail}</p>
             </div>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2 px-1">
+                  {t.emailAddress}
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="email"
+                    placeholder={t.emailPlaceholder}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleRequestOTP()}
+                    className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border border-slate-800 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="flex items-start p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-red-300">{error}</span>
+                </div>
+              )}
+
+              <button
+                onClick={handleRequestOTP}
+                disabled={authLoading || !email.trim()}
+                className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              >
+                {authLoading ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span>{t.sendingOTP}</span>
+                  </>
+                ) : (
+                  "Kirim OTP"
+                )}
+              </button>
+            </div>
+
+            <p className="text-center text-xs text-gray-500 mt-6">
+              {t.verificationCodeSent}
+            </p>
           </div>
         )}
 
-        {/* Step 2: OTP Verification */}
+        {/* Step 2: OTP Verification - Native Style */}
         {step === "otp" && (
-          <div className="max-w-md mx-auto">
-            <div className="relative">
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 rounded-3xl opacity-20 blur-xl"></div>
+          <div className="px-4 py-6">
+            <div className="text-center mb-8">
+              <p className="text-sm text-gray-400 mb-1">{t.otpSentTo}</p>
+              <p className="font-medium text-white">{email}</p>
+            </div>
 
-              <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-2xl mb-4 border border-blue-500/30">
-                    <Settings className="w-7 h-7 text-blue-300 animate-spin-slow" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    {t.securityVerification}
-                  </h2>
-                  <p className="text-gray-400 text-sm mb-1">{t.otpSentTo}</p>
-                  <p className="font-semibold text-blue-300">{email}</p>
-                </div>
-
-                <div className="space-y-5">
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
-                      {t.enter6Digit}
-                    </label>
-                    <div className="relative group">
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
-
-                      <input
-                        type="text"
-                        placeholder="• • • • • •"
-                        value={otp}
-                        onChange={(e) =>
-                          setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                        }
-                        onKeyPress={(e) =>
-                          e.key === "Enter" && handleVerifyOTP()
-                        }
-                        maxLength={6}
-                        className="relative w-full px-4 py-4 bg-slate-900/50 border border-blue-500/30 rounded-xl text-white text-center text-2xl font-mono tracking-widest placeholder-gray-600 focus:outline-none focus:border-blue-500/60 focus:ring-2 focus:ring-blue-500/20 transition-all duration-300"
-                      />
-                    </div>
-                  </div>
-
-                  {countdown > 0 && (
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <Clock className="w-4 h-4 text-cyan-400" />
-                      <span className="text-gray-400">
-                        {t.resendIn}{" "}
-                        <span className="text-cyan-400 font-semibold">
-                          {countdown}s
-                        </span>
-                      </span>
-                    </div>
-                  )}
-
-                  {error && (
-                    <div className="flex items-start p-3 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm animate-in fade-in slide-in-from-top duration-300">
-                      <AlertCircle className="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-red-300">{error}</span>
-                    </div>
-                  )}
-
-                  <div className="relative pt-2">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-
-                    <button
-                      onClick={handleVerifyOTP}
-                      disabled={authLoading || !otp.trim() || otp.length !== 6}
-                      className="relative w-full py-3.5 bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-blue-500/30"
-                    >
-                      {authLoading ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>{t.verifying}</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-5 h-5" />
-                          <span>{t.verifyEnter}</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  <button
-                    onClick={() => setStep("email")}
-                    className="w-full py-3 bg-slate-900/50 hover:bg-slate-800/50 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>{t.backToEmail}</span>
-                  </button>
-                </div>
-
-                <div className="mt-6 text-center">
-                  <p className="text-xs text-gray-500">
-                    {t.notReceived}{" "}
-                    {countdown === 0 && (
-                      <button
-                        onClick={handleRequestOTP}
-                        className="text-cyan-400 hover:text-cyan-300 font-medium transition-colors"
-                      >
-                        {t.resend}
-                      </button>
-                    )}
-                  </p>
-                </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
+                  {t.enter6Digit}
+                </label>
+                <input
+                  type="text"
+                  placeholder="• • • • • •"
+                  value={otp}
+                  onChange={(e) =>
+                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  onKeyPress={(e) => e.key === "Enter" && handleVerifyOTP()}
+                  maxLength={6}
+                  className="w-full px-4 py-4 bg-slate-900/50 border border-slate-800 rounded-2xl text-white text-center text-2xl font-mono tracking-widest placeholder-gray-600 focus:outline-none focus:border-purple-500/50 transition-colors"
+                />
               </div>
+
+              {countdown > 0 && (
+                <div className="flex items-center justify-center space-x-2 text-sm">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                  <span className="text-gray-400">
+                    {t.resendIn}{" "}
+                    <span className="text-blue-400 font-semibold">
+                      {countdown}s
+                    </span>
+                  </span>
+                </div>
+              )}
+
+              {error && (
+                <div className="flex items-start p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-red-300">{error}</span>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <button
+                  onClick={handleVerifyOTP}
+                  disabled={authLoading || !otp.trim() || otp.length !== 6}
+                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
+                  {authLoading ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span>{t.verifying}</span>
+                    </>
+                  ) : (
+                    "Verifikasi OTP"
+                  )}
+                </button>
+
+                <button
+                  onClick={() => setStep("email")}
+                  className="w-full py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 text-gray-300 font-medium rounded-2xl transition-all"
+                >
+                  {t.backToEmail}
+                </button>
+              </div>
+            </div>
+
+            <div className="mt-6 text-center">
+              <p className="text-xs text-gray-500">
+                {t.notReceived}{" "}
+                {countdown === 0 && (
+                  <button
+                    onClick={handleRequestOTP}
+                    className="text-blue-400 hover:text-blue-300 font-medium transition-colors"
+                  >
+                    {t.resend}
+                  </button>
+                )}
+              </p>
             </div>
           </div>
         )}
 
-        {/* Step 3: Video History Grid */}
+        {/* Step 3: Video History Grid - Native Style */}
         {step === "history" && (
-          <>
+          <div className="px-4 py-4 pb-20">
             {/* Error Message */}
             {error && (
-              <div className="mb-6 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl backdrop-blur-sm flex items-center animate-in fade-in slide-in-from-top duration-300">
-                <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+              <div className="mb-4 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center">
+                <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0" />
                 <span className="text-red-300 text-sm">{error}</span>
               </div>
             )}
@@ -803,93 +718,87 @@ export function VideoHistory() {
             {/* Loading State */}
             {loading ? (
               <div className="flex justify-center items-center py-24">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full blur-xl opacity-20 animate-pulse"></div>
-                  <div className="relative flex flex-col items-center space-y-4 bg-slate-900/50 border border-blue-500/20 rounded-2xl px-12 py-8 backdrop-blur-sm">
-                    <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
-                    <div className="text-center">
-                      <p className="text-gray-300 text-sm font-medium">
-                        {t.loadingHistory}
-                      </p>
-                      <p className="text-gray-500 text-xs mt-1">
-                        {t.pleaseWait}
-                      </p>
-                    </div>
+                <div className="flex flex-col items-center space-y-3">
+                  <Loader2 className="w-8 h-8 animate-spin text-purple-400" />
+                  <div className="text-center">
+                    <p className="text-gray-300 text-sm font-medium">
+                      {t.loadingHistory}
+                    </p>
+                    <p className="text-gray-500 text-xs mt-1">{t.pleaseWait}</p>
                   </div>
                 </div>
               </div>
             ) : videos.length === 0 ? (
               // Empty State
               <div className="text-center py-24">
-                <div className="max-w-md mx-auto bg-gradient-to-br from-slate-800/50 to-slate-900/50 border border-white/10 rounded-2xl p-12 backdrop-blur-sm">
-                  <div className="w-20 h-20 mx-auto mb-6 bg-gradient-to-br from-blue-500/20 to-cyan-500/20 rounded-full flex items-center justify-center">
-                    <Video className="w-10 h-10 text-blue-400" />
-                  </div>
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    {t.noVideos}
-                  </h3>
-                  <p className="text-gray-400 text-sm mb-6">{t.noVideosDesc}</p>
-                  <Button
-                    onClick={() => (window.location.href = "/konsultan-video")}
-                    className="bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white border-0 shadow-lg shadow-blue-500/20"
-                  >
-                    <Sparkles className="w-4 h-4 mr-2" />
-                    {t.createVideoNow}
-                  </Button>
+                <div className="w-16 h-16 mx-auto mb-4 bg-slate-800/50 rounded-2xl flex items-center justify-center">
+                  <Video className="w-8 h-8 text-gray-600" />
                 </div>
+                <h3 className="text-lg font-bold text-white mb-2">
+                  {t.noVideos}
+                </h3>
+                <p className="text-gray-400 text-sm mb-6">{t.noVideosDesc}</p>
+                <button
+                  onClick={() =>
+                    (window.location.href = "/konsultan-video.html")
+                  }
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all"
+                >
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {t.createVideoNow}
+                </button>
               </div>
             ) : (
               // Video Grid
               <>
                 {/* Merge Toolbar */}
-                <div className="mb-6 flex items-center justify-between bg-gradient-to-r from-slate-900/50 to-slate-950/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-                  <div className="flex items-center space-x-4">
+                <div className="mb-4 flex items-center justify-between bg-slate-800/50 border border-slate-700 rounded-xl p-3">
+                  <div className="flex items-center space-x-3">
                     {!isMergeMode ? (
-                      <Button
+                      <button
                         onClick={toggleMergeMode}
-                        className="bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white border-0 shadow-lg shadow-purple-500/20"
+                        className="flex items-center space-x-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white text-sm font-medium rounded-lg transition-all"
                       >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        {t.selectVideos}
-                      </Button>
+                        <Sparkles className="w-4 h-4" />
+                        <span>{t.selectVideos}</span>
+                      </button>
                     ) : (
                       <>
                         <div className="flex items-center space-x-2">
                           <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse"></div>
-                          <span className="text-purple-300 text-sm font-medium">
+                          <span className="text-purple-300 text-xs font-medium">
                             {selectedVideoIds.length} {t.videosSelected}
                           </span>
                         </div>
-                        <Button
+                        <button
                           onClick={handleMergeVideos}
                           disabled={selectedVideoIds.length < 2 || isMerging}
-                          className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white border-0 shadow-lg shadow-green-500/20 disabled:opacity-50 disabled:cursor-not-allowed"
+                          className="flex items-center space-x-1 px-3 py-1.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white text-xs font-medium rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                         >
                           {isMerging ? (
                             <>
-                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                              {t.merging}
+                              <Loader2 className="w-3 h-3 animate-spin" />
+                              <span>{t.merging}</span>
                             </>
                           ) : (
                             <>
-                              <Film className="w-4 h-4 mr-2" />
-                              {t.mergeVideos}
+                              <Film className="w-3 h-3" />
+                              <span>{t.mergeVideos}</span>
                             </>
                           )}
-                        </Button>
-                        <Button
+                        </button>
+                        <button
                           onClick={toggleMergeMode}
-                          variant="ghost"
-                          className="text-gray-400 hover:text-white hover:bg-slate-800/50 border border-white/10"
+                          className="px-3 py-1.5 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-gray-300 text-xs font-medium rounded-lg transition-all"
                         >
                           {t.cancelSelection}
-                        </Button>
+                        </button>
                       </>
                     )}
                   </div>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 mb-8">
+                <div className="grid grid-cols-2 gap-3 mb-8">
                   {videos.map((videoGroup) => {
                     // Get the merged video or first video from list
                     const displayVideo = videoGroup.final_url_merge_video;
@@ -905,7 +814,7 @@ export function VideoHistory() {
                         key={videoGroup.id}
                         className={`group cursor-pointer relative ${
                           isMergeMode && isSelected
-                            ? "ring-2 ring-purple-500 ring-offset-2 ring-offset-slate-950"
+                            ? "ring-2 ring-purple-500"
                             : ""
                         }`}
                         onClick={() => {
@@ -916,25 +825,18 @@ export function VideoHistory() {
                           }
                         }}
                       >
-                        {/* Glow Effect */}
-                        <div
-                          className={`absolute -inset-0.5 bg-gradient-to-r from-blue-500 via-cyan-500 to-blue-500 rounded-2xl opacity-0 blur-lg transition-all duration-500 ${
-                            isSelected ? "opacity-30" : "group-hover:opacity-20"
-                          }`}
-                        ></div>
-
                         {/* Selection Checkbox - Top Left */}
                         {isMergeMode && canSelect && (
-                          <div className="absolute top-3 left-3 z-20">
+                          <div className="absolute top-2 left-2 z-20">
                             <div
-                              className={`w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                              className={`w-5 h-5 rounded-full border-2 flex items-center justify-center transition-all ${
                                 isSelected
                                   ? "bg-purple-500 border-purple-500"
-                                  : "bg-slate-900/80 border-white/30 backdrop-blur-sm"
+                                  : "bg-slate-900/80 border-slate-600"
                               }`}
                             >
                               {isSelected && (
-                                <CheckCircle className="w-4 h-4 text-white" />
+                                <CheckCircle className="w-3 h-3 text-white" />
                               )}
                             </div>
                           </div>
@@ -942,16 +844,16 @@ export function VideoHistory() {
 
                         {/* Card */}
                         <div
-                          className={`relative overflow-hidden rounded-2xl border bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-sm aspect-video transition-all duration-300 ${
+                          className={`relative overflow-hidden rounded-xl border bg-slate-900 aspect-video transition-all active:scale-95 ${
                             isSelected
-                              ? "border-purple-500/50 shadow-2xl shadow-purple-500/20"
-                              : "border-slate-800/50 group-hover:border-blue-500/30 group-hover:shadow-2xl group-hover:shadow-blue-500/10"
+                              ? "border-purple-500/50"
+                              : "border-slate-800"
                           }`}
                         >
                           <div className="relative w-full h-full">
                             {displayVideo ? (
                               <video
-                                className="w-full h-full object-cover transition-all duration-700 group-hover:scale-110"
+                                className="w-full h-full object-cover"
                                 muted
                                 loop
                                 playsInline
@@ -960,10 +862,10 @@ export function VideoHistory() {
                                 <source src={displayVideo} type="video/mp4" />
                               </video>
                             ) : (
-                              <div className="w-full h-full bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center">
-                                <div className="text-center px-4">
-                                  <Video className="w-12 h-12 mx-auto mb-2 text-gray-500 opacity-30" />
-                                  <p className="text-xs text-gray-500">
+                              <div className="w-full h-full bg-slate-800 flex items-center justify-center">
+                                <div className="text-center px-2">
+                                  <Video className="w-8 h-8 mx-auto mb-1 text-gray-600" />
+                                  <p className="text-[10px] text-gray-500">
                                     {status}
                                   </p>
                                 </div>
@@ -971,33 +873,33 @@ export function VideoHistory() {
                             )}
 
                             {/* Gradient Overlay */}
-                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/95 via-slate-950/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                            <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-transparent to-transparent" />
 
                             {/* Content Overlay */}
-                            <div className="absolute inset-0 flex flex-col justify-between p-4 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                            <div className="absolute inset-0 flex flex-col justify-between p-2">
                               {/* Status Badge */}
                               <div className="flex justify-end">
-                                <Badge
-                                  className={`text-xs px-2 py-1 ${getStatusColor(
+                                <span
+                                  className={`text-[10px] px-1.5 py-0.5 rounded-md font-medium ${getStatusColor(
                                     status
                                   )}`}
                                 >
                                   {status}
-                                </Badge>
+                                </span>
                               </div>
 
                               {/* Bottom Info */}
                               <div>
-                                <p className="text-white text-sm font-medium mb-2 line-clamp-2">
+                                <p className="text-white text-[10px] font-medium mb-1 line-clamp-2">
                                   {prompt}
                                 </p>
                                 <div className="flex items-center justify-between">
-                                  <div className="flex items-center text-gray-400 text-xs">
-                                    <Calendar className="w-3 h-3 mr-1" />
+                                  <div className="flex items-center text-gray-400 text-[9px]">
+                                    <Calendar className="w-2.5 h-2.5 mr-0.5" />
                                     {formatDate(videoGroup.created_at)}
                                   </div>
-                                  <div className="bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full p-2 shadow-lg shadow-blue-500/30">
-                                    <Eye className="w-3 h-3 text-white" />
+                                  <div className="bg-purple-600 rounded-full p-1">
+                                    <Eye className="w-2.5 h-2.5 text-white" />
                                   </div>
                                 </div>
                               </div>
@@ -1010,7 +912,7 @@ export function VideoHistory() {
                 </div>
               </>
             )}
-          </>
+          </div>
         )}
       </div>
 
@@ -1035,21 +937,10 @@ export function VideoHistory() {
         />
       )}
 
-      {/* CSS for animations */}
+      {/* CSS for safe area */}
       <style>{`
-        @keyframes gradient {
-          0%, 100% { background-position: 0% 50%; }
-          50% { background-position: 100% 50%; }
-        }
-        .animate-gradient {
-          animation: gradient 6s ease infinite;
-        }
-        @keyframes spin-slow {
-          from { transform: rotate(0deg); }
-          to { transform: rotate(360deg); }
-        }
-        .animate-spin-slow {
-          animation: spin-slow 3s linear infinite;
+        .safe-area-top {
+          padding-top: env(safe-area-inset-top);
         }
       `}</style>
     </div>

@@ -971,640 +971,509 @@ export function VideoConsultant() {
   const t = translations[selectedLanguage as keyof typeof translations];
 
   return (
-    <div className="w-full min-h-screen bg-gradient-to-br from-slate-950 via-indigo-950 to-slate-950 relative overflow-hidden">
-      {/* Futuristic Background Effects */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl animate-pulse"></div>
+    <div className="w-full min-h-screen bg-slate-950 relative overflow-hidden">
+      {/* Subtle Background Pattern */}
+      <div className="fixed inset-0 pointer-events-none opacity-20">
         <div
-          className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "2s" }}
-        ></div>
-        <div
-          className="absolute top-1/2 left-1/2 w-96 h-96 bg-indigo-500/5 rounded-full blur-3xl animate-pulse"
-          style={{ animationDelay: "4s" }}
+          className="absolute inset-0"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 2px 2px, rgba(139, 92, 246, 0.15) 1px, transparent 0)",
+            backgroundSize: "40px 40px",
+          }}
         ></div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-4 py-8 relative z-10">
-        {/* Futuristic Header */}
-        <div className="mb-8">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="mb-6 text-purple-300 hover:text-purple-200 hover:bg-purple-500/10 border border-purple-500/20"
-            onClick={() => (window.location.href = "/")}
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            {t.back}
-          </Button>
+      <div className="max-w-2xl mx-auto relative z-10 h-screen flex flex-col">
+        {/* Native Top Bar - Only for Chat Step */}
+        {step === "chat" && (
+          <div className="flex-shrink-0 bg-slate-950/95 backdrop-blur-xl border-b border-slate-800/50 px-4 py-3 safe-area-top">
+            <div className="flex items-center justify-between">
+              <button
+                onClick={() => (window.location.href = "/index.html")}
+                className="p-2 hover:bg-slate-800/50 rounded-full transition-colors"
+              >
+                <ArrowLeft className="w-5 h-5 text-gray-400" />
+              </button>
 
-          {step !== "chat" && (
-            <div className="text-center mb-8">
-              {/* Logo with Glow */}
-              <div className="relative inline-block mb-6">
-                <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-xl opacity-30 animate-pulse"></div>
-                <div className="relative w-20 h-20 mx-auto bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-purple-400/50">
-                  <MessageCircle className="w-10 h-10 text-white" />
-                </div>
-              </div>
-
-              {/* Title */}
-              <h1 className="text-4xl md:text-5xl font-bold mb-4">
-                <span className="bg-gradient-to-r from-purple-400 via-blue-400 to-purple-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient">
-                  {t.aiConsultant}
-                </span>
-              </h1>
-
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                {step === "email" && t.emailTitle}
-                {step === "otp" && t.otpTitle}
-              </p>
-            </div>
-          )}
-
-          {step === "chat" && (
-            <div className="flex items-center justify-between bg-gradient-to-r from-slate-900/50 to-slate-950/50 backdrop-blur-xl border border-white/10 rounded-2xl p-4">
-              <div className="flex items-center space-x-4">
-                <div className="relative">
-                  <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-md opacity-40 animate-pulse"></div>
-                  <div className="relative w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center border-2 border-purple-400/50">
-                    <Bot className="w-6 h-6 text-white" />
-                  </div>
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center">
+                  <Bot className="w-4 h-4 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold bg-gradient-to-r from-purple-400 to-blue-400 bg-clip-text text-transparent">
-                    {t.aiConsultant}
+                  <h1 className="text-sm font-semibold text-white">
+                    AI Assistant
                   </h1>
-                  <div className="flex items-center space-x-2">
-                    <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                    <p className="text-sm text-gray-400">{t.onlineReady}</p>
+                  <div className="flex items-center space-x-1">
+                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
+                    <p className="text-[10px] text-gray-400">{t.onlineReady}</p>
                   </div>
                 </div>
               </div>
-              <div className="flex items-center space-x-2">
-                <Button
-                  variant="ghost"
-                  size="sm"
+
+              <div className="flex items-center space-x-1">
+                <button
                   onClick={handleClearChat}
-                  className="text-red-300 hover:text-red-200 hover:bg-red-500/10 border border-red-500/20"
                   disabled={isInitializing}
+                  className="p-2 hover:bg-slate-800/50 rounded-full transition-colors"
                 >
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">{t.clearChat}</span>
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="sm"
+                  <Trash2 className="w-4 h-4 text-gray-400" />
+                </button>
+                <button
                   onClick={handleLogout}
-                  className="text-orange-300 hover:text-orange-200 hover:bg-orange-500/10 border border-orange-500/20"
+                  className="p-2 hover:bg-slate-800/50 rounded-full transition-colors"
                 >
-                  <LogOut className="w-4 h-4 mr-2" />
-                  <span className="hidden sm:inline">{t.logout}</span>
-                </Button>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Step 1: AI Access Gate - Login Screen */}
-        {step === "email" && (
-          <div className="max-w-md mx-auto">
-            {/* Glassmorphism Card */}
-            <div className="relative">
-              {/* Outer Glow */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
-
-              <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                {/* Header with Icon */}
-                <div className="text-center mb-6 flex flex-col items-center">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl mb-4 border border-purple-500/30">
-                    <Mail className="w-7 h-7 text-purple-300" />
-                  </div>
-                  <div className="flex justify-center mb-2">
-                    <img
-                      src="/logo.svg"
-                      alt="Instant VideoApp"
-                      className="h-8 sm:h-10 md:h-11 w-auto relative z-10 transition-transform duration-300 group-hover:scale-105"
-                    />
-                  </div>
-                  <p className="text-gray-400 text-sm">{t.enterEmail}</p>
-                </div>
-
-                <div className="space-y-5">
-                  {/* Email Input with Futuristic Style */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-2">
-                      {t.emailAddress}
-                    </label>
-                    <div className="relative group">
-                      {/* Input Glow on Focus */}
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
-
-                      <div className="relative flex items-center">
-                        <Mail className="absolute left-3 w-5 h-5 text-gray-400" />
-                        <input
-                          type="email"
-                          placeholder={t.emailPlaceholder}
-                          value={email}
-                          onChange={(e) => setEmail(e.target.value)}
-                          onKeyPress={(e) =>
-                            e.key === "Enter" && handleRequestOTP()
-                          }
-                          className="w-full pl-11 pr-4 py-3 bg-slate-900/50 border border-purple-500/30 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
-                        />
-                      </div>
-                    </div>
-                  </div>
-
-                  {/* Error Message */}
-                  {error && (
-                    <div className="flex items-start p-3 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm animate-in fade-in slide-in-from-top duration-300">
-                      <AlertCircle className="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-red-300">{error}</span>
-                    </div>
-                  )}
-
-                  {/* Submit Button with Glow */}
-                  <div className="relative pt-2">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-
-                    <button
-                      onClick={handleRequestOTP}
-                      disabled={authLoading || !email.trim()}
-                      className="relative w-full py-3.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/30"
-                    >
-                      {authLoading ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>{t.sendingOTP}</span>
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-5 h-5" />
-                          <span>{t.accessPortal}</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                </div>
-
-                {/* Footer Note */}
-                <p className="text-center text-xs text-gray-500 mt-6">
-                  {t.verificationCodeSentDesc}
-                </p>
-                <p className="text-center text-xs text-gray-500 mt-6">
-                  {t.verificationCodeSent}
-                </p>
+                  <LogOut className="w-4 h-4 text-gray-400" />
+                </button>
               </div>
             </div>
           </div>
         )}
 
-        {/* Step 2: Secure AI Verification - OTP Screen */}
+        {/* Step 1: Email Login - Native Style */}
+        {step === "email" && (
+          <div className="flex-1 flex flex-col justify-center px-6 py-8">
+            {/* Back Button */}
+            <button
+              onClick={() => (window.location.href = "/index.html")}
+              className="absolute top-4 left-4 p-2 hover:bg-slate-800/50 rounded-full transition-colors safe-area-top"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-400" />
+            </button>
+
+            {/* Logo & Title */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center">
+                <MessageCircle className="w-8 h-8 text-white" />
+              </div>
+              <h1 className="text-2xl font-bold text-white mb-2">
+                {t.aiConsultant}
+              </h1>
+              <p className="text-sm text-gray-400 px-4">{t.emailTitle}</p>
+            </div>
+
+            {/* Email Input */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2 px-1">
+                  {t.emailAddress}
+                </label>
+                <div className="relative">
+                  <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="email"
+                    placeholder={t.emailPlaceholder}
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleRequestOTP()}
+                    className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border border-slate-800 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
+                  />
+                </div>
+              </div>
+
+              {error && (
+                <div className="flex items-start p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-red-300">{error}</span>
+                </div>
+              )}
+
+              <button
+                onClick={handleRequestOTP}
+                disabled={authLoading || !email.trim()}
+                className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              >
+                {authLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>{t.sendingOTP}</span>
+                  </>
+                ) : (
+                  <>
+                    <Sparkles className="w-5 h-5" />
+                    <span>{t.accessPortal}</span>
+                  </>
+                )}
+              </button>
+
+              <p className="text-center text-xs text-gray-500 px-4">
+                {t.verificationCodeSent}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: OTP Verification - Native Style */}
         {step === "otp" && (
-          <div className="max-w-md mx-auto">
-            {/* Glassmorphism Card */}
-            <div className="relative">
-              {/* Outer Glow */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-20 blur-xl"></div>
+          <div className="flex-1 flex flex-col justify-center px-6 py-8">
+            {/* Back Button */}
+            <button
+              onClick={() => setStep("email")}
+              className="absolute top-4 left-4 p-2 hover:bg-slate-800/50 rounded-full transition-colors safe-area-top"
+            >
+              <ArrowLeft className="w-5 h-5 text-gray-400" />
+            </button>
 
-              <div className="relative bg-white/10 backdrop-blur-xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-                {/* Header with Lock Icon */}
-                <div className="text-center mb-6">
-                  <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl mb-4 border border-purple-500/30">
-                    <Settings className="w-7 h-7 text-purple-300 animate-spin-slow" />
-                  </div>
-                  <h2 className="text-2xl font-bold text-white mb-2">
-                    {t.securityVerification}
-                  </h2>
-                  <p className="text-gray-400 text-sm mb-1">{t.otpSentTo}</p>
-                  <p className="font-semibold text-purple-300">{email}</p>
+            {/* Icon & Title */}
+            <div className="text-center mb-8">
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-2xl flex items-center justify-center border border-purple-500/30">
+                <Settings className="w-8 h-8 text-purple-400" />
+              </div>
+              <h2 className="text-2xl font-bold text-white mb-2">
+                {t.securityVerification}
+              </h2>
+              <p className="text-sm text-gray-400 mb-1">{t.otpSentTo}</p>
+              <p className="text-sm font-semibold text-purple-400">{email}</p>
+            </div>
+
+            {/* OTP Input */}
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
+                  {t.enter6Digit}
+                </label>
+                <input
+                  type="text"
+                  placeholder="• • • • • •"
+                  value={otp}
+                  onChange={(e) =>
+                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  onKeyPress={(e) => e.key === "Enter" && handleVerifyOTP()}
+                  maxLength={6}
+                  className="w-full px-4 py-4 bg-slate-900/50 border border-slate-800 rounded-2xl text-white text-center text-2xl font-mono tracking-widest placeholder-gray-600 focus:outline-none focus:border-purple-500/50 transition-colors"
+                />
+              </div>
+
+              {countdown > 0 && (
+                <div className="flex items-center justify-center space-x-2 text-sm">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                  <span className="text-gray-400">
+                    {t.resendIn}{" "}
+                    <span className="text-blue-400 font-semibold">
+                      {countdown}s
+                    </span>
+                  </span>
                 </div>
+              )}
 
-                <div className="space-y-5">
-                  {/* OTP Input with Futuristic Style */}
-                  <div>
-                    <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
-                      {t.enter6Digit}
-                    </label>
-                    <div className="relative group">
-                      {/* Input Glow on Focus */}
-                      <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-30 blur transition-opacity duration-300"></div>
-
-                      <input
-                        type="text"
-                        placeholder="• • • • • •"
-                        value={otp}
-                        onChange={(e) =>
-                          setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                        }
-                        onKeyPress={(e) =>
-                          e.key === "Enter" && handleVerifyOTP()
-                        }
-                        maxLength={6}
-                        className="relative w-full px-4 py-4 bg-slate-900/50 border border-purple-500/30 rounded-xl text-white text-center text-2xl font-mono tracking-widest placeholder-gray-600 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300"
-                      />
-                    </div>
-                  </div>
-
-                  {/* Countdown Timer */}
-                  {countdown > 0 && (
-                    <div className="flex items-center justify-center space-x-2 text-sm">
-                      <Clock className="w-4 h-4 text-blue-400" />
-                      <span className="text-gray-400">
-                        {t.resendIn}{" "}
-                        <span className="text-blue-400 font-semibold">
-                          {countdown}s
-                        </span>
-                      </span>
-                    </div>
-                  )}
-
-                  {/* Error Message */}
-                  {error && (
-                    <div className="flex items-start p-3 bg-red-500/10 border border-red-500/30 rounded-xl backdrop-blur-sm animate-in fade-in slide-in-from-top duration-300">
-                      <AlertCircle className="w-5 h-5 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
-                      <span className="text-sm text-red-300">{error}</span>
-                    </div>
-                  )}
-
-                  {/* Verify Button with Glow */}
-                  <div className="relative pt-2">
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-50 group-hover:opacity-75 transition-opacity duration-300"></div>
-
-                    <button
-                      onClick={handleVerifyOTP}
-                      disabled={authLoading || !otp.trim() || otp.length !== 6}
-                      className="relative w-full py-3.5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2 shadow-lg shadow-purple-500/30"
-                    >
-                      {authLoading ? (
-                        <>
-                          <RefreshCw className="w-5 h-5 animate-spin" />
-                          <span>{t.verifying}</span>
-                        </>
-                      ) : (
-                        <>
-                          <CheckCircle className="w-5 h-5" />
-                          <span>{t.verifyEnter}</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-
-                  {/* Back Button */}
-                  <button
-                    onClick={() => setStep("email")}
-                    className="w-full py-3 bg-slate-900/50 hover:bg-slate-800/50 border border-white/10 hover:border-white/20 text-gray-300 hover:text-white font-medium rounded-xl transition-all duration-300 flex items-center justify-center space-x-2"
-                  >
-                    <ArrowLeft className="w-4 h-4" />
-                    <span>{t.backToEmail}</span>
-                  </button>
+              {error && (
+                <div className="flex items-start p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-red-300">{error}</span>
                 </div>
+              )}
 
-                {/* Footer Note */}
-                <div className="mt-6 text-center">
+              <button
+                onClick={handleVerifyOTP}
+                disabled={authLoading || !otp.trim() || otp.length !== 6}
+                className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              >
+                {authLoading ? (
+                  <>
+                    <Loader2 className="w-5 h-5 animate-spin" />
+                    <span>{t.verifying}</span>
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle className="w-5 h-5" />
+                    <span>{t.verifyEnter}</span>
+                  </>
+                )}
+              </button>
+
+              {countdown === 0 && (
+                <div className="text-center">
                   <p className="text-xs text-gray-500">
                     {t.notReceived}{" "}
-                    {countdown === 0 && (
-                      <button
-                        onClick={handleRequestOTP}
-                        className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
-                      >
-                        {t.resend}
-                      </button>
-                    )}
+                    <button
+                      onClick={handleRequestOTP}
+                      className="text-purple-400 hover:text-purple-300 font-medium"
+                    >
+                      {t.resend}
+                    </button>
                   </p>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         )}
 
-        {/* Step 3: Chat Interface */}
+        {/* Step 3: Chat Interface - Native Style */}
         {step === "chat" && (
           <>
             {/* Error Message */}
             {error && (
-              <div className="mb-4 p-4 bg-red-500/10 border border-red-500/30 rounded-2xl backdrop-blur-sm flex items-center animate-in fade-in slide-in-from-top duration-300">
-                <AlertCircle className="w-5 h-5 text-red-400 mr-3 flex-shrink-0" />
+              <div className="mx-4 mt-2 mb-2 p-3 bg-red-500/10 border border-red-500/20 rounded-xl flex items-center">
+                <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0" />
                 <span className="text-red-300 text-sm">{error}</span>
               </div>
             )}
 
-            {/* Futuristic Chat Container */}
-            <div className="relative">
-              {/* Outer Glow */}
-              <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 via-blue-500 to-purple-500 rounded-3xl opacity-10 blur-xl"></div>
-
-              <div className="relative bg-gradient-to-br from-slate-900/90 to-slate-950/90 backdrop-blur-xl border border-white/10 rounded-3xl shadow-2xl overflow-hidden">
-                <div className="p-0">
-                  {/* Futuristic Messages Area */}
-                  <div className="h-[600px] overflow-y-auto p-4 sm:p-6 space-y-6 bg-gradient-to-b from-slate-900/0 to-slate-900/30">
-                    {isInitializing && messages.length === 0 ? (
-                      <div className="flex justify-center items-center h-full">
-                        <div className="flex flex-col items-center space-y-4">
-                          <div className="relative">
-                            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full blur-lg opacity-30 animate-pulse"></div>
-                            <Loader2 className="relative w-12 h-12 animate-spin text-purple-400" />
-                          </div>
-                          <span className="text-gray-400 font-medium">
-                            {t.initializingAI}
-                          </span>
-                        </div>
-                      </div>
-                    ) : (
-                      <>
-                        {messages.map((message) => (
-                          <div
-                            key={message.id}
-                            className={`flex ${
-                              message.role === "user"
-                                ? "justify-end"
-                                : "justify-start"
-                            } animate-in fade-in slide-in-from-bottom-2 duration-300`}
-                          >
+            {/* Native Chat Container */}
+            <div className="flex-1 flex flex-col bg-slate-950 overflow-hidden">
+              {/* Messages Area */}
+              <div className="flex-1 overflow-y-auto px-4 py-4 space-y-4">
+                {isInitializing && messages.length === 0 ? (
+                  <div className="flex justify-center items-center h-full">
+                    <div className="flex flex-col items-center space-y-3">
+                      <Loader2 className="w-10 h-10 animate-spin text-purple-400" />
+                      <span className="text-gray-400 text-sm">
+                        {t.initializingAI}
+                      </span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    {messages.map((message) => (
+                      <div
+                        key={message.id}
+                        className={`flex ${
+                          message.role === "user"
+                            ? "justify-end"
+                            : "justify-start"
+                        }`}
+                      >
+                        <div
+                          className={`flex gap-2 max-w-[80%] ${
+                            message.role === "user"
+                              ? "flex-row-reverse"
+                              : "flex-row"
+                          }`}
+                        >
+                          {/* Simple Avatar */}
+                          <div className="flex-shrink-0">
                             <div
-                              className={`flex gap-3 sm:gap-4 max-w-[85%] ${
+                              className={`w-8 h-8 rounded-full flex items-center justify-center ${
                                 message.role === "user"
-                                  ? "flex-row-reverse"
-                                  : "flex-row"
+                                  ? "bg-gradient-to-br from-purple-500 to-blue-500"
+                                  : "bg-gradient-to-br from-green-500 to-emerald-500"
                               }`}
                             >
-                              {/* Futuristic Avatar */}
-                              <div className="flex-shrink-0 relative">
-                                {message.role === "assistant" && (
-                                  <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full blur-md opacity-40 animate-pulse"></div>
-                                )}
-                                <div
-                                  className={`relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center border-2 ${
-                                    message.role === "user"
-                                      ? "bg-gradient-to-br from-purple-500 to-blue-500 border-purple-400/50"
-                                      : "bg-gradient-to-br from-emerald-500 to-cyan-500 border-emerald-400/50 shadow-lg shadow-emerald-500/30"
-                                  }`}
-                                >
-                                  {message.role === "user" ? (
-                                    <UserIcon className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                                  ) : (
-                                    <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                                  )}
-                                </div>
-                              </div>
+                              {message.role === "user" ? (
+                                <UserIcon className="w-4 h-4 text-white" />
+                              ) : (
+                                <Bot className="w-4 h-4 text-white" />
+                              )}
+                            </div>
+                          </div>
 
-                              {/* Message Bubble */}
-                              <div className="flex flex-col">
+                          {/* Message Bubble */}
+                          <div className="flex flex-col">
+                            <div
+                              className={`rounded-2xl px-4 py-2.5 ${
+                                message.role === "user"
+                                  ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white"
+                                  : "bg-slate-800/50 text-gray-200"
+                              }`}
+                            >
+                              <p className="text-sm whitespace-pre-line leading-relaxed">
+                                {message.content}
+                              </p>
+                            </div>
+                            <span
+                              className={`text-[10px] text-gray-500 mt-1 px-1 ${
+                                message.role === "user"
+                                  ? "text-right"
+                                  : "text-left"
+                              }`}
+                            >
+                              {formatTime(message.timestamp)}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* AI Typing Indicator */}
+                    {isLoading && (
+                      <div className="flex justify-start">
+                        <div className="flex gap-2 max-w-[80%]">
+                          <div className="flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full flex items-center justify-center bg-gradient-to-br from-green-500 to-emerald-500">
+                              <Bot className="w-4 h-4 text-white" />
+                            </div>
+                          </div>
+                          <div className="rounded-2xl px-4 py-2.5 bg-slate-800/50">
+                            <div className="flex items-center space-x-2">
+                              <div className="flex space-x-1">
+                                <div className="w-2 h-2 bg-green-400 rounded-full animate-bounce"></div>
                                 <div
-                                  className={`rounded-2xl px-5 py-3.5 shadow-lg ${
-                                    message.role === "user"
-                                      ? "bg-gradient-to-r from-purple-500 to-blue-500 text-white shadow-purple-500/20"
-                                      : "bg-slate-800/80 border border-white/10 text-gray-200 backdrop-blur-sm"
-                                  }`}
-                                >
-                                  <p className="text-sm sm:text-base whitespace-pre-line leading-relaxed">
-                                    {message.content}
-                                  </p>
-                                </div>
-                                <span
-                                  className={`text-xs text-gray-500 mt-2 px-2 ${
-                                    message.role === "user"
-                                      ? "text-right"
-                                      : "text-left"
-                                  }`}
-                                >
-                                  {formatTime(message.timestamp)}
-                                </span>
+                                  className="w-2 h-2 bg-green-400 rounded-full animate-bounce"
+                                  style={{ animationDelay: "0.1s" }}
+                                ></div>
+                                <div
+                                  className="w-2 h-2 bg-green-400 rounded-full animate-bounce"
+                                  style={{ animationDelay: "0.2s" }}
+                                ></div>
                               </div>
+                              <span className="text-xs text-gray-400">
+                                {t.aiThinking}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    <div ref={messagesEndRef} />
+                  </>
+                )}
+              </div>
+
+              {/* Native Input Area */}
+              <div className="flex-shrink-0 border-t border-slate-800/50 bg-slate-950 px-4 py-3 safe-area-bottom">
+                {collectingData && isDone ? (
+                  // When collecting_data received and is_done true, show visual style and aspect ratio selection
+                  <div className="space-y-4">
+                    {/* Visual Style Selection */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-white flex items-center">
+                        <Sparkles className="w-4 h-4 text-purple-400 mr-2" />
+                        {t.selectVisualStyle}
+                      </h4>
+                      <div className="grid grid-cols-1 gap-2">
+                        {visualStyleOptions.map((option) => (
+                          <div
+                            key={option.value}
+                            className={`p-3 rounded-xl cursor-pointer transition-all ${
+                              selectedVisualStyle === option.value
+                                ? "bg-purple-500/20 border-2 border-purple-500"
+                                : "bg-slate-800/50 border-2 border-slate-700 active:bg-slate-800"
+                            }`}
+                            onClick={() => setSelectedVisualStyle(option.value)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <div className="flex-1">
+                                <h5 className="font-medium text-white text-sm">
+                                  {
+                                    option.label[
+                                      selectedLanguage as keyof typeof option.label
+                                    ]
+                                  }
+                                </h5>
+                                <p className="text-xs text-gray-400 mt-0.5">
+                                  {
+                                    option.description[
+                                      selectedLanguage as keyof typeof option.description
+                                    ]
+                                  }
+                                </p>
+                              </div>
+                              {selectedVisualStyle === option.value && (
+                                <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center ml-2">
+                                  <Check className="w-3 h-3 text-white" />
+                                </div>
+                              )}
                             </div>
                           </div>
                         ))}
+                      </div>
+                    </div>
 
-                        {/* AI Typing Indicator */}
-                        {isLoading && (
-                          <div className="flex justify-start animate-in fade-in slide-in-from-bottom-2 duration-300">
-                            <div className="flex gap-3 sm:gap-4 max-w-[85%]">
-                              <div className="flex-shrink-0 relative">
-                                <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 to-cyan-500 rounded-full blur-md opacity-40 animate-pulse"></div>
-                                <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center bg-gradient-to-br from-emerald-500 to-cyan-500 border-2 border-emerald-400/50 shadow-lg shadow-emerald-500/30">
-                                  <Bot className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-                                </div>
-                              </div>
-                              <div className="rounded-2xl px-5 py-3.5 bg-slate-800/80 border border-white/10 backdrop-blur-sm shadow-lg">
-                                <div className="flex items-center space-x-3">
-                                  <div className="flex space-x-1">
-                                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-bounce"></div>
-                                    <div
-                                      className="w-2 h-2 bg-cyan-400 rounded-full animate-bounce"
-                                      style={{ animationDelay: "0.1s" }}
-                                    ></div>
-                                    <div
-                                      className="w-2 h-2 bg-blue-400 rounded-full animate-bounce"
-                                      style={{ animationDelay: "0.2s" }}
-                                    ></div>
-                                  </div>
-                                  <span className="text-sm text-gray-400 font-medium">
-                                    {t.aiThinking}
-                                  </span>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-
-                        {/* Collecting Data Display */}
-
-                        <div ref={messagesEndRef} />
-                      </>
-                    )}
-                  </div>
-
-                  {/* Futuristic Input Area */}
-                  <div className="border-t border-white/10 p-4 bg-gradient-to-b from-slate-900/50 to-slate-950/80 backdrop-blur-sm">
-                    {collectingData && isDone ? (
-                      // When collecting_data received and is_done true, show visual style and aspect ratio selection
-                      <div className="space-y-6">
-                        {/* Visual Style Selection */}
-                        <div className="space-y-3">
-                          <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30">
-                              <Sparkles className="w-4 h-4 text-purple-400" />
-                            </div>
-                            {t.selectVisualStyle}
-                          </h4>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {visualStyleOptions.map((option) => (
-                              <div
-                                key={option.value}
-                                className={`relative group p-4 rounded-2xl cursor-pointer transition-all ${
-                                  selectedVisualStyle === option.value
-                                    ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/50 shadow-lg shadow-purple-500/20"
-                                    : "bg-slate-800/50 border border-white/10 hover:border-purple-500/30 hover:bg-slate-800/70"
-                                }`}
-                                onClick={() =>
-                                  setSelectedVisualStyle(option.value)
+                    {/* Aspect Ratio Selection */}
+                    <div className="space-y-2">
+                      <h4 className="text-sm font-semibold text-white flex items-center">
+                        <Video className="w-4 h-4 text-purple-400 mr-2" />
+                        {t.selectAspectRatio}
+                      </h4>
+                      <div className="grid grid-cols-2 gap-2">
+                        {aspectRatioOptions.map((option) => (
+                          <div
+                            key={option.value}
+                            className={`p-3 rounded-xl cursor-pointer transition-all ${
+                              selectedAspectRatio === option.value
+                                ? "bg-purple-500/20 border-2 border-purple-500"
+                                : "bg-slate-800/50 border-2 border-slate-700 active:bg-slate-800"
+                            }`}
+                            onClick={() => setSelectedAspectRatio(option.value)}
+                          >
+                            <div className="flex items-center justify-between">
+                              <h5 className="font-medium text-white text-sm">
+                                {
+                                  option.label[
+                                    selectedLanguage as keyof typeof option.label
+                                  ]
                                 }
-                              >
-                                {selectedVisualStyle === option.value && (
-                                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-lg -z-10"></div>
-                                )}
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <h5 className="font-semibold text-white mb-1">
-                                      {
-                                        option.label[
-                                          selectedLanguage as keyof typeof option.label
-                                        ]
-                                      }
-                                    </h5>
-                                    <p className="text-sm text-gray-400">
-                                      {
-                                        option.description[
-                                          selectedLanguage as keyof typeof option.description
-                                        ]
-                                      }
-                                    </p>
-                                  </div>
-                                  {selectedVisualStyle === option.value && (
-                                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30">
-                                      <Check className="w-3 h-3 text-white" />
-                                    </div>
-                                  )}
+                              </h5>
+                              {selectedAspectRatio === option.value && (
+                                <div className="w-5 h-5 bg-purple-500 rounded-full flex items-center justify-center">
+                                  <Check className="w-3 h-3 text-white" />
                                 </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-
-                        {/* Aspect Ratio Selection */}
-                        <div className="space-y-3">
-                          <h4 className="text-lg font-semibold text-white mb-4 flex items-center">
-                            <div className="w-8 h-8 bg-gradient-to-br from-purple-500/20 to-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-purple-500/30">
-                              <Video className="w-4 h-4 text-purple-400" />
+                              )}
                             </div>
-                            {t.selectAspectRatio}
-                          </h4>
-                          <div className="grid grid-cols-2 gap-3">
-                            {aspectRatioOptions.map((option) => (
-                              <div
-                                key={option.value}
-                                className={`relative group p-4 rounded-2xl cursor-pointer transition-all ${
-                                  selectedAspectRatio === option.value
-                                    ? "bg-gradient-to-br from-purple-500/20 to-blue-500/20 border border-purple-500/50 shadow-lg shadow-purple-500/20"
-                                    : "bg-slate-800/50 border border-white/10 hover:border-purple-500/30 hover:bg-slate-800/70"
-                                }`}
-                                onClick={() =>
-                                  setSelectedAspectRatio(option.value)
-                                }
-                              >
-                                {selectedAspectRatio === option.value && (
-                                  <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-2xl opacity-20 blur-lg -z-10"></div>
-                                )}
-                                <div className="flex items-center justify-between">
-                                  <div className="flex-1">
-                                    <h5 className="font-semibold text-white">
-                                      {
-                                        option.label[
-                                          selectedLanguage as keyof typeof option.label
-                                        ]
-                                      }
-                                    </h5>
-                                  </div>
-                                  {selectedAspectRatio === option.value && (
-                                    <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-blue-500 rounded-full flex items-center justify-center shadow-lg shadow-purple-500/30">
-                                      <Check className="w-3 h-3 text-white" />
-                                    </div>
-                                  )}
-                                </div>
-                              </div>
-                            ))}
                           </div>
-                        </div>
+                        ))}
+                      </div>
+                    </div>
 
-                        {/* Continue to Payment Button */}
-                        <div className="relative">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
-                          <button
-                            onClick={handleGoToPayment}
-                            disabled={
-                              !selectedVisualStyle || !selectedAspectRatio
-                            }
-                            className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30 disabled:opacity-50 disabled:cursor-not-allowed"
-                          >
-                            <CreditCard className="w-5 h-5" />
-                            <span>
-                              {!selectedVisualStyle || !selectedAspectRatio
-                                ? t.selectVisualAndAspect
-                                : t.continuePayment}
-                            </span>
-                          </button>
-                        </div>
-                      </div>
-                    ) : jsonData && isDone ? (
-                      // When all batches done, show payment button
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-center space-x-2 py-3 bg-green-500/10 rounded-xl border border-green-500/30">
-                          <CheckCircle className="w-5 h-5 text-green-400" />
-                          <p className="text-sm font-medium text-green-300">
-                            {t.allBatchesDone} {editedScenes.length}{" "}
-                            {t.scenesCreated}
-                          </p>
-                        </div>
-                        <div className="relative">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-green-500 to-emerald-500 rounded-xl blur opacity-50 hover:opacity-75 transition-opacity duration-300"></div>
-                          <button
-                            onClick={handleGoToPayment}
-                            className="relative w-full py-4 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-bold rounded-xl transition-all duration-300 flex items-center justify-center space-x-3 shadow-lg shadow-green-500/30"
-                          >
-                            <CreditCard className="w-5 h-5" />
-                            <span>{t.continuePayment}</span>
-                          </button>
-                        </div>
-                      </div>
-                    ) : jsonData && !isDone ? (
-                      // When batch in progress, show processing status (auto-continue)
-                      <div className="space-y-3">
-                        <div className="flex items-center justify-center space-x-2 py-3 bg-blue-500/10 rounded-xl border border-blue-500/30">
-                          <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
-                          <p className="text-sm font-medium text-blue-300">
-                            {t.pleaseWait}
-                          </p>
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex gap-3">
-                        <div className="flex-1 relative group">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl opacity-0 group-focus-within:opacity-20 blur transition-opacity duration-300"></div>
-                          <textarea
-                            ref={inputRef}
-                            placeholder={t.typePlaceholder}
-                            value={inputMessage}
-                            onChange={(e) => setInputMessage(e.target.value)}
-                            onKeyPress={handleKeyPress}
-                            disabled={isLoading || isInitializing}
-                            className="relative w-full px-4 py-3 bg-slate-800/80 border border-white/10 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/60 focus:ring-2 focus:ring-purple-500/20 transition-all duration-300 min-h-[48px] max-h-[120px] resize-none"
-                            rows={1}
-                          />
-                        </div>
-                        <div className="relative">
-                          <div className="absolute -inset-0.5 bg-gradient-to-r from-purple-500 to-blue-500 rounded-xl blur opacity-40"></div>
-                          <button
-                            onClick={handleSendMessage}
-                            disabled={
-                              !inputMessage.trim() ||
-                              isLoading ||
-                              isInitializing
-                            }
-                            className="relative h-full px-5 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-xl transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg shadow-purple-500/20"
-                          >
-                            {isLoading ? (
-                              <Loader2 className="w-5 h-5 animate-spin" />
-                            ) : (
-                              <Send className="w-5 h-5" />
-                            )}
-                          </button>
-                        </div>
-                      </div>
-                    )}
+                    {/* Continue to Payment Button */}
+                    <button
+                      onClick={handleGoToPayment}
+                      disabled={!selectedVisualStyle || !selectedAspectRatio}
+                      className="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold rounded-xl transition-all flex items-center justify-center space-x-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      <span className="text-sm">
+                        {!selectedVisualStyle || !selectedAspectRatio
+                          ? t.selectVisualAndAspect
+                          : t.continuePayment}
+                      </span>
+                    </button>
                   </div>
-                </div>
+                ) : jsonData && isDone ? (
+                  // When all batches done, show payment button
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-center space-x-2 py-2.5 bg-green-500/10 rounded-xl border border-green-500/30">
+                      <CheckCircle className="w-4 h-4 text-green-400" />
+                      <p className="text-xs font-medium text-green-300">
+                        {t.allBatchesDone} {editedScenes.length}{" "}
+                        {t.scenesCreated}
+                      </p>
+                    </div>
+                    <button
+                      onClick={handleGoToPayment}
+                      className="w-full py-3.5 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white font-semibold rounded-xl transition-all flex items-center justify-center space-x-2"
+                    >
+                      <CreditCard className="w-5 h-5" />
+                      <span className="text-sm">{t.continuePayment}</span>
+                    </button>
+                  </div>
+                ) : jsonData && !isDone ? (
+                  // When batch in progress, show processing status (auto-continue)
+                  <div className="flex items-center justify-center space-x-2 py-2.5 bg-blue-500/10 rounded-xl border border-blue-500/30">
+                    <Loader2 className="w-4 h-4 text-blue-400 animate-spin" />
+                    <p className="text-xs font-medium text-blue-300">
+                      {t.pleaseWait}
+                    </p>
+                  </div>
+                ) : (
+                  <div className="flex gap-2">
+                    <textarea
+                      ref={inputRef}
+                      placeholder={t.typePlaceholder}
+                      value={inputMessage}
+                      onChange={(e) => setInputMessage(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      disabled={isLoading || isInitializing}
+                      className="flex-1 px-4 py-3 bg-slate-900/50 border border-slate-800 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 resize-none transition-colors text-sm"
+                      rows={1}
+                    />
+                    <button
+                      onClick={handleSendMessage}
+                      disabled={
+                        !inputMessage.trim() || isLoading || isInitializing
+                      }
+                      className="px-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center"
+                    >
+                      {isLoading ? (
+                        <Loader2 className="w-5 h-5 animate-spin" />
+                      ) : (
+                        <Send className="w-5 h-5" />
+                      )}
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
           </>

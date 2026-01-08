@@ -1,11 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
 import {
   X,
-  History,
   Coins,
   Video,
   Clock,
@@ -18,7 +13,6 @@ import {
   Calendar,
   User,
   Settings,
-  Play,
   ChevronLeft,
   ChevronRight,
   Merge,
@@ -288,224 +282,199 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+    <>
       {/* Backdrop */}
       <div
-        className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[60] animate-in fade-in duration-200"
         onClick={onClose}
       />
 
-      {/* Modal */}
-      <div className="relative bg-background rounded-xl shadow-2xl w-full max-w-6xl max-h-[90vh] overflow-hidden mx-auto">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-purple-100 dark:bg-purple-900/30 rounded-lg flex items-center justify-center">
-              <History className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-            </div>
-            <div>
-              <h2 className="text-xl font-semibold text-foreground">
-                Riwayat Video
-              </h2>
-              <p className="text-sm text-muted-foreground">
-                {step === "email" && "Masukkan email untuk mengakses riwayat"}
-                {step === "otp" && "Verifikasi OTP yang dikirim ke email"}
-                {step === "history" && "Daftar video dan saldo koin Anda"}
-              </p>
-            </div>
-          </div>
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
+      {/* Bottom Sheet */}
+      <div className="fixed inset-x-0 bottom-0 z-[70] bg-slate-900 rounded-t-3xl shadow-2xl animate-in slide-in-from-bottom duration-300 max-h-[90vh] flex flex-col">
+        {/* Handle Bar */}
+        <div className="flex justify-center pt-3 pb-2 flex-shrink-0">
+          <div className="w-12 h-1 bg-slate-700 rounded-full"></div>
         </div>
 
-        {/* Content */}
-        <div className="p-6 overflow-y-auto max-h-[calc(90vh-120px)]">
-          {/* Step 1: Email Input */}
+        {/* Header */}
+        <div className="flex items-center justify-between px-6 py-3 border-b border-slate-800 flex-shrink-0">
+          <div>
+            <h3 className="text-lg font-semibold text-white">Riwayat Video</h3>
+            <p className="text-xs text-gray-400 mt-0.5">
+              {step === "email" && "Masukkan email untuk mengakses riwayat"}
+              {step === "otp" && "Verifikasi OTP yang dikirim ke email"}
+              {step === "history" && "Daftar video dan saldo koin Anda"}
+            </p>
+          </div>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-slate-800 rounded-full transition-colors"
+          >
+            <X className="w-5 h-5 text-gray-400" />
+          </button>
+        </div>
+
+        {/* Content - Scrollable */}
+        <div className="flex-1 overflow-y-auto px-6 py-4">
+          {/* Step 1: Email Input - Native Style */}
           {step === "email" && (
-            <div className="max-w-md mx-auto">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <User className="w-5 h-5" />
-                    <span>Masukkan Email</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Email
-                    </label>
-                    <Input
-                      type="email"
-                      placeholder="Masukkan email Anda..."
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      onKeyPress={(e) =>
-                        e.key === "Enter" && handleRequestOTP()
-                      }
-                    />
-                  </div>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-2 px-1">
+                  Email
+                </label>
+                <div className="relative">
+                  <User className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
+                  <input
+                    type="email"
+                    placeholder="Masukkan email Anda..."
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    onKeyPress={(e) => e.key === "Enter" && handleRequestOTP()}
+                    className="w-full pl-12 pr-4 py-4 bg-slate-900/50 border border-slate-800 rounded-2xl text-white placeholder-gray-500 focus:outline-none focus:border-purple-500/50 transition-colors"
+                  />
+                </div>
+              </div>
 
-                  {error && (
-                    <div className="flex items-center p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mr-2" />
-                      <span className="text-sm text-red-800 dark:text-red-200">
-                        {error}
-                      </span>
-                    </div>
-                  )}
+              {error && (
+                <div className="flex items-start p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-red-300">{error}</span>
+                </div>
+              )}
 
-                  <Button
-                    onClick={handleRequestOTP}
-                    disabled={loading || !email.trim()}
-                    className="w-full"
-                  >
-                    {loading ? (
-                      <>
-                        <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                        Mengirim OTP...
-                      </>
-                    ) : (
-                      "Kirim OTP"
-                    )}
-                  </Button>
-                </CardContent>
-              </Card>
+              <button
+                onClick={handleRequestOTP}
+                disabled={loading || !email.trim()}
+                className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+              >
+                {loading ? (
+                  <>
+                    <RefreshCw className="w-5 h-5 animate-spin" />
+                    <span>Mengirim OTP...</span>
+                  </>
+                ) : (
+                  "Kirim OTP"
+                )}
+              </button>
             </div>
           )}
 
-          {/* Step 2: OTP Verification */}
+          {/* Step 2: OTP Verification - Native Style */}
           {step === "otp" && (
-            <div className="max-w-md mx-auto">
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <Settings className="w-5 h-5" />
-                    <span>Verifikasi OTP</span>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="text-center">
-                    <p className="text-sm text-muted-foreground mb-2">
-                      Kode OTP telah dikirim ke:
-                    </p>
-                    <p className="font-medium text-foreground">{email}</p>
-                  </div>
+            <div className="space-y-4">
+              <div className="text-center mb-4">
+                <p className="text-sm text-gray-400 mb-1">
+                  Kode OTP telah dikirim ke:
+                </p>
+                <p className="font-medium text-white">{email}</p>
+              </div>
 
-                  <div>
-                    <label className="block text-sm font-medium text-foreground mb-2">
-                      Kode OTP
-                    </label>
-                    <Input
-                      type="text"
-                      placeholder="Masukkan 6 digit OTP..."
-                      value={otp}
-                      onChange={(e) =>
-                        setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
-                      }
-                      onKeyPress={(e) => e.key === "Enter" && handleVerifyOTP()}
-                      maxLength={6}
-                    />
-                  </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-300 mb-3 text-center">
+                  Kode OTP
+                </label>
+                <input
+                  type="text"
+                  placeholder="• • • • • •"
+                  value={otp}
+                  onChange={(e) =>
+                    setOtp(e.target.value.replace(/\D/g, "").slice(0, 6))
+                  }
+                  onKeyPress={(e) => e.key === "Enter" && handleVerifyOTP()}
+                  maxLength={6}
+                  className="w-full px-4 py-4 bg-slate-900/50 border border-slate-800 rounded-2xl text-white text-center text-2xl font-mono tracking-widest placeholder-gray-600 focus:outline-none focus:border-purple-500/50 transition-colors"
+                />
+              </div>
 
-                  {countdown > 0 && (
-                    <div className="text-center">
-                      <p className="text-sm text-muted-foreground">
-                        Kirim ulang OTP dalam {countdown} detik
-                      </p>
-                    </div>
+              {countdown > 0 && (
+                <div className="flex items-center justify-center space-x-2 text-sm">
+                  <Clock className="w-4 h-4 text-blue-400" />
+                  <span className="text-gray-400">
+                    Kirim ulang dalam{" "}
+                    <span className="text-blue-400 font-semibold">
+                      {countdown}s
+                    </span>
+                  </span>
+                </div>
+              )}
+
+              {error && (
+                <div className="flex items-start p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                  <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                  <span className="text-sm text-red-300">{error}</span>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <button
+                  onClick={handleVerifyOTP}
+                  disabled={loading || !otp.trim() || otp.length !== 6}
+                  className="w-full py-4 bg-gradient-to-r from-purple-500 to-blue-500 hover:from-purple-600 hover:to-blue-600 text-white font-semibold rounded-2xl transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center space-x-2"
+                >
+                  {loading ? (
+                    <>
+                      <RefreshCw className="w-5 h-5 animate-spin" />
+                      <span>Memverifikasi...</span>
+                    </>
+                  ) : (
+                    "Verifikasi OTP"
                   )}
+                </button>
 
-                  {error && (
-                    <div className="flex items-center p-3 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                      <AlertCircle className="w-4 h-4 text-red-600 dark:text-red-400 mr-2" />
-                      <span className="text-sm text-red-800 dark:text-red-200">
-                        {error}
-                      </span>
-                    </div>
-                  )}
-
-                  <div className="space-y-2">
-                    <Button
-                      onClick={handleVerifyOTP}
-                      disabled={loading || !otp.trim() || otp.length !== 6}
-                      className="w-full"
-                    >
-                      {loading ? (
-                        <>
-                          <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                          Memverifikasi...
-                        </>
-                      ) : (
-                        "Verifikasi OTP"
-                      )}
-                    </Button>
-
-                    <Button
-                      variant="outline"
-                      onClick={() => setStep("email")}
-                      className="w-full"
-                    >
-                      Kembali ke Email
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
+                <button
+                  onClick={() => setStep("email")}
+                  className="w-full py-3 bg-slate-800/50 hover:bg-slate-800 border border-slate-700 text-gray-300 font-medium rounded-2xl transition-all"
+                >
+                  Kembali ke Email
+                </button>
+              </div>
             </div>
           )}
 
-          {/* Step 3: Video History */}
+          {/* Step 3: Video History - Native Style */}
           {step === "history" && (
-            <div className="space-y-6">
+            <div className="space-y-4">
               {/* Coin Balance Card */}
               {coinData && (
-                <Card className="bg-gradient-to-r from-purple-50 to-blue-50 dark:from-purple-950/20 dark:to-blue-950/20 border-purple-200 dark:border-purple-800">
-                  <CardHeader>
-                    <CardTitle className="flex items-center space-x-2">
-                      <Coins className="w-5 h-5 text-purple-600" />
-                      <span>Saldo Koin</span>
-                    </CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-purple-600">
-                          {coinData.quota.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Total Koin
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-blue-600">
-                          {coinData.hari_ini.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Hari Ini
-                        </p>
-                      </div>
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-green-600">
-                          {coinData.minggu_ini.toLocaleString()}
-                        </p>
-                        <p className="text-sm text-muted-foreground">
-                          Minggu Ini
-                        </p>
-                      </div>
+                <div className="bg-gradient-to-r from-purple-500/10 to-blue-500/10 border border-purple-500/30 rounded-2xl p-4">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Coins className="w-5 h-5 text-purple-400" />
+                    <h3 className="text-sm font-semibold text-white">
+                      Saldo Koin
+                    </h3>
+                  </div>
+                  <div className="grid grid-cols-3 gap-3">
+                    <div className="text-center">
+                      <p className="text-xl font-bold text-purple-400">
+                        {coinData.quota.toLocaleString()}
+                      </p>
+                      <p className="text-[10px] text-gray-400">Total Koin</p>
                     </div>
-                  </CardContent>
-                </Card>
+                    <div className="text-center">
+                      <p className="text-xl font-bold text-blue-400">
+                        {coinData.hari_ini.toLocaleString()}
+                      </p>
+                      <p className="text-[10px] text-gray-400">Hari Ini</p>
+                    </div>
+                    <div className="text-center">
+                      <p className="text-xl font-bold text-green-400">
+                        {coinData.minggu_ini.toLocaleString()}
+                      </p>
+                      <p className="text-[10px] text-gray-400">Minggu Ini</p>
+                    </div>
+                  </div>
+                </div>
               )}
 
               {/* Tab Navigation */}
-              <div className="flex space-x-1 bg-gray-100 dark:bg-gray-800 p-1 rounded-lg">
+              <div className="flex space-x-2 bg-slate-800/50 p-1 rounded-xl">
                 <button
                   onClick={() => setActiveTab("list")}
-                  className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === "list"
-                      ? "bg-white dark:bg-gray-700 text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-slate-700 text-white"
+                      : "text-gray-400"
                   }`}
                 >
                   <List className="w-4 h-4" />
@@ -513,10 +482,10 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                 </button>
                 <button
                   onClick={() => setActiveTab("merge")}
-                  className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2 rounded-md text-sm font-medium transition-colors ${
+                  className={`flex-1 flex items-center justify-center space-x-2 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                     activeTab === "merge"
-                      ? "bg-white dark:bg-gray-700 text-foreground shadow-sm"
-                      : "text-muted-foreground hover:text-foreground"
+                      ? "bg-slate-700 text-white"
+                      : "text-gray-400"
                   }`}
                 >
                   <Merge className="w-4 h-4" />
@@ -525,128 +494,123 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
               </div>
 
               {/* Video List/Merge */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2">
-                      {activeTab === "list" ? (
-                        <>
-                          <Video className="w-5 h-5" />
-                          <span>Daftar Video ({totalVideos})</span>
-                        </>
-                      ) : (
-                        <>
-                          <Merge className="w-5 h-5" />
-                          <span>
-                            Merge Video ({selectedVideos.length} dipilih)
-                          </span>
-                        </>
-                      )}
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      {activeTab === "merge" && selectedVideos.length >= 2 && (
-                        <Button
-                          onClick={handleMergeVideos}
-                          disabled={merging}
-                          className="bg-green-600 hover:bg-green-700"
-                        >
-                          {merging ? (
-                            <>
-                              <RefreshCw className="w-4 h-4 mr-2 animate-spin" />
-                              Menggabungkan...
-                            </>
-                          ) : (
-                            <>
-                              <Merge className="w-4 h-4 mr-2" />
-                              Gabungkan Video
-                            </>
-                          )}
-                        </Button>
-                      )}
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => loadHistoryData(xApiKey!)}
-                        disabled={loadingHistory}
+              <div className="bg-slate-800/30 border border-slate-700 rounded-2xl overflow-hidden">
+                {/* Header */}
+                <div className="flex items-center justify-between px-4 py-3 border-b border-slate-700">
+                  <div className="flex items-center space-x-2">
+                    {activeTab === "list" ? (
+                      <>
+                        <Video className="w-5 h-5 text-purple-400" />
+                        <span className="text-sm font-semibold text-white">
+                          Daftar Video ({totalVideos})
+                        </span>
+                      </>
+                    ) : (
+                      <>
+                        <Merge className="w-5 h-5 text-blue-400" />
+                        <span className="text-sm font-semibold text-white">
+                          Merge Video ({selectedVideos.length} dipilih)
+                        </span>
+                      </>
+                    )}
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    {activeTab === "merge" && selectedVideos.length >= 2 && (
+                      <button
+                        onClick={handleMergeVideos}
+                        disabled={merging}
+                        className="flex items-center space-x-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors disabled:opacity-50"
                       >
-                        <RefreshCw
-                          className={`w-4 h-4 mr-2 ${
-                            loadingHistory ? "animate-spin" : ""
-                          }`}
-                        />
-                        Refresh
-                      </Button>
-                    </div>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
+                        {merging ? (
+                          <>
+                            <RefreshCw className="w-3 h-3 animate-spin" />
+                            <span>Menggabungkan...</span>
+                          </>
+                        ) : (
+                          <>
+                            <Merge className="w-3 h-3" />
+                            <span>Gabungkan</span>
+                          </>
+                        )}
+                      </button>
+                    )}
+                    <button
+                      onClick={() => loadHistoryData(xApiKey!)}
+                      disabled={loadingHistory}
+                      className="p-1.5 hover:bg-slate-700 rounded-lg transition-colors disabled:opacity-50"
+                    >
+                      <RefreshCw
+                        className={`w-4 h-4 text-gray-400 ${
+                          loadingHistory ? "animate-spin" : ""
+                        }`}
+                      />
+                    </button>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-4">
                   {loadingHistory ? (
                     <div className="flex justify-center items-center py-8">
-                      <RefreshCw className="w-6 h-6 animate-spin mr-2" />
-                      <span>Memuat data...</span>
+                      <RefreshCw className="w-6 h-6 animate-spin mr-2 text-purple-400" />
+                      <span className="text-gray-400">Memuat data...</span>
                     </div>
                   ) : videoList.length === 0 ? (
                     <div className="text-center py-8">
-                      <Video className="w-16 h-16 text-gray-400 mx-auto mb-4" />
-                      <p className="text-muted-foreground">
+                      <Video className="w-16 h-16 text-gray-600 mx-auto mb-4" />
+                      <p className="text-gray-400 text-sm">
                         Belum ada video yang dibuat
                       </p>
                     </div>
                   ) : (
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {/* Merge Result */}
                       {mergeResult && activeTab === "merge" && (
-                        <div className="p-4 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                        <div className="p-3 bg-green-500/10 border border-green-500/30 rounded-xl">
                           <div className="flex items-center space-x-2 mb-2">
-                            <CheckCircle className="w-5 h-5 text-green-600" />
-                            <h3 className="font-semibold text-green-800 dark:text-green-200">
+                            <CheckCircle className="w-4 h-4 text-green-400" />
+                            <h3 className="text-sm font-semibold text-green-300">
                               Video Berhasil Digabungkan!
                             </h3>
                           </div>
-                          <p className="text-sm text-green-700 dark:text-green-300 mb-3">
+                          <p className="text-xs text-green-400 mb-3">
                             {mergeResult.list_merge_video?.length || 0} video
                             telah berhasil digabungkan
                           </p>
                           <div className="flex space-x-2">
-                            <Button
-                              size="sm"
+                            <button
                               onClick={() =>
                                 window.open(
                                   mergeResult.final_url_merge_video,
                                   "_blank"
                                 )
                               }
-                              className="bg-green-600 hover:bg-green-700"
+                              className="flex items-center space-x-1 px-3 py-2 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors"
                             >
-                              <Eye className="w-4 h-4 mr-1" />
-                              Lihat Video
-                            </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
+                              <Eye className="w-3 h-3" />
+                              <span>Lihat Video</span>
+                            </button>
+                            <button
                               onClick={() =>
                                 window.open(
                                   mergeResult.final_url_merge_video,
                                   "_blank"
                                 )
                               }
+                              className="flex items-center space-x-1 px-3 py-2 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-gray-300 text-xs font-medium rounded-lg transition-colors"
                             >
-                              <Download className="w-4 h-4 mr-1" />
-                              Download
-                            </Button>
+                              <Download className="w-3 h-3" />
+                              <span>Download</span>
+                            </button>
                           </div>
                         </div>
                       )}
 
                       {/* Error Display */}
                       {error && (
-                        <div className="p-4 bg-red-50 dark:bg-red-950/20 border border-red-200 dark:border-red-800 rounded-lg">
-                          <div className="flex items-center space-x-2">
-                            <AlertCircle className="w-4 h-4 text-red-600" />
-                            <span className="text-sm text-red-800 dark:text-red-200">
-                              {error}
-                            </span>
-                          </div>
+                        <div className="flex items-start p-3 bg-red-500/10 border border-red-500/20 rounded-xl">
+                          <AlertCircle className="w-4 h-4 text-red-400 mr-2 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm text-red-300">{error}</span>
                         </div>
                       )}
 
@@ -654,16 +618,16 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                       {videoList.map((video) => (
                         <div
                           key={video.id}
-                          className={`p-4 border rounded-lg transition-colors ${
+                          className={`p-3 bg-slate-800/50 border border-slate-700 rounded-xl transition-all active:scale-[0.98] ${
                             activeTab === "merge" &&
                             video.status_video === "success" &&
                             video.url_video
-                              ? "hover:bg-blue-50 dark:hover:bg-blue-950/20 cursor-pointer"
-                              : "hover:bg-gray-50 dark:hover:bg-gray-800/50"
+                              ? "cursor-pointer"
+                              : ""
                           } ${
                             activeTab === "merge" &&
                             selectedVideos.includes(video.url_video || "")
-                              ? "bg-blue-50 dark:bg-blue-950/20 border-blue-300 dark:border-blue-700"
+                              ? "bg-blue-500/10 border-blue-500/50"
                               : ""
                           }`}
                           onClick={() => {
@@ -684,10 +648,10 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                                 video.url_video && (
                                   <div className="flex items-center pt-1">
                                     <div
-                                      className={`w-5 h-5 rounded border-2 flex items-center justify-center ${
+                                      className={`w-5 h-5 rounded border-2 flex items-center justify-center transition-colors ${
                                         selectedVideos.includes(video.url_video)
-                                          ? "bg-blue-600 border-blue-600"
-                                          : "border-gray-300 dark:border-gray-600"
+                                          ? "bg-blue-500 border-blue-500"
+                                          : "border-slate-600"
                                       }`}
                                     >
                                       {selectedVideos.includes(
@@ -700,30 +664,39 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                                 )}
 
                               <div className="flex-1">
-                                <div className="flex items-center space-x-2 mb-2">
-                                  <Badge
-                                    className={getStatusColor(
-                                      video.status_video
-                                    )}
+                                <div className="flex items-center flex-wrap gap-1.5 mb-2">
+                                  <span
+                                    className={`inline-flex items-center space-x-1 px-2 py-0.5 rounded-lg text-[10px] font-medium ${
+                                      video.status_video.toLowerCase() ===
+                                      "success"
+                                        ? "bg-green-500/20 text-green-400"
+                                        : video.status_video.toLowerCase() ===
+                                          "progress"
+                                        ? "bg-blue-500/20 text-blue-400"
+                                        : video.status_video.toLowerCase() ===
+                                          "failed"
+                                        ? "bg-red-500/20 text-red-400"
+                                        : "bg-gray-500/20 text-gray-400"
+                                    }`}
                                   >
                                     {getStatusIcon(video.status_video)}
                                     <span className="ml-1">
                                       {getStatusText(video.status_video)}
                                     </span>
-                                  </Badge>
-                                  <Badge variant="outline">
+                                  </span>
+                                  <span className="px-2 py-0.5 bg-slate-700/50 border border-slate-600 rounded-lg text-[10px] text-gray-300">
                                     {video.model_ai}
-                                  </Badge>
-                                  <Badge variant="outline">
+                                  </span>
+                                  <span className="px-2 py-0.5 bg-slate-700/50 border border-slate-600 rounded-lg text-[10px] text-gray-300">
                                     {video.aspect_ratio}
-                                  </Badge>
+                                  </span>
                                 </div>
 
-                                <p className="text-sm text-foreground mb-2 line-clamp-2">
+                                <p className="text-xs text-gray-300 mb-2 line-clamp-2">
                                   {video.prompt}
                                 </p>
 
-                                <div className="flex items-center space-x-4 text-xs text-muted-foreground">
+                                <div className="flex items-center flex-wrap gap-3 text-[10px] text-gray-500">
                                   <div className="flex items-center space-x-1">
                                     <Calendar className="w-3 h-3" />
                                     <span>{formatDate(video.created_at)}</span>
@@ -740,25 +713,23 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                             {activeTab === "list" &&
                               video.status_video === "success" &&
                               video.url_video && (
-                                <div className="flex space-x-2 ml-4">
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
+                                <div className="flex flex-col space-y-1.5 ml-3">
+                                  <button
                                     onClick={() => handleVideoAction(video)}
+                                    className="flex items-center space-x-1 px-2.5 py-1.5 bg-purple-600 hover:bg-purple-700 text-white text-[10px] font-medium rounded-lg transition-colors"
                                   >
-                                    <Eye className="w-4 h-4 mr-1" />
-                                    Lihat
-                                  </Button>
-                                  <Button
-                                    size="sm"
-                                    variant="outline"
+                                    <Eye className="w-3 h-3" />
+                                    <span>Lihat</span>
+                                  </button>
+                                  <button
                                     onClick={() =>
                                       window.open(video.url_video!, "_blank")
                                     }
+                                    className="flex items-center space-x-1 px-2.5 py-1.5 bg-slate-700 hover:bg-slate-600 border border-slate-600 text-gray-300 text-[10px] font-medium rounded-lg transition-colors"
                                   >
-                                    <Download className="w-4 h-4 mr-1" />
-                                    Download
-                                  </Button>
+                                    <Download className="w-3 h-3" />
+                                    <span>Download</span>
+                                  </button>
                                 </div>
                               )}
                           </div>
@@ -769,15 +740,14 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
 
                   {/* Pagination */}
                   {totalPages > 1 && (
-                    <div className="flex items-center justify-center space-x-2 mt-6">
-                      <Button
-                        variant="outline"
-                        size="sm"
+                    <div className="flex items-center justify-center space-x-2 mt-4">
+                      <button
                         onClick={() => handlePageChange(currentPage - 1)}
                         disabled={currentPage === 1 || loadingHistory}
+                        className="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <ChevronLeft className="w-4 h-4" />
-                      </Button>
+                        <ChevronLeft className="w-4 h-4 text-gray-400" />
+                      </button>
 
                       <div className="flex items-center space-x-1">
                         {Array.from(
@@ -785,38 +755,38 @@ export function VideoHistoryModal({ isOpen, onClose }: VideoHistoryModalProps) {
                           (_, i) => {
                             const page = i + 1;
                             return (
-                              <Button
+                              <button
                                 key={page}
-                                variant={
-                                  currentPage === page ? "default" : "outline"
-                                }
-                                size="sm"
                                 onClick={() => handlePageChange(page)}
                                 disabled={loadingHistory}
+                                className={`min-w-[32px] px-2 py-1.5 text-xs font-medium rounded-lg transition-colors disabled:opacity-50 ${
+                                  currentPage === page
+                                    ? "bg-purple-600 text-white"
+                                    : "bg-slate-800 hover:bg-slate-700 border border-slate-700 text-gray-400"
+                                }`}
                               >
                                 {page}
-                              </Button>
+                              </button>
                             );
                           }
                         )}
                       </div>
 
-                      <Button
-                        variant="outline"
-                        size="sm"
+                      <button
                         onClick={() => handlePageChange(currentPage + 1)}
                         disabled={currentPage === totalPages || loadingHistory}
+                        className="p-2 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                       >
-                        <ChevronRight className="w-4 h-4" />
-                      </Button>
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                      </button>
                     </div>
                   )}
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             </div>
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }
